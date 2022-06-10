@@ -1,23 +1,19 @@
 import SingleGridView from "../components/SingleGridView";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
-
 import axios from "axios";
-import Web3Modal from "web3modal";
-
 import { NFT_ADDRESS, Market_ADDRESS } from "../config";
 import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
 import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
+import React, { useEffect, useState } from "react";
 
-export default function Home() {
-  const [nfts, setNfts] = useState([]);
-  const [processing, setProcessing] = useState(false);
+const Nft = () => {
+  const [myNft, setMyNft] = useState([]);
 
   useEffect(() => {
-    getNFTS();
+    getMyNFTS();
   }, []);
 
-  const getNFTS = async () => {
+  const getMyNFTS = async () => {
     const provider = new ethers.providers.JsonRpcProvider(
       "https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac"
     );
@@ -27,7 +23,9 @@ export default function Home() {
       Market.abi,
       provider
     );
-    const data = await marketContract.fetchMarketItems();
+    const data = await marketContract.fetchItemsCreated();
+
+    console.log({ data });
     const items = await Promise.all(
       data.map(async (item) => {
         const tokenUri = await nftContract.tokenURI(item.tokenId);
@@ -42,45 +40,32 @@ export default function Home() {
           name: metaData.data.name,
           description: metaData.data.description,
         };
+
         return formateItem;
       })
     );
-    setNfts((preState) => (preState = items));
+    setMyNft((preState) => (preState = items));
   };
 
-  const buyNFT = async (nft) => {
-    setProcessing(true);
-    const web3modal = new Web3Modal();
-    const connectMA = await web3modal.connect();
-    const provider = new ethers.providers.Web3Provider(connectMA);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(Market_ADDRESS, Market.abi, signer);
-    const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
-    const tx = await contract.createMarketSale(NFT_ADDRESS, nft.tokenId, {
-      value: price,
-    });
-    await tx.wait();
-    setProcessing(false);
-    getNFTS();
-  };
-
-  if (!nfts.length) {
-    return <h3>No NFT Listed yet !!</h3>;
+  if (!myNft.length) {
+    return <h3>You does not have any NFT !!</h3>;
   }
 
-  console.log(nfts);
+  console.log({myNft});
 
   return (
     <div className="grid grid-cols-4 gap-5 my-5 px-5">
-      {nfts.map((item) => (
+      {myNft.map((item) => (
         <SingleGridView
           key={item.tokenId}
           nft={item}
-          isBuy={true}
-          buyNFT={buyNFT}
-          processing={processing}
+          isBuy={false}
+          processing={false}
+          buyNFT={() => {}}
         />
       ))}
     </div>
   );
-}
+};
+
+export default Nft;

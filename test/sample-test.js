@@ -25,8 +25,13 @@ describe("NFT Market", function () {
     marketListingPrice = marketListingPrice.toString();
     const priceOfNft = ethers.utils.parseUnits("1", "ether");
 
-    await nft.createNewToken("google.com");
-    await nft.createNewToken("google.com");
+    await nft.createNewToken("google.com", 10000000000000000n);
+    await nft.createNewToken("google.com", 10000000000000000n);
+    await nft.createNewToken("google.com", 10000000000000000n);
+
+    const abc = await nft.getMintedNFT();
+
+    console.log(abc);
 
     await market.createMarketItem(nftAddress, 1, priceOfNft, {
       value: BigNumber.from(marketListingPrice),
@@ -63,6 +68,6 @@ describe("NFT Market", function () {
 
     const myNFt = await market.connect(owner).fetchMyNft();
 
-    console.log({myNFt, create});
+    console.log({ myNFt, create });
   });
 });

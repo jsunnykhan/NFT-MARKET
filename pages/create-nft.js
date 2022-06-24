@@ -1,14 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import { ethers } from "ethers";
 
 import { create as ipfsHttpClient } from "ipfs-http-client";
-import Web3Modal from "web3modal";
-import { NFT_ADDRESS, Market_ADDRESS } from "../config";
-import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
-import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
+
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { _uploadFile, _uploadMetaData } from "../utils/fileUpload";
+import { _listingToMarket, _minting } from "../utils/NFT";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
@@ -26,17 +24,8 @@ const CreateNFT = () => {
 
   const onChange = async (event) => {
     const file = event.target.files[0];
-    try {
-      const data = await client.add(file, {
-        progress: (progress) => console.log({ process }),
-      });
-      console.log({ data });
-      const url = `https://ipfs.infura.io/ipfs/${data.path}`;
-
-      setFileUrl((preState) => (preState = url));
-    } catch (error) {
-      console.error(error);
-    }
+    const fileUrl = await _uploadFile(file);
+    setFileUrl((preState) => (preState = fileUrl));
   };
 
   const creatingNftMetaData = async () => {
@@ -48,52 +37,15 @@ const CreateNFT = () => {
       image: fileUrl,
     });
 
-    try {
-      const nftData = await client.add(data);
-      console.log({ nftData });
-      const url = `https://ipfs.infura.io/ipfs/${nftData.path}`;
+    const metaDataUrl = await _uploadMetaData(data);
+   
 
-      createNFT(url);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    const tokenId = await _minting(metaDataUrl);
 
-  const createNFT = async (url) => {
-    const web3modal = new Web3Modal();
-    const connectMA = await web3modal.connect();
-    const provider = new ethers.providers.Web3Provider(connectMA);
-    const signer = provider.getSigner();
+    const listingMarket = await _listingToMarket(tokenId, price);
 
-    setMint(true);
-    const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, signer);
-    let transaction = await nftContract.createNewToken(url);
-    let tx = await transaction.wait();
+    console.log(listingMarket)
 
-    setMint(false);
-    setSubmitted(true);
-    const event = tx.events[0];
-    const value = event.args.tokenId;
-    const tokenId = value.toString();
-
-    const price = ethers.utils.parseUnits(formInput.price, "ether");
-    const marketContract = new ethers.Contract(
-      Market_ADDRESS,
-      Market.abi,
-      signer
-    );
-
-    let listingPrice = await marketContract.getMarketListingPrice();
-    listingPrice = listingPrice.toString();
-
-    transaction = await marketContract.createMarketItem(
-      NFT_ADDRESS,
-      tokenId,
-      price,
-      { value: listingPrice }
-    );
-    tx = await transaction.wait();
-    setSubmitted(false);
     router.push("/");
   };
 

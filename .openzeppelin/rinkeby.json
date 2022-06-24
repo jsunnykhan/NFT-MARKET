@@ -1,0 +1,82 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x7Dfe95a30425eADbFbe82144adA238Bd280d89E3",
+    "txHash": "0xb4417cc347d3f3197743c1ad55083a29ed95e40889ab77ddfa69a916ad382bb8"
+  },
+  "proxies": [
+    {
+      "address": "0xf9d43AC024a1C27B6e2987797De69DBd8aB855a7",
+      "txHash": "0x2e4db379b3ed643b21a0f343cb46275966ee965fcb31762846c38f78f0f95b2f",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "6e386024f8848e980df954a00ed650dc5ca2731545a92a8d3c2c62414f8912a2": {
+      "address": "0x0f141E63f1a5F8b05eD8dd660B11Bd0F5eea5e81",
+      "txHash": "0xc0f5bde095c08a86bbc0eb245f1bf078256e74a544310a80e279bc2700e14a3f",
+      "layout": {
+        "storage": [
+          {
+            "label": "_admin",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:5"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:7"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_string_storage",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:8"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:10"
+          },
+          {
+            "label": "_balance",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:12"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}

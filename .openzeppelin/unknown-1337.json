@@ -1,0 +1,87 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x73051772c6ad83DFde33442f7cc1e4A5AF03fF1b",
+    "txHash": "0x2c302d1917e9769af03b9c68e37c05a6df7c80204a32cdde301921b818e5f231"
+  },
+  "proxies": [
+    {
+      "address": "0x0582CB14AD1347deCFBa94Eec9De5bD933C245FB",
+      "txHash": "0xb931b1ae97b9e7028a5329418259585fb2593d72ed6cda0cfc86550abd982c44",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xcD8a054e7092096Cfe194B44f45AbdebF83B4336",
+      "txHash": "0x60ecd59fcdb5067611d857ce016a0c1e2a386645688dbd8f3712fb951c05bf1f",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "6e386024f8848e980df954a00ed650dc5ca2731545a92a8d3c2c62414f8912a2": {
+      "address": "0xD4110D27E4c4637A4D01bC04dBCcD693190b6433",
+      "txHash": "0x268a91fc79023ad68a3d6ce6ac90edf1d125508cc214f87d0d68e3ca1e6773a8",
+      "layout": {
+        "storage": [
+          {
+            "label": "_admin",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:5"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:7"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_string_storage",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:8"
+          },
+          {
+            "label": "_totalSupply",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:10"
+          },
+          {
+            "label": "_balance",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "MyToken",
+            "src": "contracts\\MyToken.sol:12"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}

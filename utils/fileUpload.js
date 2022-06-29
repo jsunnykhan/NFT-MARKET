@@ -8,7 +8,7 @@ export const _uploadFile = async (file) => {
     const data = await client.add(file, {
       progress: (progress) => console.log({ progress }),
     });
-    console.log({ data });
+  
     url = `https://ipfs.infura.io/ipfs/${data.path}`;
   } catch (error) {
     console.error(error);
@@ -20,11 +20,9 @@ export const _uploadMetaData = async (data) => {
   let url = "";
   try {
     const nftData = await client.add(data);
-    console.log({ nftData });
     url = `https://ipfs.infura.io/ipfs/${nftData.path}`;
   } catch (error) {
     console.error(error);
   }
-
   return url;
 };

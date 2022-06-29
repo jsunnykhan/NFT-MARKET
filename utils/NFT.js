@@ -32,16 +32,12 @@ export const _getMintedNFT = async () => {
   const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, signer);
 
   const mintedNFT = await nftContract.getMintedNFT();
-
-  console.log(mintedNFT);
   return mintedNFT;
 };
 
 export const _listingToMarket = async (tokenId, price) => {
   const provider = await configure();
   const signer = provider.getSigner();
-
-  const pri = ethers.utils.parseUnits(price, "ether");
   const marketContract = new ethers.Contract(
     Market_ADDRESS,
     Market.abi,

@@ -41,17 +41,13 @@ const Nft = () => {
   const getMyNFTS = async () => {
     const data = await _getMintedNFT();
 
-    console.log(data);
-
     const { marketContract, nftContract } = await contractInit();
 
     const items = await Promise.all(
       data.map(async (item) => {
         const tokenUri = await nftContract.tokenURI(item.tokenId);
         const metaData = await axios.get(tokenUri);
-        // const price = ethers.utils.parseUnits(item.price?.toString(), "ether");
         let formateItem = {
-          // price,
           tokenId: item.tokenId.toString(),
           seller: item.seller,
           owner: item.owner,

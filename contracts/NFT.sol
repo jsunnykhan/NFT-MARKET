@@ -19,20 +19,23 @@ contract NFT is ERC721URIStorage {
         address nftContract;
         uint256 tokenId;
         address payable seller;
-        address payable owner; 
-        uint256 price;
+        address payable owner;
         bool sold;
     }
 
     mapping(uint256 => MintedItem) private _mintedNFT;
 
     constructor(address marketPlcaeAddress_)
-        ERC721("NFT MarketPlace", "Sunny")
+        ERC721("NFT MarketPlace", "Sunny") 
     {
         _marketPlcaeAddress = marketPlcaeAddress_;
     }
 
-    function createNewToken(string memory tokenURI_, uint256 price)
+    // function initialize(address marketPlcaeAddress_) public initializer {
+    //     _marketPlcaeAddress = marketPlcaeAddress_;
+    // }
+
+    function createNewToken(string memory tokenURI_)
         external
         payable
         returns (uint256)
@@ -42,14 +45,12 @@ contract NFT is ERC721URIStorage {
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, tokenURI_);
         setApprovalForAll(_marketPlcaeAddress, true);
-        _storeMintedNFT(newItemId, price);
+        _storeMintedNFT(newItemId);
+        console.log("Token Id",newItemId);
         return newItemId;
-
-
-        
     }
 
-    function _storeMintedNFT(uint256 tokenId, uint256 price) private {
+    function _storeMintedNFT(uint256 tokenId) private {
         _mintedTokenId.increment();
 
         uint256 itemId = _mintedTokenId.current();
@@ -60,7 +61,6 @@ contract NFT is ERC721URIStorage {
             tokenId,
             payable(msg.sender),
             payable(address(0)),
-            price,
             false
         );
     }

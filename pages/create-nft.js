@@ -44,8 +44,6 @@ const CreateNFT = () => {
 
     const listingMarket = await _listingToMarket(tokenId, price);
 
-    console.log(listingMarket)
-
     router.push("/");
   };
 

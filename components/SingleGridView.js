@@ -3,7 +3,6 @@ import React, { useState } from "react";
 
 const SingleGridView = (props) => {
   const { nft, isBuy, buyNFT, processing } = props;
-
   const [process, setProcess] = useState(false);
   return (
     <div className="h-full w-full rounded bg-gray-50 border">
@@ -18,7 +17,7 @@ const SingleGridView = (props) => {
       <div className="p-2">
         <h3 className="text-lg font-semibold">{nft.name}</h3>
         <h4 className="font-semibold uppercase text-gray-400">
-          {nft.price} eth
+          {nft.price} vsc
         </h4>
       </div>
 

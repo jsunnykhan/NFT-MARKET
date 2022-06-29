@@ -49,9 +49,9 @@ const Nft = () => {
       data.map(async (item) => {
         const tokenUri = await nftContract.tokenURI(item.tokenId);
         const metaData = await axios.get(tokenUri);
-        const price = ethers.utils.formatUnits(item.price.toString(), "ether");
+        // const price = ethers.utils.parseUnits(item.price?.toString(), "ether");
         let formateItem = {
-          price,
+          // price,
           tokenId: item.tokenId.toString(),
           seller: item.seller,
           owner: item.owner,

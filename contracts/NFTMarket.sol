@@ -2,6 +2,7 @@
 pragma solidity ^0.8.11;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
@@ -13,10 +14,15 @@ contract NFTMarket is ReentrancyGuard {
     Counters.Counter private _itemsSold;
 
     address payable ownerOfContract;
-    uint256 marketListingPrice = 0.01 ether;
+    uint256 private marketListingPrice;
 
+    // function initialize() external virtual override {
+    //     ownerOfContract = payable(msg.sender);
+    //     marketListingPrice = 0.01 ether;
+    // }
     constructor() {
         ownerOfContract = payable(msg.sender);
+        marketListingPrice = 0.01 ether;
     }
 
     // Each of market items
@@ -51,7 +57,7 @@ contract NFTMarket is ReentrancyGuard {
      * @dev tokenId - id from contract
      * @dev price of item(nft)
      */
-    function createMarketItem(
+    function addItemInMarket(
         address nftContract,
         uint256 tokenId,
         uint256 price
@@ -88,20 +94,20 @@ contract NFTMarket is ReentrancyGuard {
         );
     }
 
-    function createMarketSale(address nftContract, uint256 itemId)
-        public
-        payable
-        nonReentrant
-    {
+    function buyNftFromMarket(
+        address con,
+        uint256 itemId,
+        address nftContract
+    ) public {
         uint256 price = idToMarketItem[itemId].price;
         uint256 tokenId = idToMarketItem[itemId].tokenId;
+        address seller = idToMarketItem[itemId].seller;
 
-        require(
-            msg.value >= price,
-            "Please Provide asking value for complete the purchase"
-        );
+        VSCoins vivaCoin = VSCoins(con);
+        bool res = vivaCoin.transferFrom(msg.sender, address(this), price);
+        console.log(res);
 
-        idToMarketItem[itemId].seller.transfer(msg.value);
+        vivaCoin.transferTo(address(this), seller, price);
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
         idToMarketItem[itemId].owner = payable(msg.sender);
         idToMarketItem[itemId].sold = true;
@@ -109,6 +115,53 @@ contract NFTMarket is ReentrancyGuard {
         payable(ownerOfContract).transfer(marketListingPrice);
     }
 
+    // function buyNftFromMarket(
+    //     address nftContract,
+    //     uint256 itemId,
+    //     address tokenAddress,
+    //     address from
+    // ) public nonReentrant {
+    //     uint256 price = idToMarketItem[itemId].price;
+    //     uint256 tokenId = idToMarketItem[itemId].tokenId;
+
+    //     // require(
+    //     //     msg.value >= price,
+    //     //     "Please Provide asking value for complete the purchase"
+    //     // );
+
+    //     VSCoins vsCoins = VSCoins(tokenAddress);
+
+    //     bool res = vsCoins.transferFrom(
+    //         msg.sender,
+    //         from,
+    //         price
+    //     );
+
+    //     if (res) {
+    //         revert("Transaction success");
+    //     } else {
+    //         revert("Transaction failed");
+    //     }
+
+    //     // idToMarketItem[itemId].seller.transfer(msg.value);
+    //     // IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
+    //     // idToMarketItem[itemId].owner = payable(msg.sender);
+    //     // idToMarketItem[itemId].sold = true;
+    //     // _itemsSold.increment();
+    //     // payable(ownerOfContract).transfer(marketListingPrice);
+    // }
+
+    /**
+     *
+     *
+     *
+     *
+     *   Get Functions
+     *
+     *
+     *
+     *
+     **/
     function fetchMarketItems() public view returns (MarketItem[] memory) {
         uint256 itemCount = _itemIds.current();
         uint256 unsoldItemCount = itemCount - _itemsSold.current();
@@ -181,4 +234,18 @@ contract NFTMarket is ReentrancyGuard {
         }
         return items;
     }
+}
+
+abstract contract VSCoins {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public virtual returns (bool);
+
+    function transferTo(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public virtual returns (bool);
 }

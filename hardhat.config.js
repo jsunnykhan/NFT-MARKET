@@ -20,8 +20,8 @@ module.exports = {
         mnemonic: privateKey,
       },
       confirmations: 2,
-      gas: 21000000,
-      gasPrice: 8000000000,
+      // gas: 21000000,
+      // gasPrice: 8000000000,
     },
   },
   etherscan: {

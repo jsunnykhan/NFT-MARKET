@@ -15,7 +15,7 @@ export const _minting = async (url) => {
   const provider = await configure();
   const signer = provider.getSigner();
   const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, signer);
-  let transaction = await nftContract.createNewToken(url, 1000000000000000000n);
+  let transaction = await nftContract.createNewToken(url);
   let tx = await transaction.wait();
   console.log(tx);
 
@@ -51,13 +51,14 @@ export const _listingToMarket = async (tokenId, price) => {
   let listingPrice = await marketContract.getMarketListingPrice();
   listingPrice = listingPrice.toString();
 
-  const transaction = await marketContract.createMarketItem(
+  const transaction = await marketContract.addItemInMarket(
     NFT_ADDRESS,
     tokenId,
     pri,
     { value: listingPrice }
   );
-  const tx = await transaction.wait();
 
+  const tx = await transaction.wait();
+  
   return tx;
 };

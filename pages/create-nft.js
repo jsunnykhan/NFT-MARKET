@@ -41,7 +41,9 @@ const CreateNFT = () => {
       attributes: attributes,
     });
 
+
     const metaDataUrl = await _uploadMetaData(data);
+    console.log(metaDataUrl)
     const tokenId = await _minting(metaDataUrl);
     console.log(tokenId);
     router.push("/");

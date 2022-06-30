@@ -1,23 +1,34 @@
-import SingleGridView from "../../components/SingleGridView";
 import { ethers } from "ethers";
 import { NFT_ADDRESS, Market_ADDRESS } from "../../config";
 import NFT from "../../artifacts/contracts/NFT.sol/NFT.json";
 import Market from "../../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Web3Modal from "web3modal";
 import axios from "axios";
 import { _getMintedNFT } from "../../utils/NFT";
 
-import Link from "next/link";
+import NftGridView from "../../components/NftGridView";
+import { StateContext } from "../../components/StateContex";
+import { useRouter } from "next/router";
+import crypto from "crypto";
 
 const Nft = () => {
-  const [myNft, setMyNft] = useState([]);
+  const [mintedNft, setMintedNft] = useState([]);
   const [createdNft, setCreatedNft] = useState([]);
 
+  const { redirect, setSingleNft, singleNft } = useContext(StateContext);
+
+  const router = useRouter();
+
   useEffect(() => {
-    getMyNFTS();
-    getNftCreated();
-  }, []);
+    if (redirect.redirectUrl === "mint") {
+      getMintedNft();
+    } else if (redirect.redirectUrl === "own") {
+      getNftCreated();
+    } else {
+      getMintedNft();
+    }
+  }, [redirect.redirectUrl]);
 
   const contractInit = async () => {
     const web3modal = new Web3Modal();
@@ -36,12 +47,8 @@ const Nft = () => {
     return { marketContract, nftContract };
   };
 
-
-
-  const getMyNFTS = async () => {
+  const getMintedNft = async () => {
     const data = await _getMintedNFT();
-
-    console.log(data);
 
     const { marketContract, nftContract } = await contractInit();
 
@@ -49,21 +56,20 @@ const Nft = () => {
       data.map(async (item) => {
         const tokenUri = await nftContract.tokenURI(item.tokenId);
         const metaData = await axios.get(tokenUri);
-        // const price = ethers.utils.parseUnits(item.price?.toString(), "ether");
         let formateItem = {
-          // price,
           tokenId: item.tokenId.toString(),
           seller: item.seller,
           owner: item.owner,
           image: metaData.data.image,
           name: metaData.data.name,
           description: metaData.data.description,
+          attributes: metaData.data.attributes,
         };
 
         return formateItem;
       })
     );
-    setMyNft((preState) => (preState = items));
+    setMintedNft((preState) => (preState = items));
   };
 
   const getNftCreated = async () => {
@@ -91,49 +97,37 @@ const Nft = () => {
     setCreatedNft((preState) => (preState = items));
   };
 
-  if (!myNft.length) {
-    return <h3>You does not have any NFT !!</h3>;
+  const redirectNftDetailPage = (nft) => {
+    setSingleNft(nft);
+    const hash = crypto
+      .createHash("sha256")
+      .update(nft.name + nft.tokenId + nft.seller + "/nft")
+      .digest("hex");
+
+    router.push(router.route + "/" + hash);
+  };
+
+  if (!createdNft.length && !mintedNft.length) {
+    return (
+      <h3 className="m-auto justify-center items-center text-center py-20">
+        You does not have any NFT !!
+      </h3>
+    );
   }
-
   return (
-    <div className=" my-5 px-5">
-      <h3 className="px-2 font-bold text-2xl py-5">My NFT</h3>
-
-      {!myNft.length ? (
-        <p className="flex text-center mx-auto justify-center">{`You haven't any NFT`}</p>
+    <div className="my-10 px-10">
+      {redirect.redirectUrl === "mint" ? (
+        <NftGridView
+          nftList={mintedNft}
+          notFoundMessage="You haven't any NFT"
+          redirectNftDetailPage={redirectNftDetailPage}
+        />
       ) : (
-        <div className="grid grid-cols-4 gap-5">
-          {myNft.map((item) => (
-            <Link href={`nft/${item.tokenId}`} key={item.tokenId} passHref>
-              <div className="cursor-pointer hover:scale-105">
-                <SingleGridView
-                  key={item.tokenId}
-                  nft={item}
-                  isBuy={false}
-                  processing={false}
-                  buyNFT={() => {}}
-                />
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      <h3 className="px-2 font-bold text-2xl mt-5 py-5">Created NFT</h3>
-      {!createdNft.length ? (
-        <p className="flex text-center mx-auto justify-center">{`No NFT found that you created`}</p>
-      ) : (
-        <div className="grid grid-cols-4 gap-5">
-          {createdNft.map((item) => (
-            <SingleGridView
-              key={item.tokenId}
-              nft={item}
-              isBuy={false}
-              processing={false}
-              buyNFT={() => {}}
-            />
-          ))}
-        </div>
+        <NftGridView
+          nftList={createdNft}
+          notFoundMessage="No NFT found that you created"
+          redirectNftDetailPage={redirectNftDetailPage}
+        />
       )}
     </div>
   );

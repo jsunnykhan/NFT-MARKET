@@ -46,7 +46,7 @@ const CreateNFT = () => {
     console.log(metaDataUrl)
     const tokenId = await _minting(metaDataUrl);
     console.log(tokenId);
-    router.push("/");
+    router.push("/nft");
   };
 
   useEffect(() => {

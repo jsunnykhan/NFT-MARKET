@@ -46,7 +46,7 @@ export const _listingToMarket = async (tokenId, price) => {
 
   let listingPrice = await marketContract.getMarketListingPrice();
   listingPrice = listingPrice.toString();
-
+  const pri = ethers.utils.parseUnits(price, "ether");
   const transaction = await marketContract.addItemInMarket(
     NFT_ADDRESS,
     tokenId,
@@ -55,6 +55,6 @@ export const _listingToMarket = async (tokenId, price) => {
   );
 
   const tx = await transaction.wait();
-  
+
   return tx;
 };

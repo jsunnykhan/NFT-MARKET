@@ -5,7 +5,7 @@ import SingleGridView from "./SingleGridView";
 const NftGridView = (props) => {
   const {nftList , notFoundMessage ,redirectNftDetailPage } =props;
   return (
-    <div className="w-full h-[60vw]">
+    <div className="w-full">
       {!nftList.length ? (
         <p className="flex text-center mx-auto justify-center">{notFoundMessage}</p>
       ) : (

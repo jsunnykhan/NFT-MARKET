@@ -88,11 +88,11 @@ const NFTDetail = () => {
               {isProOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
             </div>
             {isProOpen && (
-              <div className="bg-gray-300 bg-opacity-25 px-6 h-max grid grid-cols-2 gap-x-5 gap-y-4 py-5">
+              <div className="bg-gray-300 bg-opacity-25 px-3 h-max grid gap-x-5 gap-y-4 py-5 overflow-x-hidden">
                 {singleNft?.attributes?.map((data, index) => (
                   <div
                     key={index}
-                    className="px-10 py-2 shadow-xl rounded-md bg-blue-100 w-max flex flex-col ring-1 ring-purple-200 justify-center mx-auto items-center"
+                    className="px-10 py-2 shadow-xl rounded-md bg-blue-100 w-max flex flex-col ring-1 ring-purple-200 justify-center mx-auto items-center "
                   >
                     <h3 className="text-lg font-medium capitalize">
                       {data.trait_type}

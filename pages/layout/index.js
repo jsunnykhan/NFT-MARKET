@@ -61,7 +61,7 @@ const Layout = (props) => {
               {item.url === router.route && (
                 <div className="absolute -bottom-5 w-full h-0.5 rounded-tr rounded-tl bg-blue-600"></div>
               )}
-              {router.route === "/nft" && isHover ? (
+              {/* {router.route === "/nft" && isHover ? (
                 item.url === "/nft" ? (
                   <div
                     className="absolute top-12 right-0"
@@ -70,7 +70,7 @@ const Layout = (props) => {
                     <Drawer />
                   </div>
                 ) : null
-              ) : null}
+              ) : null} */}
             </div>
           ))}
         </ul>

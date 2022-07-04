@@ -14,7 +14,7 @@ const PropertiesModal = (props) => {
       setProperty(attributes);
     }
     if (!isModalOpen) {
-      return true;
+      return ()=>true;
     }
   }, [isModalOpen]);
 

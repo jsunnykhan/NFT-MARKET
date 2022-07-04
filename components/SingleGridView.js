@@ -7,7 +7,7 @@ const SingleGridView = (props) => {
   const [process, setProcess] = useState(false);
   return (
     <div className="h-full w-full rounded shadow-md hover:scale-105 cursor-pointer ring-1 ring-purple-200">
-      <div className="h-4/5 relative">
+      <div className="h-[200px] relative">
         <Image
           className="rounded-t"
           src={nft.image}
@@ -17,7 +17,7 @@ const SingleGridView = (props) => {
           objectPosition="center"
         />
       </div>
-      <div className="h-1/5 bg-gray-50 rounded-b py-1">
+      <div className="h-1/5 rounded-b py-1">
         <div className="p-2">
           <h3 className="text-lg font-semibold truncate">{nft.name}</h3>
           <div className="flex justify-between items-center">

@@ -15,20 +15,18 @@ import crypto from "crypto";
 const Nft = () => {
   const [mintedNft, setMintedNft] = useState([]);
   const [createdNft, setCreatedNft] = useState([]);
+  const [ownedNft, setOwnedNft] = useState([]);
+  const [tabHandle, setTabHandler] = useState("mint");
 
-  const { redirect, setSingleNft, singleNft } = useContext(StateContext);
+  const { setSingleNft } = useContext(StateContext);
 
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
-    if (redirect.redirectUrl === "mint") {
-      getMintedNft();
-    } else if (redirect.redirectUrl === "own") {
-      getNftCreated();
-    } else {
-      getMintedNft();
-    }
-  }, [redirect.redirectUrl]);
+    getMintedNft();
+    getNftCreated();
+    getOwnedItems();
+  }, []);
 
   const contractInit = async () => {
     const web3modal = new Web3Modal();
@@ -89,12 +87,39 @@ const Nft = () => {
           image: metaData.data.image,
           name: metaData.data.name,
           description: metaData.data.description,
+          attributes: metaData.data.attributes,
         };
 
         return formateItem;
       })
     );
     setCreatedNft((preState) => (preState = items));
+  };
+
+  const getOwnedItems = async () => {
+    const { marketContract, nftContract } = await contractInit();
+
+    const data = await marketContract.fetchMyNft();
+    const items = await Promise.all(
+      data.map(async (item) => {
+        const tokenUri = await nftContract.tokenURI(item.tokenId);
+        const metaData = await axios.get(tokenUri);
+        const price = ethers.utils.formatUnits(item.price.toString(), "ether");
+        let formateItem = {
+          price,
+          tokenId: item.tokenId.toString(),
+          seller: item.seller,
+          owner: item.owner,
+          image: metaData.data.image,
+          name: metaData.data.name,
+          description: metaData.data.description,
+          attributes: metaData.data.attributes,
+        };
+
+        return formateItem;
+      })
+    );
+    setOwnedNft((preState) => (preState = items));
   };
 
   const redirectNftDetailPage = (nft) => {
@@ -107,25 +132,62 @@ const Nft = () => {
     router.push(router.route + "/" + hash);
   };
 
-  if (!createdNft.length && !mintedNft.length) {
+  if (!createdNft.length && !mintedNft.length && !ownedNft.length) {
     return (
       <h3 className="m-auto justify-center items-center text-center py-20">
         You does not have any NFT !!
       </h3>
     );
   }
+
+  const tabChangeHandler = (tab) => {
+    setTabHandler(tab);
+  };
+
   return (
     <div className="my-10 px-10">
-      {redirect.redirectUrl === "mint" ? (
+      <div className="flex space-x-5 pb-10">
+        <h2
+          className={`bg-gray-100 ${
+            tabHandle === "mint" ? "bg-blue-500 text-white" : "text-black"
+          } px-5 py-2 rounded-full font-bold cursor-pointer`}
+          onClick={() => tabChangeHandler("mint")}
+        >
+          Minted Items
+        </h2>
+        <h2
+          className={`bg-gray-100  ${
+            tabHandle === "created" ? "bg-blue-500 text-white" : "text-black"
+          } px-5 py-2 rounded-full font-bold cursor-pointer`}
+          onClick={() => tabChangeHandler("created")}
+        >
+          Selling Items
+        </h2>
+        <h2
+          className={`bg-gray-100 ${
+            tabHandle === "owned" ? "bg-blue-500 text-white" : "text-black"
+          }  px-5 py-2 rounded-full font-bold cursor-pointer`}
+          onClick={() => tabChangeHandler("owned")}
+        >
+          Owned Items
+        </h2>
+      </div>
+      {tabHandle === "mint" ? (
         <NftGridView
           nftList={mintedNft}
           notFoundMessage="You haven't any NFT"
           redirectNftDetailPage={redirectNftDetailPage}
         />
-      ) : (
+      ) : tabHandle === "created" ? (
         <NftGridView
           nftList={createdNft}
-          notFoundMessage="No NFT found that you created"
+          notFoundMessage="No NFT found that you Sell on Dark Sea"
+          redirectNftDetailPage={redirectNftDetailPage}
+        />
+      ) : (
+        <NftGridView
+          nftList={ownedNft}
+          notFoundMessage="No NFT found that you owned"
           redirectNftDetailPage={redirectNftDetailPage}
         />
       )}

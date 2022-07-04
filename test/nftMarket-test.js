@@ -119,5 +119,60 @@ describe("Token contract", function () {
       const balanceOfSeller = await erc20token.balanceOf(addr2.address);
       console.log({ balanceOfSender, balanceOfSellerBefore, balanceOfSeller });
     });
+
+    it("should buy previous sell items", async () => {
+      const tokenId = await nftToken
+        .connect(addr2)
+        .createNewToken("google.com");
+      await tokenId.wait();
+      await marketNftToken
+        .connect(addr2)
+        .addItemInMarket(nftToken.address, 1, 7000000000000000000n, {
+          value: 10000000000000000n,
+        });
+
+      await erc20token.transfer(addr1.address, 10000000000000000000n);
+      const approve = await erc20token
+        .connect(addr1)
+        .approve(marketNftToken.address, 7000000000000000000n);
+
+      const allowance = await erc20token.allowance(
+        addr1.address,
+        marketNftToken.address
+      );
+
+      console.log(allowance.toString());
+      const balanceOfSellerBefore = await erc20token.balanceOf(addr2.address);
+      await marketNftToken
+        .connect(addr1)
+        .buyNftFromMarket(erc20token.address, 1, nftToken.address);
+
+      const balanceOfSender = await erc20token.balanceOf(addr1.address);
+      const balanceOfSeller = await erc20token.balanceOf(addr2.address);
+      console.log({ balanceOfSender, balanceOfSellerBefore, balanceOfSeller });
+
+      await marketNftToken.connect(addr1).addItemInMarket(
+        nftToken.address,
+        1,
+        8000000000000000000n,
+        { value: 10000000000000000n }
+      );
+
+      await erc20token.transfer(addr2.address, 10000000000000000000n);
+      const approve2 = await erc20token
+        .connect(addr2)
+        .approve(marketNftToken.address, 7000000000000000000n);
+
+      const allowance2 = await erc20token.allowance(
+        addr2.address,
+        marketNftToken.address
+      );
+
+      console.log(allowance.toString());
+      const balanceOfSellerBefore2 = await erc20token.balanceOf(addr2.address);
+      await marketNftToken
+        .connect(addr2)
+        .buyNftFromMarket(erc20token.address, 1, nftToken.address);
+    });
   });
 });

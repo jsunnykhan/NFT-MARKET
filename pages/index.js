@@ -22,8 +22,8 @@ export default function Home() {
 
   const getNFTS = async () => {
     const provider = new ethers.providers.JsonRpcProvider(
-      // "https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac"
-      "http://127.0.0.1:7545"
+      "https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac"
+      // "http://127.0.0.1:7545"
     );
     const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, provider);
     const marketContract = new ethers.Contract(

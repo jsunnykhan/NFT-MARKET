@@ -49,6 +49,8 @@ contract NFTMarket is ReentrancyGuard {
     );
 
     function getMarketListingPrice() public view returns (uint256) {
+
+        
         return marketListingPrice;
     }
 
@@ -68,32 +70,40 @@ contract NFTMarket is ReentrancyGuard {
             "You have to pay 0.01 ether to create Nft"
         );
 
-        _itemIds.increment();
-        uint256 newItemId = _itemIds.current();
-
-        _idToMarketItem[newItemId] = MarketItem(
-            newItemId,
-            nftContract,
-            tokenId,
-            payable(msg.sender),
-            payable(address(0)),
-            price,
-            false
+        console.log(
+            "Item Exists",
+            _idToMarketItem[tokenId].owner != address(0),
+            _idToMarketItem[tokenId].owner
         );
 
-        IERC721(nftContract).approve(address(this) , tokenId);
+        if (_idToMarketItem[tokenId].owner == address(0)) {
+            _itemIds.increment();
+            uint256 newItemId = _itemIds.current();
+
+            _idToMarketItem[newItemId] = MarketItem(
+                newItemId,
+                nftContract,
+                tokenId,
+                payable(msg.sender),
+                payable(address(0)),
+                price,
+                false
+            );
+        }
+
+        IERC721(nftContract).approve(address(this), tokenId);
 
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
 
-        emit MarketItemCreated(
-            newItemId,
-            nftContract,
-            tokenId,
-            payable(msg.sender),
-            payable(address(0)),
-            price,
-            false
-        );
+        // emit MarketItemCreated(
+        //     newItemId,
+        //     nftContract,
+        //     tokenId,
+        //     payable(msg.sender),
+        //     payable(address(0)),
+        //     price,
+        //     false
+        // );
     }
 
     function buyNftFromMarket(
@@ -116,8 +126,6 @@ contract NFTMarket is ReentrancyGuard {
         _itemsSold.increment();
         payable(ownerOfContract).transfer(marketListingPrice);
     }
-
-    
 
     /**
      *

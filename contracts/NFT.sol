@@ -25,9 +25,7 @@ contract NFT is ERC721URIStorage {
 
     mapping(uint256 => MintedItem) private _mintedNFT;
 
-    constructor(address marketPlcaeAddress_)
-        ERC721("NFT MarketPlace", "Sunny") 
-    {
+    constructor(address marketPlcaeAddress_) ERC721("Viv", "VS") {
         _marketPlcaeAddress = marketPlcaeAddress_;
     }
 
@@ -46,7 +44,7 @@ contract NFT is ERC721URIStorage {
         _setTokenURI(newItemId, tokenURI_);
         setApprovalForAll(_marketPlcaeAddress, true);
         _storeMintedNFT(newItemId);
-        console.log("Token Id",newItemId);
+        console.log("Token Id", newItemId);
         return newItemId;
     }
 

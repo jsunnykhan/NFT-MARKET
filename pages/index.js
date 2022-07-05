@@ -18,12 +18,10 @@ export default function Home() {
     getNFTS();
   }, []);
 
- 
-
   const getNFTS = async () => {
     const provider = new ethers.providers.JsonRpcProvider(
-      // "https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac"
-      "http://127.0.0.1:7545"
+      "https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac"
+      // "http://127.0.0.1:7545"
     );
     const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, provider);
     const marketContract = new ethers.Contract(
@@ -108,37 +106,47 @@ export default function Home() {
     console.log(erc20Token);
     const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
 
-    const tx = await erc20Token.approve(Market_ADDRESS, price);
-    await tx.wait();
+    // const tx = await erc20Token.approve(Market_ADDRESS, price);
+    // await tx.wait();
 
     const walletAddress = await signer.getAddress();
 
-    const allowance = await erc20Token.allowance(walletAddress, Market_ADDRESS);
-    const balance = await erc20Token.balanceOf(Market_ADDRESS);
-    console.log( allowance.toString() , balance.toString());
+    const tx = await marketContract.buyNftFromMarket(
+      ERC20_TOKEN,
+      nft.tokenId,
+      NFT_ADDRESS
+    );
 
-    if (allowance.toString() === price.toString()) {
-      console.log("ssdasda")
-      const tx = await marketContract.buyNftFromMarket(
-        ERC20_TOKEN,
-        nft.tokenId,
-        NFT_ADDRESS
-      );
-      console.log("4");
-      await tx.wait();
-      setProcessing(false);
-      getNFTS();
-      console.log("3");
-    } else {
-      console.log("Transaction failed");
-    }
+    await tx.wait();
+    setProcessing(false);
+    getNFTS();
 
-    //   provider.on("block", (blockNumber) => {
-    //     console.log(blockNumber)
-    // })
-    provider.on("DebugLog", (message, price) => {
-      console.log(message, price);
-    });
+    // const allowance = await erc20Token.allowance(walletAddress, Market_ADDRESS);
+    // const balance = await erc20Token.balanceOf(Market_ADDRESS);
+    // console.log( allowance.toString() , balance.toString());
+
+    // if (allowance.toString() === price.toString()) {
+    //   console.log("ssdasda");
+    //   const tx = await marketContract.buyNftFromMarket(
+    //     ERC20_TOKEN,
+    //     nft.tokenId,
+    //     NFT_ADDRESS
+    //   );
+    //   console.log("4");
+    //   await tx.wait();
+    //   setProcessing(false);
+    //   getNFTS();
+    //   console.log("3");
+    // } else {
+    //   console.log("Transaction failed");
+    // }
+
+    // //   provider.on("block", (blockNumber) => {
+    // //     console.log(blockNumber)
+    // // })
+    // provider.on("DebugLog", (message, price) => {
+    //   console.log(message, price);
+    // });
   };
 
   return (

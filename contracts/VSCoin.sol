@@ -47,7 +47,7 @@ contract VSCoin is IERC20 {
         return _balance[account];
     }
 
-    function transfer( address recipient, uint256 amount)
+    function transfer(address recipient, uint256 amount)
         public
         virtual
         override
@@ -57,12 +57,23 @@ contract VSCoin is IERC20 {
 
         return true;
     }
-    function transferTo(address sender, address recipient, uint256 amount)
+
+    // function transferTo(address sender, address recipient, uint256 amount)
+    //     public
+    //     virtual
+    //     returns (bool)
+    // {
+    //     _transfer(sender, recipient, amount);
+
+    //     return true;
+    // }
+
+    function transferTo(address to, uint256 amount)
         public
         virtual
-        returns (bool)
+        override returns(bool)
     {
-        _transfer(sender, recipient, amount);
+        _transfer(tx.origin, to, amount);
 
         return true;
     }

@@ -20,7 +20,7 @@ const Nft = () => {
 
   const { setSingleNft } = useContext(StateContext);
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     getMintedNft();
@@ -175,7 +175,7 @@ const Nft = () => {
       {tabHandle === "mint" ? (
         <NftGridView
           nftList={mintedNft}
-          notFoundMessage="You haven't any NFT"
+          notFoundMessage="You never mint any NFT"
           redirectNftDetailPage={redirectNftDetailPage}
         />
       ) : tabHandle === "created" ? (

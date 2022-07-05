@@ -128,15 +128,8 @@ function buyNftFromMarket(
         uint256 tokenId = _idToMarketItem[itemId].tokenId;
         address seller = _idToMarketItem[itemId].seller;
 
-        // VSCoins vivaCoin = VSCoins(con);
-        // bool res = vivaCoin.transferFrom(msg.sender, address(this), price);
-        
-
-        IERC20(con).transferFrom(msg.sender,address(this), price);
+        IERC20(con).transferTo(address(this), price);
         IERC20(con).transfer(seller, price);
-
-        // vivaCoin.transferTo(address(this), seller, price);
-
 
 
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);

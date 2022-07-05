@@ -2,6 +2,7 @@
 pragma solidity ^0.8.11;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -81,7 +82,7 @@ contract NFTMarket is ReentrancyGuard {
             false
         );
 
-        IERC721(nftContract).approve(address(this) , tokenId);
+        // IERC721(nftContract).approve(address(this) , tokenId);
 
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
 
@@ -96,7 +97,29 @@ contract NFTMarket is ReentrancyGuard {
         );
     }
 
-    function buyNftFromMarket(
+    // function buyNftFromMarket(
+    //     address con,
+    //     uint256 itemId,
+    //     address nftContract
+    // ) public {
+    //     uint256 price = _idToMarketItem[itemId].price;
+    //     uint256 tokenId = _idToMarketItem[itemId].tokenId;
+    //     address seller = _idToMarketItem[itemId].seller;
+
+    //     VSCoins vivaCoin = VSCoins(con);
+    //     bool res = vivaCoin.transferFrom(msg.sender, address(this), price);
+    //     console.log(res);
+
+    //     vivaCoin.transferTo(address(this), seller, price);
+    //     IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
+    //     _idToMarketItem[itemId].owner = payable(msg.sender);
+    //     _idToMarketItem[itemId].sold = true;
+    //     _itemsSold.increment();
+    //     payable(ownerOfContract).transfer(marketListingPrice);
+    // }
+
+
+function buyNftFromMarket(
         address con,
         uint256 itemId,
         address nftContract
@@ -105,18 +128,23 @@ contract NFTMarket is ReentrancyGuard {
         uint256 tokenId = _idToMarketItem[itemId].tokenId;
         address seller = _idToMarketItem[itemId].seller;
 
-        VSCoins vivaCoin = VSCoins(con);
-        bool res = vivaCoin.transferFrom(msg.sender, address(this), price);
-        console.log(res);
+        // VSCoins vivaCoin = VSCoins(con);
+        // bool res = vivaCoin.transferFrom(msg.sender, address(this), price);
+        
 
-        vivaCoin.transferTo(address(this), seller, price);
+        IERC20(con).transferFrom(msg.sender,address(this), price);
+        IERC20(con).transfer(seller, price);
+
+        // vivaCoin.transferTo(address(this), seller, price);
+
+
+
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
         _idToMarketItem[itemId].owner = payable(msg.sender);
         _idToMarketItem[itemId].sold = true;
         _itemsSold.increment();
         payable(ownerOfContract).transfer(marketListingPrice);
     }
-
     
 
     /**

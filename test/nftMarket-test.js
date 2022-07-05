@@ -131,7 +131,7 @@ describe("Token contract", function () {
           value: 10000000000000000n,
         });
 
-      await erc20token.transfer(addr1.address, 10000000000000000000n);
+      await erc20token.transfer(addr1.address, 7000000000000000000n);
       const approve = await erc20token
         .connect(addr1)
         .approve(marketNftToken.address, 7000000000000000000n);
@@ -158,20 +158,20 @@ describe("Token contract", function () {
         { value: 10000000000000000n }
       );
 
-      await erc20token.transfer(addr2.address, 10000000000000000000n);
+      await erc20token.transfer(addr2.address, 8000000000000000000n);
       const approve2 = await erc20token
         .connect(addr2)
-        .approve(marketNftToken.address, 7000000000000000000n);
+        .approve(marketNftToken.address, 8000000000000000000n);
 
       const allowance2 = await erc20token.allowance(
         addr2.address,
         marketNftToken.address
       );
 
-      console.log(allowance.toString());
+      console.log("Allowance",allowance2.toString());
       const balanceOfSellerBefore2 = await erc20token.balanceOf(addr2.address);
       await marketNftToken
-        .connect(addr2)
+        .connect(addrs[3])
         .buyNftFromMarket(erc20token.address, 1, nftToken.address);
     });
   });

@@ -2,17 +2,19 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
-export const _uploadFile = async (file) => {
+export const _uploadFile = async (file, setUploading) => {
   let url = "";
   try {
+    setUploading(true);
     const data = await client.add(file, {
       progress: (progress) => console.log({ progress }),
     });
-  
+
     url = `https://ipfs.infura.io/ipfs/${data.path}`;
   } catch (error) {
     console.error(error);
   }
+  setUploading(false);
   return url;
 };
 

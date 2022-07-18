@@ -2,17 +2,20 @@ import SingleGridView from "../components/SingleGridView";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
+
+import { BallTriangle } from "react-loader-spinner";
+
 import axios from "axios";
 import Web3Modal from "web3modal";
 
 import { NFT_ADDRESS, Market_ADDRESS, ERC20_TOKEN } from "../config";
 import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
 import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
-import Token from "../artifacts/contracts/VSCoin.sol/VSCoin.json";
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
   const [processing, setProcessing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getNFTS();
@@ -23,6 +26,7 @@ export default function Home() {
       "https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac"
       // "http://127.0.0.1:7545"
     );
+    setLoading(true);
     const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, provider);
     const marketContract = new ethers.Contract(
       Market_ADDRESS,
@@ -48,45 +52,25 @@ export default function Home() {
       })
     );
     setNfts((preState) => (preState = items));
+    setLoading(false);
   };
-
-  const buyNFT = async (nft) => {
-    console.log(nft);
-    const web3modal = new Web3Modal();
-    setProcessing(true);
-    const connectMA = await web3modal.connect();
-    const provider = new ethers.providers.Web3Provider(connectMA);
-    const signer = provider.getSigner();
-
-    const marketContract = new ethers.Contract(
-      Market_ADDRESS,
-      Market.abi,
-      signer
+  if (loading) {
+    return (
+      <div className="flex text-center mx-auto justify-center items-center py-10">
+        <BallTriangle
+          height="30"
+          width="30"
+          color="purple"
+          ariaLabel="loading"
+        />
+      </div>
     );
-
-    const vsContract = new ethers.Contract(ERC20_TOKEN, Token.abi, signer);
-    console.log(marketContract, vsContract);
-    try {
-      const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
-      console.log(price);
-
-      const tx = await marketContract.createMarketSale(
-        NFT_ADDRESS,
-        nft.tokenId,
-        { value: price }
-      );
-      console.log("4");
-      await tx.wait();
-      setProcessing(false);
-      getNFTS();
-      console.log("3");
-    } catch (error) {
-      setProcessing(false);
-    }
-  };
-
-  if (!nfts.length) {
-    return <h3>No NFT Listed yet !!</h3>;
+  } else if (!nfts.length) {
+    return (
+      <h2 className="flex text-center m-auto justify-center font-bold text-xl items-center py-10 capitalize">
+        No nft item listed yet
+      </h2>
+    );
   }
 
   const transferToken = async (nft) => {
@@ -95,22 +79,12 @@ export default function Home() {
     const provider = new ethers.providers.Web3Provider(connectMA);
 
     const signer = provider.getSigner();
-    const erc20Token = new ethers.Contract(ERC20_TOKEN, Token.abi, signer);
-
     const marketContract = new ethers.Contract(
       Market_ADDRESS,
       Market.abi,
       signer
     );
-
-    console.log(erc20Token);
     const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
-
-    // const tx = await erc20Token.approve(Market_ADDRESS, price);
-    // await tx.wait();
-
-    const walletAddress = await signer.getAddress();
-
     const tx = await marketContract.buyNftFromMarket(
       ERC20_TOKEN,
       nft.tokenId,
@@ -120,33 +94,6 @@ export default function Home() {
     await tx.wait();
     setProcessing(false);
     getNFTS();
-
-    // const allowance = await erc20Token.allowance(walletAddress, Market_ADDRESS);
-    // const balance = await erc20Token.balanceOf(Market_ADDRESS);
-    // console.log( allowance.toString() , balance.toString());
-
-    // if (allowance.toString() === price.toString()) {
-    //   console.log("ssdasda");
-    //   const tx = await marketContract.buyNftFromMarket(
-    //     ERC20_TOKEN,
-    //     nft.tokenId,
-    //     NFT_ADDRESS
-    //   );
-    //   console.log("4");
-    //   await tx.wait();
-    //   setProcessing(false);
-    //   getNFTS();
-    //   console.log("3");
-    // } else {
-    //   console.log("Transaction failed");
-    // }
-
-    // //   provider.on("block", (blockNumber) => {
-    // //     console.log(blockNumber)
-    // // })
-    // provider.on("DebugLog", (message, price) => {
-    //   console.log(message, price);
-    // });
   };
 
   return (

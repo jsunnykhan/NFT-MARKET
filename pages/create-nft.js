@@ -3,6 +3,8 @@ import { useState } from "react";
 
 import { create as ipfsHttpClient } from "ipfs-http-client";
 
+import { Oval } from "react-loader-spinner";
+
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { _uploadFile, _uploadMetaData } from "../utils/fileUpload";
@@ -16,7 +18,7 @@ const CreateNFT = () => {
   const [isDisable, setIsDisable] = useState(true);
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mint, setMint] = useState(false);
+  const [fileUploading, setFileUploading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formInput, setFormInput] = useState({
     name: "",
@@ -27,7 +29,7 @@ const CreateNFT = () => {
 
   const onChange = async (event) => {
     const file = event.target.files[0];
-    const fileUrl = await _uploadFile(file);
+    const fileUrl = await _uploadFile(file, setFileUploading);
     setFileUrl((preState) => (preState = fileUrl));
   };
 
@@ -41,18 +43,17 @@ const CreateNFT = () => {
       attributes: attributes,
     });
 
-
     const metaDataUrl = await _uploadMetaData(data);
-    console.log(metaDataUrl)
+    console.log(metaDataUrl);
     const tokenId = await _minting(metaDataUrl);
     console.log(tokenId);
     router.push("/nft");
   };
 
   useEffect(() => {
-    if (formInput.name && formInput.description  && fileUrl) {
+    if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
-    }else{
+    } else {
       setIsDisable(true);
     }
   }, [formInput, fileUrl]);
@@ -90,6 +91,18 @@ const CreateNFT = () => {
                   alt="image"
                   className="rounded-full"
                 />
+              )}
+
+              {fileUploading && (
+                <div className="absolute top-[35%] left-[35%]">
+                  <Oval
+                    height="50"
+                    width="50"
+                    color="purple"
+                    secondaryColor="purple"
+                    ariaLabel="loading"
+                  />
+                </div>
               )}
 
               <input

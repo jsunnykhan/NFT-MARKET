@@ -97,29 +97,8 @@ contract NFTMarket is ReentrancyGuard {
         );
     }
 
-    // function buyNftFromMarket(
-    //     address con,
-    //     uint256 itemId,
-    //     address nftContract
-    // ) public {
-    //     uint256 price = _idToMarketItem[itemId].price;
-    //     uint256 tokenId = _idToMarketItem[itemId].tokenId;
-    //     address seller = _idToMarketItem[itemId].seller;
 
-    //     VSCoins vivaCoin = VSCoins(con);
-    //     bool res = vivaCoin.transferFrom(msg.sender, address(this), price);
-    //     console.log(res);
-
-    //     vivaCoin.transferTo(address(this), seller, price);
-    //     IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
-    //     _idToMarketItem[itemId].owner = payable(msg.sender);
-    //     _idToMarketItem[itemId].sold = true;
-    //     _itemsSold.increment();
-    //     payable(ownerOfContract).transfer(marketListingPrice);
-    // }
-
-
-function buyNftFromMarket(
+    function buyNftFromMarket(
         address con,
         uint256 itemId,
         address nftContract
@@ -128,7 +107,7 @@ function buyNftFromMarket(
         uint256 tokenId = _idToMarketItem[itemId].tokenId;
         address seller = _idToMarketItem[itemId].seller;
 
-        IERC20(con).transferTo(address(this), price);
+        IERC20(con).transfer(address(this), price);
         IERC20(con).transfer(seller, price);
 
 
@@ -223,18 +202,4 @@ function buyNftFromMarket(
         }
         return items;
     }
-}
-
-abstract contract VSCoins {
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) public virtual returns (bool);
-
-    function transferTo(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) public virtual returns (bool);
 }

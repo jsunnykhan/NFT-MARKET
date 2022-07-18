@@ -29,97 +29,110 @@ const Nft = () => {
   }, []);
 
   const contractInit = async () => {
-    const web3modal = new Web3Modal();
-    const connectMA = await web3modal.connect();
-    const provider = new ethers.providers.Web3Provider(connectMA);
-    const signer = provider.getSigner();
+    let nftContract, marketContract;
 
-    const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, signer);
+    try {
+      const web3modal = new Web3Modal();
+      const connectMA = await web3modal.connect();
+      const provider = new ethers.providers.Web3Provider(connectMA);
+      const signer = provider.getSigner();
 
-    const marketContract = new ethers.Contract(
-      Market_ADDRESS,
-      Market.abi,
-      signer
-    );
+      nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, signer);
+
+      marketContract = new ethers.Contract(Market_ADDRESS, Market.abi, signer);
+    } catch (error) {
+      console.log(error);
+    }
 
     return { marketContract, nftContract };
   };
 
   const getMintedNft = async () => {
-    const data = await _getMintedNFT();
+    try {
+      const data = await _getMintedNFT();
 
-    const { marketContract, nftContract } = await contractInit();
+      const { marketContract, nftContract } = await contractInit();
 
-    const items = await Promise.all(
-      data.map(async (item) => {
-        const tokenUri = await nftContract.tokenURI(item.tokenId);
-        const metaData = await axios.get(tokenUri);
-        let formateItem = {
-          tokenId: item.tokenId.toString(),
-          seller: item.seller,
-          owner: item.owner,
-          image: metaData.data.image,
-          name: metaData.data.name,
-          description: metaData.data.description,
-          attributes: metaData.data.attributes,
-        };
+      const items = await Promise.all(
+        data.map(async (item) => {
+          const tokenUri = await nftContract.tokenURI(item.tokenId);
+          const metaData = await axios.get(tokenUri);
+          let formateItem = {
+            tokenId: item.tokenId.toString(),
+            seller: item.seller,
+            owner: item.owner,
+            image: metaData.data.image,
+            name: metaData.data.name,
+            description: metaData.data.description,
+            attributes: metaData.data.attributes,
+          };
 
-        return formateItem;
-      })
-    );
-    setMintedNft((preState) => (preState = items));
+          return formateItem;
+        })
+      );
+      setMintedNft((preState) => (preState = items));
+    } catch (error) {}
   };
 
   const getNftCreated = async () => {
-    const { marketContract, nftContract } = await contractInit();
+    try {
+      const { marketContract, nftContract } = await contractInit();
 
-    const data = await marketContract.fetchItemsCreated();
-    const items = await Promise.all(
-      data.map(async (item) => {
-        const tokenUri = await nftContract.tokenURI(item.tokenId);
-        const metaData = await axios.get(tokenUri);
-        const price = ethers.utils.formatUnits(item.price.toString(), "ether");
-        let formateItem = {
-          price,
-          tokenId: item.tokenId.toString(),
-          seller: item.seller,
-          owner: item.owner,
-          image: metaData.data.image,
-          name: metaData.data.name,
-          description: metaData.data.description,
-          attributes: metaData.data.attributes,
-        };
+      const data = await marketContract.fetchItemsCreated();
+      const items = await Promise.all(
+        data.map(async (item) => {
+          const tokenUri = await nftContract.tokenURI(item.tokenId);
+          const metaData = await axios.get(tokenUri);
+          const price = ethers.utils.formatUnits(
+            item.price.toString(),
+            "ether"
+          );
+          let formateItem = {
+            price,
+            tokenId: item.tokenId.toString(),
+            seller: item.seller,
+            owner: item.owner,
+            image: metaData.data.image,
+            name: metaData.data.name,
+            description: metaData.data.description,
+            attributes: metaData.data.attributes,
+          };
 
-        return formateItem;
-      })
-    );
-    setCreatedNft((preState) => (preState = items));
+          return formateItem;
+        })
+      );
+      setCreatedNft((preState) => (preState = items));
+    } catch (error) {}
   };
 
   const getOwnedItems = async () => {
-    const { marketContract, nftContract } = await contractInit();
+    try {
+      const { marketContract, nftContract } = await contractInit();
+      const data = await marketContract.fetchMyNft();
+      const items = await Promise.all(
+        data.map(async (item) => {
+          const tokenUri = await nftContract.tokenURI(item.tokenId);
+          const metaData = await axios.get(tokenUri);
+          const price = ethers.utils.formatUnits(
+            item.price.toString(),
+            "ether"
+          );
+          let formateItem = {
+            price,
+            tokenId: item.tokenId.toString(),
+            seller: item.seller,
+            owner: item.owner,
+            image: metaData.data.image,
+            name: metaData.data.name,
+            description: metaData.data.description,
+            attributes: metaData.data.attributes,
+          };
 
-    const data = await marketContract.fetchMyNft();
-    const items = await Promise.all(
-      data.map(async (item) => {
-        const tokenUri = await nftContract.tokenURI(item.tokenId);
-        const metaData = await axios.get(tokenUri);
-        const price = ethers.utils.formatUnits(item.price.toString(), "ether");
-        let formateItem = {
-          price,
-          tokenId: item.tokenId.toString(),
-          seller: item.seller,
-          owner: item.owner,
-          image: metaData.data.image,
-          name: metaData.data.name,
-          description: metaData.data.description,
-          attributes: metaData.data.attributes,
-        };
-
-        return formateItem;
-      })
-    );
-    setOwnedNft((preState) => (preState = items));
+          return formateItem;
+        })
+      );
+      setOwnedNft((preState) => (preState = items));
+    } catch (error) {}
   };
 
   const redirectNftDetailPage = (nft) => {

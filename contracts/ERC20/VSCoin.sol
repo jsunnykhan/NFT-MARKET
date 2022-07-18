@@ -58,20 +58,9 @@ contract VSCoin is IERC20 {
         return true;
     }
 
-    // function transferTo(address sender, address recipient, uint256 amount)
-    //     public
-    //     virtual
-    //     returns (bool)
-    // {
-    //     _transfer(sender, recipient, amount);
-
-    //     return true;
-    // }
-
     function transferTo(address to, uint256 amount)
         public
-        virtual
-        override returns(bool)
+        virtual returns(bool)
     {
         _transfer(tx.origin, to, amount);
 

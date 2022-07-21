@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.11;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -17,10 +16,6 @@ contract NFTMarket is ReentrancyGuard {
     address payable ownerOfContract;
     uint256 private marketListingPrice;
 
-    // function initialize() external virtual override {
-    //     ownerOfContract = payable(msg.sender);
-    //     marketListingPrice = 0.01 ether;
-    // }
     constructor() {
         ownerOfContract = payable(msg.sender);
         marketListingPrice = 0.01 ether;
@@ -37,6 +32,22 @@ contract NFTMarket is ReentrancyGuard {
         bool sold;
     }
 
+    struct AuctionItem {
+        uint256 id;
+        uint256 itemId;
+        address nftContract;
+        uint256 tokenId;
+        address payable beneficiary;
+        uint256 auctionEndTime;
+        uint256 baseValue;
+        address highestBidder;
+        uint256 highestBid;
+        bool ended;
+        bool sold;
+    }
+
+    AuctionItem[] public auctionItems;
+
     mapping(uint256 => MarketItem) private _idToMarketItem; // giving item id as a key and return marketItem ob.
 
     event MarketItemCreated(
@@ -48,6 +59,11 @@ contract NFTMarket is ReentrancyGuard {
         uint256 price,
         bool sold
     );
+
+    event HighestBidIncreased(address bidder, uint256 amount);
+    event AuctionEnded(address winner, uint256 amount);
+    event AuctionStarted(uint256 startTime);
+    event BeneficiaryPaid(address beneficiary, uint256 amount);
 
     function getMarketListingPrice() public view returns (uint256) {
         return marketListingPrice;
@@ -82,8 +98,6 @@ contract NFTMarket is ReentrancyGuard {
             false
         );
 
-        // IERC721(nftContract).approve(address(this) , tokenId);
-
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
 
         emit MarketItemCreated(
@@ -97,29 +111,7 @@ contract NFTMarket is ReentrancyGuard {
         );
     }
 
-    // function buyNftFromMarket(
-    //     address con,
-    //     uint256 itemId,
-    //     address nftContract
-    // ) public {
-    //     uint256 price = _idToMarketItem[itemId].price;
-    //     uint256 tokenId = _idToMarketItem[itemId].tokenId;
-    //     address seller = _idToMarketItem[itemId].seller;
-
-    //     VSCoins vivaCoin = VSCoins(con);
-    //     bool res = vivaCoin.transferFrom(msg.sender, address(this), price);
-    //     console.log(res);
-
-    //     vivaCoin.transferTo(address(this), seller, price);
-    //     IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
-    //     _idToMarketItem[itemId].owner = payable(msg.sender);
-    //     _idToMarketItem[itemId].sold = true;
-    //     _itemsSold.increment();
-    //     payable(ownerOfContract).transfer(marketListingPrice);
-    // }
-
-
-function buyNftFromMarket(
+    function buyNftFromMarket(
         address con,
         uint256 itemId,
         address nftContract
@@ -128,9 +120,8 @@ function buyNftFromMarket(
         uint256 tokenId = _idToMarketItem[itemId].tokenId;
         address seller = _idToMarketItem[itemId].seller;
 
-        IERC20(con).transferTo(address(this), price);
-        IERC20(con).transfer(seller, price);
-
+        IVSCoins(con).transferTo(address(this), price);
+        IVSCoins(con).transfer(seller, price);
 
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
         _idToMarketItem[itemId].owner = payable(msg.sender);
@@ -138,7 +129,6 @@ function buyNftFromMarket(
         _itemsSold.increment();
         payable(ownerOfContract).transfer(marketListingPrice);
     }
-    
 
     /**
      *
@@ -223,18 +213,215 @@ function buyNftFromMarket(
         }
         return items;
     }
+
+    /**
+     *
+     *
+     *
+     *
+     *   Auction Functions
+     *
+     *
+     *
+     *
+     **/
+
+    function startAuction(
+        uint256 _biddingTime,
+        uint256 _baseValue,
+        address _nftContract,
+        uint256 _itemId,
+        uint256 _tokenId
+    ) public payable {
+        uint256 _auctionId = auctionItems.length;
+        auctionItems.push(
+            AuctionItem(
+                _auctionId,
+                _itemId,
+                _nftContract,
+                _tokenId,
+                payable(msg.sender),
+                block.timestamp + _biddingTime,
+                _baseValue,
+                address(0),
+                0,
+                false,
+                false
+            )
+        );
+        emit AuctionStarted(auctionItems[_auctionId].auctionEndTime);
+    }
+
+    function bid(
+        uint256 _auctionId,
+        uint256 _amount,
+        address _tokenAddr
+    ) public {
+        if (block.timestamp > auctionItems[_auctionId].auctionEndTime) {
+            revert("AUC101: Auction has already ended");
+        }
+
+        if (_amount <= auctionItems[_auctionId].baseValue) {
+            revert("AUC102: Bid cannot be less than b_amount");
+        }
+
+        if (_amount <= auctionItems[_auctionId].highestBid) {
+            revert("AUC103: These already a higher or equal bid");
+        }
+
+        uint256 currentAllowance = IVSCoins(_tokenAddr).allowance(
+            msg.sender,
+            address(this)
+        );
+
+        console.log("currentAllowance", currentAllowance);
+        console.log("msg.sender in bid fn: %s", msg.sender);
+
+        if (currentAllowance <= 0) {
+            IVSCoins(_tokenAddr).approve(address(this), _amount);
+            if (auctionItems[_auctionId].highestBid != 0) {
+                IVSCoins(_tokenAddr).decreaseAllowance(
+                    address(this),
+                    auctionItems[_auctionId].highestBid,
+                    auctionItems[_auctionId].highestBidder
+                );
+            }
+        } else {
+            if (msg.sender == auctionItems[_auctionId].highestBidder) {
+                IVSCoins(_tokenAddr).decreaseAllowance(
+                    address(this),
+                    auctionItems[_auctionId].highestBid,
+                    auctionItems[_auctionId].highestBidder
+                );
+
+                IVSCoins(_tokenAddr).increaseAllowance(
+                    address(this),
+                    _amount,
+                    msg.sender
+                );
+            } else {
+                IVSCoins(_tokenAddr).increaseAllowance(
+                    address(this),
+                    _amount,
+                    msg.sender
+                );
+                if (auctionItems[_auctionId].highestBid != 0) {
+                    IVSCoins(_tokenAddr).decreaseAllowance(
+                        address(this),
+                        auctionItems[_auctionId].highestBid,
+                        auctionItems[_auctionId].highestBidder
+                    );
+                }
+            }
+        }
+
+        auctionItems[_auctionId].highestBidder = msg.sender;
+        auctionItems[_auctionId].highestBid = _amount;
+        emit HighestBidIncreased(
+            auctionItems[_auctionId].highestBidder,
+            auctionItems[_auctionId].highestBid
+        );
+    }
+
+    function auctionEnd(
+        uint256 _auctionId,
+        address _tokenAddr,
+        uint256 _itemId,
+        address nftContract
+    ) public {
+        uint256 tokenId = _idToMarketItem[_itemId].tokenId;
+        if (block.timestamp < auctionItems[_auctionId].auctionEndTime) {
+            revert("AUC105: Auction has not ended yet");
+        }
+
+        if (auctionItems[_auctionId].ended) {
+            revert("AUC106: The function has already been called");
+        }
+
+        uint256 transferAmount = auctionItems[_auctionId].highestBid;
+        address beneficiary = auctionItems[_auctionId].beneficiary;
+        address highestBidder = auctionItems[_auctionId].highestBidder;
+
+        console.log(
+            "currentAllowance",
+            IVSCoins(_tokenAddr).allowance(highestBidder, address(this))
+        );
+        console.log("msg.sender in bid fn: %s", msg.sender);
+
+        auctionItems[_auctionId].ended = true;
+        emit AuctionEnded(highestBidder, transferAmount);
+
+        IVSCoins(_tokenAddr).transferFrom(
+            highestBidder,
+            beneficiary,
+            transferAmount
+        );
+
+        IERC721(nftContract).transferFrom(address(this), highestBidder, tokenId);
+        _idToMarketItem[_itemId].owner = payable(msg.sender);
+        _idToMarketItem[_itemId].sold = true;
+        auctionItems[_auctionId].sold = true;
+        _itemsSold.increment();
+    }
+
+    function getauctionItems() public view returns (AuctionItem[] memory) {
+        return auctionItems;
+    }
+
+    function getItem(uint256 _auctionId)
+        public
+        view
+        returns (AuctionItem memory)
+    {
+        return auctionItems[_auctionId];
+    }
+
+    function getHighestBidder(uint256 _id) public view returns (address) {
+        return auctionItems[_id].highestBidder;
+    }
+
+    function getHighestBid(uint256 _id) public view returns (uint256) {
+        return auctionItems[_id].highestBid;
+    }
 }
 
-abstract contract VSCoins {
+abstract contract IVSCoins {
     function transferFrom(
         address sender,
         address recipient,
         uint256 amount
     ) public virtual returns (bool);
 
-    function transferTo(
-        address sender,
-        address recipient,
-        uint256 amount
+    function transferTo(address to, uint256 amount)
+        public
+        virtual
+        returns (bool);
+
+    function transfer(address recipient, uint256 amount)
+        public
+        virtual
+        returns (bool);
+
+    function approve(address spender, uint256 amount)
+        public
+        virtual
+        returns (bool);
+
+    function allowance(address owner, address spender)
+        public
+        view
+        virtual
+        returns (uint256);
+
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue,
+        address highestBidder
+    ) public virtual returns (bool);
+
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue,
+        address highestBidder
     ) public virtual returns (bool);
 }

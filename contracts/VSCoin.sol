@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.11;
+pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
@@ -13,18 +13,11 @@ contract VSCoin is IERC20 {
 
     mapping(address => mapping(address => uint256)) private _allowances;
 
-    // function initialize() external {
-    //     _name = "VS Coin";
-    //     _symbol = "VSC";
-    //     _mint(msg.sender, 100000 * 10**18);
-    //     _admin = msg.sender;
-    // }
-
     constructor() {
         _name = "VS Coin";
         _symbol = "VSC";
-        _mint(msg.sender, 100000 * 10**18);
-        _admin = msg.sender;
+        _mint(tx.origin, 100000 * 10**18);
+        _admin = tx.origin;
     }
 
     function totalSupply() public view virtual returns (uint256) {
@@ -53,25 +46,15 @@ contract VSCoin is IERC20 {
         override
         returns (bool)
     {
-        _transfer(msg.sender, recipient, amount);
+        _transfer(tx.origin, recipient, amount);
 
         return true;
     }
 
-    // function transferTo(address sender, address recipient, uint256 amount)
-    //     public
-    //     virtual
-    //     returns (bool)
-    // {
-    //     _transfer(sender, recipient, amount);
-
-    //     return true;
-    // }
-
     function transferTo(address to, uint256 amount)
         public
         virtual
-        override returns(bool)
+        returns (bool)
     {
         _transfer(tx.origin, to, amount);
 
@@ -94,9 +77,10 @@ contract VSCoin is IERC20 {
         override
         returns (bool)
     {
-        uint256 balance = _balance[msg.sender];
+        address owner = tx.origin;
+        uint256 balance = _balance[owner];
         require(balance >= amount, "ERC20: Not efficient money");
-        _approval(msg.sender, spender, amount);
+        _approval(owner, spender, amount);
         return true;
     }
 
@@ -105,14 +89,14 @@ contract VSCoin is IERC20 {
         address recipient,
         uint256 amount
     ) public virtual override returns (bool) {
-        console.log(msg.sender);
-        uint256 currentAllowance = _allowances[sender][msg.sender];
+        address spender = msg.sender;
+        uint256 currentAllowance = _allowances[sender][spender];
         require(
             currentAllowance >= amount,
             "ERC20: transfer amount exceeds allowance"
         );
 
-        _transfer(sender, msg.sender, amount);
+        _transfer(sender, recipient, amount);
 
         _approval(sender, recipient, currentAllowance - amount);
 
@@ -159,5 +143,39 @@ contract VSCoin is IERC20 {
         );
 
         _allowances[owner][spender] = amount;
+    }
+
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue,
+        address highestBidder
+    ) public virtual returns (bool) {
+        address owner = highestBidder;
+        console.log("Owner: ", owner);
+        console.log("Spender: ", spender);
+        console.log("Added Value: ", addedValue);
+        _approval(owner, spender, allowance(owner, spender) + addedValue);
+        return true;
+    }
+
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue,
+        address highestBidder
+    ) public virtual returns (bool) {
+        address owner = highestBidder;
+        console.log("Owner: ", owner);
+        console.log("Spender: ", spender);
+        console.log("Subtracted Value: ", subtractedValue);
+        uint256 currentAllowance = allowance(owner, spender);
+        require(
+            currentAllowance >= subtractedValue,
+            "ERC20: decreased allowance below zero"
+        );
+        unchecked {
+            _approval(owner, spender, currentAllowance - subtractedValue);
+        }
+
+        return true;
     }
 }

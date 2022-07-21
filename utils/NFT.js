@@ -1,10 +1,10 @@
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import { NFT_ADDRESS, Market_ADDRESS } from "../config";
-import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
-import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
+import { ethers } from 'ethers';
+import Web3Modal from 'web3modal';
+import { NFT_ADDRESS, Market_ADDRESS, ERC20_TOKEN } from '../config';
+import NFT from '../artifacts/contracts/NFT.sol/NFT.json';
+import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json';
 
-const configure = async () => {
+export const configure = async () => {
   const web3modal = new Web3Modal();
   const connectMA = await web3modal.connect();
   const provider = new ethers.providers.Web3Provider(connectMA);
@@ -46,7 +46,7 @@ export const _listingToMarket = async (tokenId, price) => {
 
   let listingPrice = await marketContract.getMarketListingPrice();
   listingPrice = listingPrice.toString();
-  const pri = ethers.utils.parseUnits(price, "ether");
+  const pri = ethers.utils.parseUnits(price, 'ether');
   const transaction = await marketContract.addItemInMarket(
     NFT_ADDRESS,
     tokenId,
@@ -56,5 +56,59 @@ export const _listingToMarket = async (tokenId, price) => {
 
   const tx = await transaction.wait();
 
+  return tx;
+};
+
+export const _startAuction = async (remainingTime, basePrice, tokenId, itemId) => {
+  const provider = await configure();
+  const signer = provider.getSigner();
+  const priceWei = ethers.utils.parseUnits(basePrice, 'ether');
+  console.log(priceWei);
+  const marketContract = new ethers.Contract(
+    Market_ADDRESS,
+    Market.abi,
+    signer
+  );
+  let listingPrice = await marketContract.getMarketListingPrice();
+  listingPrice = listingPrice.toString();
+  const tx = await marketContract.startAuction(
+    remainingTime,
+    priceWei,
+    Market_ADDRESS,
+    tokenId,
+    itemId,
+    { value: listingPrice }
+  );
+  tx.wait();
+};
+
+export const _getAuctionItems = async () => {
+  const provider = await configure();
+  const signer = provider.getSigner();
+  const marketContract = new ethers.Contract(
+    Market_ADDRESS,
+    Market.abi,
+    signer
+  );
+  const auction = await marketContract.getauctionItems();
+  return auction;
+};
+
+export const _bid = async (auctionId, price) => {
+  const provider = await configure();
+  const signer = provider.getSigner();
+  const marketContract = new ethers.Contract(
+    Market_ADDRESS,
+    Market.abi,
+    signer
+  );
+  const priceWei = ethers.utils.parseUnits(price, 'ether');
+  console.log(auctionId);
+  const transaction = await marketContract.bid(
+    auctionId,
+    priceWei,
+    ERC20_TOKEN
+  );
+  const tx = await transaction.wait();
   return tx;
 };

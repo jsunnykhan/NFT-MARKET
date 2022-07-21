@@ -1,9 +1,9 @@
-import Image from "next/image";
-import React, { useState } from "react";
-
+import Image from 'next/image';
+import React, { useState } from 'react';
 
 const SingleGridView = (props) => {
   const { nft, isBuy, buyNFT, processing } = props;
+  console.log(nft);
   const [process, setProcess] = useState(false);
   return (
     <div className="h-full w-full rounded shadow-md hover:scale-105 cursor-pointer ring-1 ring-purple-200">
@@ -44,7 +44,7 @@ const SingleGridView = (props) => {
                 buyNFT(nft);
               }}
             >
-              {processing && process ? "Processing.." : "Buy NFT"}
+              {processing && process ? 'Processing..' : 'Buy NFT'}
             </button>
           </div>
         )}

@@ -1,39 +1,59 @@
-import React, { useContext, useState } from "react";
-import Image from "next/image";
+import React, { useContext, useEffect, useState } from 'react';
+import Image from 'next/image';
 
-import { StateContext } from "../../components/StateContex";
+import { StateContext } from '../../components/StateContex';
 
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { VscListSelection } from "react-icons/vsc";
-import { MdOutlineBookmark } from "react-icons/md";
-import SellModal from "../../components/sellModal";
-import { _listingToMarket } from "../../utils/NFT";
-import { BigNumber } from "ethers";
-import { useRouter } from "next/router";
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { VscListSelection } from 'react-icons/vsc';
+import { MdOutlineBookmark } from 'react-icons/md';
+import SellModal from '../../components/sellModal';
+import { _listingToMarket, _startAuction } from '../../utils/NFT';
+import { useRouter } from 'next/router';
+import AuctionModal from '../../components/AuctionModal';
+import { toMiliseonds } from '../../utils/toMiliseconds';
 
 const NFTDetail = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
   const [isProOpen, setIsProOpen] = useState(false);
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
-  const [price, setPrice] = useState("");
+  const [isAuctionModalOpen, setIsAuctionModalOpen] = useState(false);
+  const [price, setPrice] = useState('');
+  const [basePrice, setBasePrice] = useState('');
+  const [auctionTime, setAuctionTime] = useState(undefined);
 
   const { singleNft } = useContext(StateContext);
 
   const router = useRouter();
+  console.log(singleNft);
 
   const listingItemIntoMarket = async () => {
     setIsSellModalOpen(false);
-    
+
     if (singleNft.tokenId) {
       const listingMarket = await _listingToMarket(singleNft.tokenId, price);
-      setPrice("");
+      setPrice('');
       console.log(listingMarket);
       router.push('/');
     }
   };
 
+  const auctionItemsIntoMarket = async () => {
+    console.log('here');
+    setIsAuctionModalOpen(false);
+    console.log(auctionTime);
+    const remaining = Math.ceil(
+      (toMiliseonds(auctionTime) - Date.now()) / 1000
+    );
+    await _startAuction(remaining, basePrice, singleNft.tokenId, singleNft.itemId);
+    router.push('/');
+  };
+
   const sellModalOpen = () => {
     setIsSellModalOpen(true);
+  };
+
+  const auctionModalOpen = () => {
+    setIsAuctionModalOpen(true);
   };
 
   return (
@@ -45,6 +65,16 @@ const NFTDetail = () => {
           listingItemIntoMarket={listingItemIntoMarket}
           isSellModalOpen={isSellModalOpen}
           setIsSellModalOpen={setIsSellModalOpen}
+        />
+      )}
+      {isAuctionModalOpen && (
+        <AuctionModal
+          basePrice={basePrice}
+          setBasePrice={setBasePrice}
+          auctionItemsIntoMarket={auctionItemsIntoMarket}
+          isAuctionModalOpen={isAuctionModalOpen}
+          setAuctionTime={setAuctionTime}
+          setIsAuctionModalOpen={setIsAuctionModalOpen}
         />
       )}
       <div className="w-full px-10 py-10 flex h-screen justify-between space-x-5">
@@ -118,19 +148,25 @@ const NFTDetail = () => {
                 {singleNft.name}
               </h3>
               <h3 className="font-semibold capitalize text-4xl">
-                {"#" + singleNft.tokenId}
+                {'#' + singleNft.tokenId}
               </h3>
             </div>
             <div className="flex space-x-2">
               <p className="font-medium">Owned by</p>
               <p className="text-blue-600 truncate w-20">{singleNft.owner}</p>
             </div>
-            <div>
+            <div className="flex justify-start">
               <button
-                className="w-[20%] bg-blue-600 text-white text-2xl font-semibold py-3 rounded-lg"
+                className="w-[20%] bg-blue-600 text-white text-2xl font-semibold py-3 rounded-lg mx-2"
                 onClick={sellModalOpen}
               >
                 Sell
+              </button>
+              <button
+                className="w-[20%] bg-blue-600 text-white text-2xl font-semibold py-3 rounded-lg mx-2"
+                onClick={auctionModalOpen}
+              >
+                Auction
               </button>
             </div>
           </div>

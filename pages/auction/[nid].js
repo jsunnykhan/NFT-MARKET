@@ -117,10 +117,10 @@ const NFTDetail = () => {
 
         <div className="w-[70%] ml-2">
           <div className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
-            {/* <div className="flex space-x-2">
+            <div className="flex space-x-2">
               <p className="font-medium">Created by</p>
-              <p className="text-blue-600 truncate w-20">{singleNft.seller}</p>
-            </div> */}
+              <p className="text-blue-600 truncate w-40">{singleNft.seller}</p>
+            </div>
             <div className="flex space-x-3">
               <h3 className="font-semibold capitalize text-4xl">
                 {singleNft.name}

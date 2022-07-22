@@ -155,7 +155,7 @@ const Nft = () => {
           auctionId: Number(item.id),
           price,
           tokenId: item.tokenId.toString(),
-          seller: item.seller,
+          seller: item.seller.toString(),
           owner: item.owner,
           image: metaData.data.image,
           name: metaData.data.name,

@@ -59,7 +59,12 @@ export const _listingToMarket = async (tokenId, price) => {
   return tx;
 };
 
-export const _startAuction = async (remainingTime, basePrice, tokenId, itemId) => {
+export const _startAuction = async (
+  remainingTime,
+  basePrice,
+  tokenId,
+  itemId
+) => {
   const provider = await configure();
   const signer = provider.getSigner();
   const priceWei = ethers.utils.parseUnits(basePrice, 'ether');
@@ -74,7 +79,7 @@ export const _startAuction = async (remainingTime, basePrice, tokenId, itemId) =
   const tx = await marketContract.startAuction(
     remainingTime,
     priceWei,
-    Market_ADDRESS,
+    NFT_ADDRESS,
     tokenId,
     itemId,
     { value: listingPrice }

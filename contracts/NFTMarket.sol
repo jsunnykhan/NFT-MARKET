@@ -37,7 +37,7 @@ contract NFTMarket is ReentrancyGuard {
         uint256 itemId;
         address nftContract;
         uint256 tokenId;
-        address payable beneficiary;
+        address payable seller;
         uint256 auctionEndTime;
         uint256 baseValue;
         address highestBidder;
@@ -63,7 +63,7 @@ contract NFTMarket is ReentrancyGuard {
     event HighestBidIncreased(address bidder, uint256 amount);
     event AuctionEnded(address winner, uint256 amount);
     event AuctionStarted(uint256 startTime);
-    event BeneficiaryPaid(address beneficiary, uint256 amount);
+    event BeneficiaryPaid(address seller, uint256 amount);
 
     function getMarketListingPrice() public view returns (uint256) {
         return marketListingPrice;
@@ -97,6 +97,7 @@ contract NFTMarket is ReentrancyGuard {
             price,
             false
         );
+        console.log(nftContract);
 
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
 
@@ -119,6 +120,8 @@ contract NFTMarket is ReentrancyGuard {
         uint256 price = _idToMarketItem[itemId].price;
         uint256 tokenId = _idToMarketItem[itemId].tokenId;
         address seller = _idToMarketItem[itemId].seller;
+
+        console.log(tokenId);
 
         IVSCoins(con).transferTo(address(this), price);
         IVSCoins(con).transfer(seller, price);
@@ -249,6 +252,7 @@ contract NFTMarket is ReentrancyGuard {
                 false
             )
         );
+        IERC721(_nftContract).transferFrom(msg.sender, address(this), _tokenId);
         emit AuctionStarted(auctionItems[_auctionId].auctionEndTime);
     }
 
@@ -329,7 +333,8 @@ contract NFTMarket is ReentrancyGuard {
         uint256 _itemId,
         address nftContract
     ) public {
-        uint256 tokenId = _idToMarketItem[_itemId].tokenId;
+        console.log(_itemId);
+        uint256 tokenId = auctionItems[_auctionId].tokenId;
         if (block.timestamp < auctionItems[_auctionId].auctionEndTime) {
             revert("AUC105: Auction has not ended yet");
         }
@@ -338,26 +343,30 @@ contract NFTMarket is ReentrancyGuard {
             revert("AUC106: The function has already been called");
         }
 
+        if (auctionItems[_auctionId].highestBidder == address(0)) {
+            revert("AUC107: No bid has been made");
+        }
+
         uint256 transferAmount = auctionItems[_auctionId].highestBid;
-        address beneficiary = auctionItems[_auctionId].beneficiary;
+        address seller = auctionItems[_auctionId].seller;
         address highestBidder = auctionItems[_auctionId].highestBidder;
 
-        console.log(
-            "currentAllowance",
-            IVSCoins(_tokenAddr).allowance(highestBidder, address(this))
-        );
-        console.log("msg.sender in bid fn: %s", msg.sender);
+        console.log(tokenId);
 
         auctionItems[_auctionId].ended = true;
         emit AuctionEnded(highestBidder, transferAmount);
 
         IVSCoins(_tokenAddr).transferFrom(
             highestBidder,
-            beneficiary,
+            seller,
             transferAmount
         );
 
-        IERC721(nftContract).transferFrom(address(this), highestBidder, tokenId);
+        IERC721(nftContract).transferFrom(
+            address(this),
+            highestBidder,
+            tokenId
+        );
         _idToMarketItem[_itemId].owner = payable(msg.sender);
         _idToMarketItem[_itemId].sold = true;
         auctionItems[_auctionId].sold = true;

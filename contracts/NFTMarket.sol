@@ -16,6 +16,9 @@ contract NFTMarket is ReentrancyGuard {
     address payable ownerOfContract;
     uint256 private marketListingPrice;
 
+    // need to have a owned array/map
+    // so that modifying only one place handles all ownership changes
+
     constructor() {
         ownerOfContract = payable(msg.sender);
         marketListingPrice = 0.01 ether;
@@ -367,13 +370,18 @@ contract NFTMarket is ReentrancyGuard {
             highestBidder,
             tokenId
         );
-        _idToMarketItem[_itemId].owner = payable(msg.sender);
+
+        console.log(payable(highestBidder));
+
+        _idToMarketItem[_itemId].owner = payable(highestBidder);
         _idToMarketItem[_itemId].sold = true;
         auctionItems[_auctionId].sold = true;
-        _itemsSold.increment();
+
+        console.log(_idToMarketItem[_itemId].owner);
     }
 
     function getauctionItems() public view returns (AuctionItem[] memory) {
+        //create an array of unsold auction items
         return auctionItems;
     }
 

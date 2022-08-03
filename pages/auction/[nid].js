@@ -36,6 +36,7 @@ const NFTDetail = () => {
   };
 
   useEffect(() => {
+    
     const init = () => {
       setAuctionTime(singleNft.auctionEndTime * 1000);
     };

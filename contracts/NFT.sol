@@ -42,7 +42,6 @@ contract NFT is ERC721URIStorage {
         uint256 newItemId = _nftTokenId.current();
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, tokenURI_);
-        setApprovalForAll(_marketPlcaeAddress, true);
         _storeMintedNFT(newItemId);
         console.log("Token Id", newItemId);
         return newItemId;
@@ -85,5 +84,9 @@ contract NFT is ERC721URIStorage {
             }
         }
         return items;
+    }
+    
+    function setApprovalForAll(address operator, bool approved) public virtual override{
+        _setApprovalForAll(tx.origin, operator, approved);
     }
 }

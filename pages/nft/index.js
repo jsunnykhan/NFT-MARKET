@@ -34,7 +34,7 @@ const Nft = () => {
     getMintedNft();
     getNftCreated();
     getOwnedItems();
-    getAuctionNft();
+    // getAuctionNft();
   }, []);
 
   const contractInit = async () => {
@@ -137,44 +137,44 @@ const Nft = () => {
     setOwnedNft((preState) => (preState = items));
   };
 
-  const getAuctionNft = async () => {
-    const { marketContract, nftContract } = await contractInit();
+  // const getAuctionNft = async () => {
+  //   const { marketContract, nftContract } = await contractInit();
 
-    const data = await _getAuctionItems();
-    console.log(data);
-    const items = await Promise.all(
-      data.map(async (item) => {
-        const tokenUri = await nftContract.tokenURI(item.tokenId);
-        const metaData = await axios.get(tokenUri);
-        const price = ethers.utils.formatUnits(
-          item.baseValue.toString(),
-          'ether'
-        );
-        let formateItem = {
-          itemId: item.itemId.toString(),
-          auctionId: Number(item.id),
-          price,
-          tokenId: item.tokenId.toString(),
-          seller: item.seller.toString(),
-          owner: item.owner,
-          image: metaData.data.image,
-          name: metaData.data.name,
-          description: metaData.data.description,
-          attributes: metaData.data.attributes,
-          auctionEndTime: item.auctionEndTime,
-          highestBid: ethers.utils.formatUnits(
-            item.highestBid.toString(),
-            'ether'
-          ),
-          highestBidder: item.highestBidder.toString(),
-        };
+  //   const data = await _getAuctionItems();
+  //   console.log(data);
+  //   const items = await Promise.all(
+  //     data.map(async (item) => {
+  //       const tokenUri = await nftContract.tokenURI(item.tokenId);
+  //       const metaData = await axios.get(tokenUri);
+  //       const price = ethers.utils.formatUnits(
+  //         item.baseValue.toString(),
+  //         'ether'
+  //       );
+  //       let formateItem = {
+  //         itemId: item.itemId.toString(),
+  //         auctionId: Number(item.id),
+  //         price,
+  //         tokenId: item.tokenId.toString(),
+  //         seller: item.seller.toString(),
+  //         owner: item.owner,
+  //         image: metaData.data.image,
+  //         name: metaData.data.name,
+  //         description: metaData.data.description,
+  //         attributes: metaData.data.attributes,
+  //         auctionEndTime: item.auctionEndTime,
+  //         highestBid: ethers.utils.formatUnits(
+  //           item.highestBid.toString(),
+  //           'ether'
+  //         ),
+  //         highestBidder: item.highestBidder.toString(),
+  //       };
 
-        return formateItem;
-      })
-    );
-    setAuctionNft((preState) => (preState = items));
-    console.log(items);
-  };
+  //       return formateItem;
+  //     })
+  //   );
+  //   setAuctionNft((preState) => (preState = items));
+  //   console.log(items);
+  // };
 
   const redirectNftDetailPage = (nft) => {
     setSingleNft(nft);

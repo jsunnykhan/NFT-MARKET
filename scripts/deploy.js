@@ -1,9 +1,10 @@
-const hre = require("hardhat");
+const hre = require('hardhat');
 
 async function main() {
-  const NFtMarket = await hre.ethers.getContractFactory("NFTMarket");
-  const VSCoin = await hre.ethers.getContractFactory("VSCoin");
-  const Nft = await hre.ethers.getContractFactory("NFT");
+  const NFtMarket = await hre.ethers.getContractFactory('NFTMarket');
+  const VSCoin = await hre.ethers.getContractFactory('VSCoin');
+  const Nft = await hre.ethers.getContractFactory('NFT');
+  const AuctionMarket = await hre.ethers.getContractFactory('AuctionMarket');
 
   const nftMarket = await NFtMarket.deploy();
   await nftMarket.deployed();
@@ -17,7 +18,16 @@ async function main() {
   await nft.deployed();
   const nftAddress = nft.address;
 
-  console.log({ nftMarketAddress, nftAddress, vsCoinAddress });
+  const auctionMarket = await AuctionMarket.deploy();
+  await auctionMarket.deployed();
+  const auctionMarketAddress = auctionMarket.address;
+
+  console.log({
+    nftMarketAddress,
+    nftAddress,
+    vsCoinAddress,
+    auctionMarketAddress,
+  });
 }
 
 main()

@@ -402,43 +402,35 @@ contract NFTMarket is ReentrancyGuard {
     }
 }
 
-abstract contract IVSCoins {
+interface IVSCoins {
     function transferFrom(
         address sender,
         address recipient,
         uint256 amount
-    ) public virtual returns (bool);
+    ) external returns (bool);
 
-    function transferTo(address to, uint256 amount)
-        public
-        virtual
-        returns (bool);
+    function transferTo(address to, uint256 amount) external returns (bool);
 
     function transfer(address recipient, uint256 amount)
-        public
-        virtual
+        external
         returns (bool);
 
-    function approve(address spender, uint256 amount)
-        public
-        virtual
-        returns (bool);
+    function approve(address spender, uint256 amount) external returns (bool);
 
     function allowance(address owner, address spender)
-        public
+        external
         view
-        virtual
         returns (uint256);
 
     function decreaseAllowance(
         address spender,
         uint256 subtractedValue,
         address highestBidder
-    ) public virtual returns (bool);
+    ) external returns (bool);
 
     function increaseAllowance(
         address spender,
         uint256 addedValue,
         address highestBidder
-    ) public virtual returns (bool);
+    ) external returns (bool);
 }

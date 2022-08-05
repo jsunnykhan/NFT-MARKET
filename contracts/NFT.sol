@@ -18,7 +18,7 @@ contract NFT is ERC721URIStorage {
         uint256 itemId;
         address nftContract;
         uint256 tokenId;
-        address payable seller;
+        address payable creator;
         address payable owner;
         bool sold;
     }
@@ -69,7 +69,7 @@ contract NFT is ERC721URIStorage {
         uint256 currentIndex = 0;
 
         for (uint256 index = 0; index < totalItemCount; index++) {
-            if (_mintedNFT[index + 1].seller == msg.sender) {
+            if (_mintedNFT[index + 1].creator == msg.sender) {
                 itemCount += 1;
             }
         }
@@ -77,7 +77,7 @@ contract NFT is ERC721URIStorage {
         MintedItem[] memory items = new MintedItem[](itemCount);
 
         for (uint256 index = 0; index < totalItemCount; index++) {
-            if (_mintedNFT[index + 1].seller == msg.sender) {
+            if (_mintedNFT[index + 1].creator == msg.sender) {
                 uint256 currentId = _mintedNFT[index + 1].itemId;
                 MintedItem storage currentItem = _mintedNFT[currentId];
                 items[currentIndex] = currentItem;

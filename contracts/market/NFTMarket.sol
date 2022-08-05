@@ -8,7 +8,6 @@ import "hardhat/console.sol";
 import "../utils/Ownable.sol";
 
 contract NFTMarket is ReentrancyGuard, Ownable {
-    
     uint256 private _marketFee;
 
     enum State {
@@ -68,11 +67,11 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         bool isErc721,
         uint256 price
     ) public virtual returns (bool success) {
-        // require(
-        //     _listings[listingId].listingId == listingId,
-        //     "Item is already listed"
-        // );
-        
+        require(
+            _listings[listingId].listingId != listingId,
+            "Item is already listed"
+        );
+        if (isErc721) {
             Listing memory listing = Listing(
                 listingId,
                 tokenId,
@@ -95,5 +94,14 @@ contract NFTMarket is ReentrancyGuard, Ownable {
             );
             return true;
         }
-    
+    }
+
+    function deleteListingItem(uint256 listingId)
+        public
+        virtual
+        returns (bool)
+    {
+        delete _listings[listingId];
+        return true;
+    }
 }

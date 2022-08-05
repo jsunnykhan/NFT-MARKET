@@ -128,7 +128,7 @@ function buyNftFromMarket(
         uint256 tokenId = _idToMarketItem[itemId].tokenId;
         address seller = _idToMarketItem[itemId].seller;
 
-        IERC20(con).transferTo(address(this), price);
+        
         IERC20(con).transfer(seller, price);
 
 

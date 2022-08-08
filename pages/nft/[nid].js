@@ -11,6 +11,12 @@ import { _listingToMarket, _startAuction } from '../../utils/NFT';
 import { useRouter } from 'next/router';
 import AuctionModal from '../../components/AuctionModal';
 import { toMiliseonds } from '../../utils/toMiliseconds';
+import Market from '../../artifacts/contracts/NFTMarket.sol/NFTMarket.json';
+import NFT from '../../artifacts/contracts/NFT.sol/NFT.json';
+import { NFT_ADDRESS } from '../../config';
+import { Market_ADDRESS } from '../../config';
+
+import Web3 from 'web3';
 
 const NFTDetail = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
@@ -20,11 +26,61 @@ const NFTDetail = () => {
   const [price, setPrice] = useState('');
   const [basePrice, setBasePrice] = useState('');
   const [auctionTime, setAuctionTime] = useState(undefined);
+  const [itemCreatedEvent, setItemCreatedEvent] = useState([]);
+  const [mintEvent, setMintEvent] = useState([]);
+  const [transferEvents, setTransferEvents] = useState([]);
 
   const { singleNft } = useContext(StateContext);
 
   const router = useRouter();
   console.log(singleNft);
+
+  const init = async () => {
+    const web3 = new Web3(window.ethereum);
+    const marketContract = new web3.eth.Contract(Market.abi, Market_ADDRESS);
+    const nftContract = new web3.eth.Contract(NFT.abi, NFT_ADDRESS);
+    const options1 = {
+      filter: {
+        seller: web3.eth.defaultAccount,
+      },
+      fromBlock: 0,
+      toBlock: 'latest',
+    };
+
+    const options2 = {
+      filter: {
+        mintedBy: web3.eth.defaultAccount,
+      },
+      fromBlock: 0,
+      toBlock: 'latest',
+    };
+
+    const transferOptions = {
+      filter: {
+        tokenId: singleNft.tokenId,
+      },
+      fromBlock: 0,
+      toBlock: 'latest',
+    };
+
+    const tempTransferEvents = await nftContract.getPastEvents(
+      'Transfer',
+      transferOptions
+    );
+    setTransferEvents(tempTransferEvents);
+
+    const tempCreatedEvents = await marketContract.getPastEvents(
+      'MarketItemCreated',
+      options1
+    );
+    const tempMintEvents = await nftContract.getPastEvents('Minted', options2);
+    setItemCreatedEvent(tempCreatedEvents);
+    setMintEvent(tempMintEvents);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   const listingItemIntoMarket = async () => {
     setIsSellModalOpen(false);
@@ -44,7 +100,12 @@ const NFTDetail = () => {
     const remaining = Math.ceil(
       (toMiliseonds(auctionTime) - Date.now()) / 1000
     );
-    await _startAuction(remaining, basePrice, singleNft.tokenId, singleNft.itemId);
+    await _startAuction(
+      remaining,
+      basePrice,
+      singleNft.tokenId,
+      singleNft.itemId
+    );
     router.push('/');
   };
 
@@ -170,6 +231,33 @@ const NFTDetail = () => {
               </button>
             </div>
           </div>
+          {/* <ul className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
+            <h3>Event History</h3>
+            {mintEvent.map((event) => {
+              return (
+                <li key={event.transactionHash}>
+                  {event.returnValues.mintedBy}
+                </li>
+              );
+            })}
+          </ul> */}
+
+          <ul className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
+            {itemCreatedEvent.map((event) => {
+              return (
+                <li key={event.transactionHash}>{event.returnValues.seller}</li>
+              );
+            })}
+          </ul>
+          <ul className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
+            {transferEvents.map((event) => {
+              return (
+                <li key={event.transactionHash}>
+                  From: {event.returnValues.from}  To: {event.returnValues.to}
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </div>

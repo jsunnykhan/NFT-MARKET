@@ -54,10 +54,10 @@ contract NFTMarket is ReentrancyGuard {
     mapping(uint256 => MarketItem) private _idToMarketItem; // giving item id as a key and return marketItem ob.
 
     event MarketItemCreated(
-        uint256 indexed itemId,
+        uint256 itemId,
         address indexed nftContract,
         uint256 indexed tokenId,
-        address payable seller,
+        address payable indexed seller,
         address payable owner,
         uint256 price,
         bool sold

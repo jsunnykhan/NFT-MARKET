@@ -33,6 +33,8 @@ contract NFT is ERC721URIStorage {
     //     _marketPlcaeAddress = marketPlcaeAddress_;
     // }
 
+    event Minted(address indexed mintedBy, uint256 indexed tokenId);
+
     function createNewToken(string memory tokenURI_)
         external
         payable
@@ -45,6 +47,7 @@ contract NFT is ERC721URIStorage {
         setApprovalForAll(_marketPlcaeAddress, true);
         _storeMintedNFT(newItemId);
         console.log("Token Id", newItemId);
+        emit Minted(msg.sender, newItemId);
         return newItemId;
     }
 

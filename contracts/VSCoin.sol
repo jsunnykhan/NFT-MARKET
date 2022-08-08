@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.11;
+pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
@@ -20,6 +20,7 @@ contract VSCoin is IERC20 {
     //     _admin = msg.sender;
     // }
 
+    //previously with tx.origin
     constructor() {
         _name = "VS Coin";
         _symbol = "VSC";
@@ -71,7 +72,7 @@ contract VSCoin is IERC20 {
     function transferTo(address to, uint256 amount)
         public
         virtual
-        override returns(bool)
+        returns (bool)
     {
         _transfer(tx.origin, to, amount);
 
@@ -88,15 +89,16 @@ contract VSCoin is IERC20 {
         return _allowances[owner][spender];
     }
 
+    //update this for tx.origin
     function approve(address spender, uint256 amount)
         public
         virtual
         override
         returns (bool)
     {
-        uint256 balance = _balance[msg.sender];
+        uint256 balance = _balance[tx.origin];
         require(balance >= amount, "ERC20: Not efficient money");
-        _approval(msg.sender, spender, amount);
+        _approval(tx.origin, spender, amount);
         return true;
     }
 
@@ -112,6 +114,7 @@ contract VSCoin is IERC20 {
             "ERC20: transfer amount exceeds allowance"
         );
 
+        //is it necessary to use msg.sender
         _transfer(sender, msg.sender, amount);
 
         _approval(sender, recipient, currentAllowance - amount);
@@ -159,5 +162,39 @@ contract VSCoin is IERC20 {
         );
 
         _allowances[owner][spender] = amount;
+    }
+
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue,
+        address highestBidder
+    ) public virtual returns (bool) {
+        address owner = highestBidder;
+        console.log("Owner: ", owner);
+        console.log("Spender: ", spender);
+        console.log("Added Value: ", addedValue);
+        _approval(owner, spender, allowance(owner, spender) + addedValue);
+        return true;
+    }
+
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue,
+        address highestBidder
+    ) public virtual returns (bool) {
+        address owner = highestBidder;
+        console.log("Owner: ", owner);
+        console.log("Spender: ", spender);
+        console.log("Subtracted Value: ", subtractedValue);
+        uint256 currentAllowance = allowance(owner, spender);
+        require(
+            currentAllowance >= subtractedValue,
+            "ERC20: decreased allowance below zero"
+        );
+        unchecked {
+            _approval(owner, spender, currentAllowance - subtractedValue);
+        }
+
+        return true;
     }
 }

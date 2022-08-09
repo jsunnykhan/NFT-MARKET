@@ -37,6 +37,8 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         uint256 price
     );
 
+    event CollectionCreated(address indexed owner, address indexed nftContract);
+
     constructor(uint256 marketFee) {
         _marketFee = marketFee;
     }
@@ -103,5 +105,9 @@ contract NFTMarket is ReentrancyGuard, Ownable {
     {
         delete _listings[listingId];
         return true;
+    }
+
+    function contractCreated(address _owner, address _contractAddress) public {
+        emit CollectionCreated(_owner, _contractAddress);
     }
 }

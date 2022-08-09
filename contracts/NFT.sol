@@ -27,15 +27,13 @@ contract NFT is ERC721URIStorage {
 
     address private _ownerOfContract;
 
-    event ContractCreated(
-        address indexed owner,
-        address indexed collectionAddress
-    );
-
     constructor(address marketPlcaeAddress_) ERC721("Viv", "VS") {
         _marketPlcaeAddress = marketPlcaeAddress_;
         _ownerOfContract = msg.sender;
-        emit ContractCreated(_ownerOfContract, address(this));
+        IMarketPlace(_marketPlcaeAddress).contractCreated(
+            _ownerOfContract,
+            address(this)
+        );
     }
 
     // function initialize(address marketPlcaeAddress_) public initializer {
@@ -95,4 +93,8 @@ contract NFT is ERC721URIStorage {
         }
         return items;
     }
+}
+
+interface IMarketPlace {
+    function contractCreated(address _owner, address _contractAddress) external;
 }

@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import NftContract from '../artifacts/contracts/NFT.sol/NFT.json';
 
 const MakeCollectionModal = (props) => {
-  const { isCollectionModalOpen, setIsCollectionModalOpen } = props;
+  const { getEvents, isCollectionModalOpen, setIsCollectionModalOpen } = props;
 
   const [valid, setValid] = useState(true);
   const [formInput, setFormInput] = useState({
@@ -25,6 +25,7 @@ const MakeCollectionModal = (props) => {
     await nft.deployTransaction.wait();
     const nftAddress = nft.address;
     setIsCollectionModalOpen(false);
+    getEvents();
   };
 
   useEffect(() => {

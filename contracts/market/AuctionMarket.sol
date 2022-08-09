@@ -247,7 +247,7 @@ contract AuctionMarket {
     //     address seller = auctionItems[_auctionId].seller;
     //     bool auctionEnded = auctionItems[_auctionId].auctionEnded;
     //     if(seller != tx.origin /* msg.sender */ && !auctionEnded){
-            
+
     //     }
     // }
 
@@ -278,6 +278,8 @@ contract AuctionMarket {
 
         return _auctionItems;
     }
+
+    
 }
 
 // vs coin interface

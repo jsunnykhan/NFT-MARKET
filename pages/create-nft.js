@@ -9,6 +9,9 @@ import { _uploadFile, _uploadMetaData } from '../utils/fileUpload';
 import { _listingToMarket, _minting } from '../utils/NFT';
 import PropertiesModal from '../components/propertiesModal';
 import MakeCollectionModal from '../components/MakeCollectionModal';
+import Web3 from 'web3';
+import Market from '../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
+import { Market_ADDRESS } from '../config';
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
@@ -53,7 +56,27 @@ const CreateNFT = () => {
     router.push('/nft');
   };
 
+  const getEvents = async () => {
+    const web3 = new Web3(window.ethereum);
+    const marketContract = new web3.eth.Contract(Market.abi, Market_ADDRESS);
+    const option = {
+      filter: {
+        owner: web3.eth.defaultAccount,
+      },
+      fromBlock: 0,
+      toBlock: 'latest',
+    };
+
+    const events = await marketContract.getPastEvents(
+      'CollectionCreated',
+      option
+    );
+
+    console.log(events);
+  };
+
   useEffect(() => {
+    getEvents();
     if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
     } else {
@@ -80,6 +103,7 @@ const CreateNFT = () => {
         )}
         {isCollectionModalOpen && (
           <MakeCollectionModal
+            getEvents={getEvents}
             isCollectionModalOpen={isCollectionModalOpen}
             setIsCollectionModalOpen={setIsCollectionModalOpen}
           />
@@ -121,7 +145,6 @@ const CreateNFT = () => {
             >
               Create Collection
             </button>
-          
           </div>
           <div className="space-y-2">
             <h3 className="font-semibold text-xl text-gray-700">Name</h3>

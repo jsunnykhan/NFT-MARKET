@@ -15,7 +15,7 @@ export default function Home() {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    getNFTS();
+    // getNFTS();
   }, []);
 
   const getNFTS = async () => {

@@ -25,8 +25,17 @@ contract NFT is ERC721URIStorage {
 
     mapping(uint256 => MintedItem) private _mintedNFT;
 
+    address private _ownerOfContract;
+
+    event ContractCreated(
+        address indexed owner,
+        address indexed collectionAddress
+    );
+
     constructor(address marketPlcaeAddress_) ERC721("Viv", "VS") {
         _marketPlcaeAddress = marketPlcaeAddress_;
+        _ownerOfContract = msg.sender;
+        emit ContractCreated(_ownerOfContract, address(this));
     }
 
     // function initialize(address marketPlcaeAddress_) public initializer {

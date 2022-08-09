@@ -27,12 +27,18 @@ contract NFT is ERC721URIStorage {
 
     address private _ownerOfContract;
 
-    constructor(address marketPlcaeAddress_) ERC721("Viv", "VS") {
+    constructor(
+        address marketPlcaeAddress_,
+        string memory _name,
+        string memory _symbol
+    ) ERC721(_name, _symbol) {
         _marketPlcaeAddress = marketPlcaeAddress_;
         _ownerOfContract = msg.sender;
         IMarketPlace(_marketPlcaeAddress).contractCreated(
             _ownerOfContract,
-            address(this)
+            address(this),
+            _name,
+            _symbol
         );
     }
 
@@ -96,5 +102,10 @@ contract NFT is ERC721URIStorage {
 }
 
 interface IMarketPlace {
-    function contractCreated(address _owner, address _contractAddress) external;
+    function contractCreated(
+        address _owner,
+        address _contractAddress,
+        string memory _name,
+        string memory _symbol
+    ) external;
 }

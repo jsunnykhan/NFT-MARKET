@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect } from 'react';
+import { useState } from 'react';
 
-import { create as ipfsHttpClient } from "ipfs-http-client";
+import { create as ipfsHttpClient } from 'ipfs-http-client';
 
-import { useRouter } from "next/router";
-import Image from "next/image";
-import { _uploadFile, _uploadMetaData } from "../utils/fileUpload";
-import { _listingToMarket, _minting } from "../utils/NFT";
-import PropertiesModal from "../components/propertiesModal";
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import { _uploadFile, _uploadMetaData } from '../utils/fileUpload';
+import { _listingToMarket, _minting } from '../utils/NFT';
+import PropertiesModal from '../components/propertiesModal';
+import MakeCollectionModal from '../components/MakeCollectionModal';
 
-const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
@@ -19,9 +20,12 @@ const CreateNFT = () => {
   const [mint, setMint] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formInput, setFormInput] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
+    collection: '',
+    symbol: '',
   });
+  const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -33,6 +37,7 @@ const CreateNFT = () => {
 
   const creatingNftMetaData = async () => {
     const { name, description } = formInput;
+    console.log(formInput);
     if (!name || !description || !fileUrl) return;
     const data = JSON.stringify({
       name,
@@ -41,18 +46,17 @@ const CreateNFT = () => {
       attributes: attributes,
     });
 
-
     const metaDataUrl = await _uploadMetaData(data);
-    console.log(metaDataUrl)
+    console.log(metaDataUrl);
     const tokenId = await _minting(metaDataUrl);
     console.log(tokenId);
-    router.push("/nft");
+    router.push('/nft');
   };
 
   useEffect(() => {
-    if (formInput.name && formInput.description  && fileUrl) {
+    if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
-    }else{
+    } else {
       setIsDisable(true);
     }
   }, [formInput, fileUrl]);
@@ -73,6 +77,12 @@ const CreateNFT = () => {
               setIsModalOpen={setIsModalOpen}
             />
           </div>
+        )}
+        {isCollectionModalOpen && (
+          <MakeCollectionModal
+            isCollectionModalOpen={isCollectionModalOpen}
+            setIsCollectionModalOpen={setIsCollectionModalOpen}
+          />
         )}
         <div className="flex flex-col space-y-5 w-2/5 my-5">
           <h2 className="flex font-semibold text-4xl mb-2 ">Create New Item</h2>
@@ -102,6 +112,17 @@ const CreateNFT = () => {
             </div>
           </div>
 
+          <div className="space-y-2">
+            <button
+              className="bg-blue-400 py-4 px-8 rounded-xl text-white font-bold text-xl disabled:bg-blue-200"
+              onClick={() => {
+                setIsCollectionModalOpen(true);
+              }}
+            >
+              Create Collection
+            </button>
+          
+          </div>
           <div className="space-y-2">
             <h3 className="font-semibold text-xl text-gray-700">Name</h3>
             <input

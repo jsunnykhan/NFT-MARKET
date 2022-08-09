@@ -242,6 +242,7 @@ contract AuctionMarket {
         );
     }
 
+    // Future Feature
     // function terminateAuction(uint256 _auctionId) public {
     //     address seller = auctionItems[_auctionId].seller;
     //     bool auctionEnded = auctionItems[_auctionId].auctionEnded;

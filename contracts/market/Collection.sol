@@ -20,7 +20,7 @@ contract Collection is ERC721URIStorage {
     address private _ownerOfContract;
 
     constructor(string memory name, string memory symble) ERC721(name, symble) {
-        _ownerOfContract = msg.sender;
+        _ownerOfContract = _origin();
     }
 
     // function initialize(address marketPlcaeAddress_) public initializer {
@@ -38,7 +38,7 @@ contract Collection is ERC721URIStorage {
     {
         _nftTokenId.increment();
         uint256 newItemId = _nftTokenId.current();
-        _mint(msg.sender, newItemId);
+        _mint(_origin(), newItemId);
         _setTokenURI(newItemId, tokenURI_);
         _storeMintedNFT(newItemId);
         console.log("Token Id", newItemId);
@@ -49,7 +49,7 @@ contract Collection is ERC721URIStorage {
         _minted[tokenId] = MintedItem(
             address(this),
             tokenId,
-            payable(msg.sender)
+            payable(_origin())
         );
     }
 }
@@ -59,7 +59,7 @@ contract Collection is ERC721URIStorage {
 //         uint256 currentIndex = 0;
 
 //         for (uint256 index = 0; index < totalItemCount; index++) {
-//             if (_minted[index + 1].creator == msg.sender) {
+//             if (_minted[index + 1].creator == _origin()) {
 //                 itemCount += 1;
 //             }
 //         }
@@ -67,7 +67,7 @@ contract Collection is ERC721URIStorage {
 //         MintedItem[] memory items = new MintedItem[](itemCount);
 
 //         for (uint256 index = 0; index < totalItemCount; index++) {
-//             if (_minted[index + 1].creator == msg.sender) {
+//             if (_minted[index + 1].creator == _origin()) {
 //                 uint256 currentId = _minted[index + 1].tokenId;
 //                 MintedItem storage currentItem = _minted[currentId];
 //                 items[currentIndex] = currentItem;

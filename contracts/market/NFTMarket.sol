@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../token/ERC20/IERC20.sol";
+import "../token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
@@ -8,6 +9,9 @@ import "hardhat/console.sol";
 import "../utils/Ownable.sol";
 
 contract NFTMarket is ReentrancyGuard, Ownable {
+    using Counters for Counters.Counter;
+    Counters.Counter private _listingId;
+
     uint256 private _marketFee;
 
     enum State {
@@ -28,9 +32,18 @@ contract NFTMarket is ReentrancyGuard, Ownable {
 
     mapping(uint256 => Listing) private _listings;
 
-    event listingCreated(
+    event listed(
         uint256 indexed listingId,
         address collectionAddress,
+        address payable creator,
+        address payable owner,
+        bool isErc721,
+        uint256 price
+    );
+
+    event buyItem(
+        uint256 indexed tokenId,
+        address indexed collectionAddress,
         address payable creator,
         address payable owner,
         bool isErc721,
@@ -59,36 +72,50 @@ contract NFTMarket is ReentrancyGuard, Ownable {
     }
 
     function createListing(
-        uint256 listingId,
         uint256 tokenId,
         address collectionAddress,
-        address payable creator,
-        address payable owner,
         bool isErc721,
         uint256 price
     ) public virtual returns (bool success) {
+        _listingId.increment();
+
+        uint256 newListingId = _listingId.current();
+
         require(
-            _listings[listingId].listingId != listingId,
+            _listings[newListingId].listingId != newListingId,
             "Item is already listed"
         );
         if (isErc721) {
+            address _owner = IERC721(collectionAddress).ownerOf(tokenId);
+
+            require(
+                _owner != msg.sender,
+                "This token not belongs to this address"
+            );
+            IERC721(collectionAddress).approve(address(this), tokenId); // collenction should be tx.origin
+            // IERC721(collectionAddress).transferFrom(
+            //     msg.sender,
+            //     address(this),
+            //     tokenId
+            // );
+
             Listing memory listing = Listing(
-                listingId,
+                newListingId,
                 tokenId,
                 collectionAddress,
-                creator,
-                owner,
+                payable(_owner),
+                payable(_owner),
                 isErc721,
                 State.LISTED,
                 price
             );
-            _listings[listingId] = listing;
+            _listings[newListingId] = listing;
 
-            emit listingCreated(
-                listingId,
+            emit listed(
+                newListingId,
                 collectionAddress,
-                creator,
-                owner,
+                payable(_owner),
+                payable(_owner),
                 isErc721,
                 price
             );
@@ -96,8 +123,51 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         }
     }
 
-    function deleteListingItem(uint256 listingId)
-        public
+    function buyListingItem(
+        address collectionAddress,
+        uint256 listingId_,
+        uint256 price_,
+        address tokenAddress
+    ) public virtual returns (bool) {
+        Listing memory listing = _listings[listingId_];
+        uint256 price = listing.price;
+        require(price_ >= price, "Insufficient Balance");
+
+        uint256 listingId = listing.listingId;
+        uint256 tokenId = listing.tokenId;
+        address owner = IERC721(collectionAddress).ownerOf(tokenId);
+        address creator = payable(listing.creator);
+
+        IERC20(tokenAddress).transfer(owner, price);
+        IERC721(collectionAddress).transferFrom(
+            owner,
+            address(this),
+            tokenId
+        );
+        IERC721(collectionAddress).approve(msg.sender, tokenId);
+        IERC721(collectionAddress).transferFrom(
+            address(this),
+
+            msg.sender,
+            tokenId
+        );
+
+        emit buyItem(
+            tokenId,
+            collectionAddress,
+            payable(creator),
+            payable(msg.sender),
+            true,
+            price
+        );
+
+        _deleteListingItem(listingId);
+
+        return true;
+    }
+
+    function _deleteListingItem(uint256 listingId)
+        internal
         virtual
         returns (bool)
     {

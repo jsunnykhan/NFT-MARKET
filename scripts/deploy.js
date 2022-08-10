@@ -16,7 +16,7 @@ async function main() {
   await vsCoin.deployed();
   const vsCoinAddress = vsCoin.address;
 
-  const nft = await Nft.deploy(nftMarketAddress);
+  const nft = await Nft.deploy(nftMarketAddress, 'Default', 'DEF');
   await nft.deployed();
   const nftAddress = nft.address;
 

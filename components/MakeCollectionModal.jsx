@@ -21,7 +21,11 @@ const MakeCollectionModal = (props) => {
       NftContract.bytecode,
       signer
     );
-    const nft = await Nft.deploy(Market_ADDRESS);
+    const nft = await Nft.deploy(
+      Market_ADDRESS,
+      formInput.collection,
+      formInput.symbol
+    );
     await nft.deployTransaction.wait();
     const nftAddress = nft.address;
     setIsCollectionModalOpen(false);

@@ -29,6 +29,8 @@ const CreateNFT = () => {
     symbol: '',
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState({});
+  const [collectionList, setCollectionList] = useState([]);
 
   const router = useRouter();
 
@@ -51,7 +53,10 @@ const CreateNFT = () => {
 
     const metaDataUrl = await _uploadMetaData(data);
     console.log(metaDataUrl);
-    const tokenId = await _minting(metaDataUrl);
+    const tokenId = await _minting(
+      selectedCollection.returnValues.nftContract,
+      metaDataUrl
+    );
     console.log(tokenId);
     router.push('/nft');
   };
@@ -61,7 +66,7 @@ const CreateNFT = () => {
     const marketContract = new web3.eth.Contract(Market.abi, Market_ADDRESS);
     const option = {
       filter: {
-        owner: web3.eth.defaultAccount,
+        owner: await web3.eth.getAccounts(),
       },
       fromBlock: 0,
       toBlock: 'latest',
@@ -71,8 +76,12 @@ const CreateNFT = () => {
       'CollectionCreated',
       option
     );
-
+    setCollectionList(events);
     console.log(events);
+  };
+
+  const handleChange = (e) => {
+    setSelectedCollection(collectionList[e.target.value]);
   };
 
   useEffect(() => {
@@ -145,6 +154,23 @@ const CreateNFT = () => {
             >
               Create Collection
             </button>
+          </div>
+          <div className="space-y-2">
+            <select
+              className="bg-blue-400 py-4 px-8 rounded-xl text-white font-bold text-xl disabled:bg-blue-200"
+              name="cars"
+              id="cars"
+              placeholder="Select Collection"
+              onChange={handleChange}
+            >
+              {collectionList.map((li, index) => {
+                return (
+                  <option key={index} value={index}>
+                    {li.returnValues.name}
+                  </option>
+                );
+              })}
+            </select>
           </div>
           <div className="space-y-2">
             <h3 className="font-semibold text-xl text-gray-700">Name</h3>

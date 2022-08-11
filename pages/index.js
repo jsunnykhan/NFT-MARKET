@@ -36,6 +36,7 @@ export default function Home() {
         const tokenUri = await nftContract.tokenURI(item.tokenId);
         const metaData = await axios.get(tokenUri);
         const price = ethers.utils.formatUnits(item.price.toString(), 'ether');
+        console.log(metaData.data.image);
         let formateItem = {
           price,
           tokenId: item.tokenId.toString(),

@@ -8,7 +8,6 @@ import { VscListSelection } from "react-icons/vsc";
 import { MdOutlineBookmark } from "react-icons/md";
 import SellModal from "../../components/sellModal";
 import { _listingToMarket } from "../../utils/NFT";
-import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 
 const NFTDetail = () => {

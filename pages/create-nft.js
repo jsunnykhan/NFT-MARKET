@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 
-import { create as ipfsHttpClient } from 'ipfs-http-client';
 
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -12,17 +11,14 @@ import MakeCollectionModal from '../components/MakeCollectionModal';
 import Web3 from 'web3';
 import Market from '../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
 import { Market_ADDRESS } from '../config';
-import { uploadFile, uploadMetaData } from '../utils/upload.mjs';
+import { uploadMetaData } from '../utils/upload.mjs';
 
-const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
   const [isDisable, setIsDisable] = useState(true);
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mint, setMint] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',

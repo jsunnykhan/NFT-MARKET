@@ -18,6 +18,7 @@ export default function Home() {
     // getNFTS();
   }, []);
 
+  // update ipfs url to https
   const getNFTS = async () => {
     const provider = new ethers.providers.JsonRpcProvider(
       // "https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac"

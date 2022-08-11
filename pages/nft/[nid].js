@@ -51,6 +51,7 @@ const NFTDetail = () => {
         <div className="w-[30%] space-y-5">
           <div className=" h-3/5 shadow-lg rounded-md ring-1 ring-purple-100">
             <div className="relative w-full h-[90%] rounded-t-md overflow-hidden">
+                {/* create https url from ipfs url */}             
               <Image
                 src={singleNft?.image}
                 alt={singleNft.name}

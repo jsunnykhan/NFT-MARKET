@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 
-
+//generate image from the ipfs url
 const SingleGridView = (props) => {
   const { nft, isBuy, buyNFT, processing } = props;
   const [process, setProcess] = useState(false);

@@ -87,13 +87,22 @@ const CreateNFT = () => {
     );
     setCollectionList(events);
     console.log(events);
+    setSelectedCollection(collectionList[0]);
   };
 
   const handleChange = (e) => {
+    console.log(collectionList[e.target.value]);
     setSelectedCollection(collectionList[e.target.value]);
   };
 
   useEffect(() => {
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload();
+    });
+
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
     getEvents();
     if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
@@ -164,23 +173,29 @@ const CreateNFT = () => {
               Create Collection
             </button>
           </div>
-          <div className="space-y-2">
-            <select
-              className="bg-blue-400 py-4 px-8 rounded-xl text-white font-bold text-xl disabled:bg-blue-200"
-              name="cars"
-              id="cars"
-              placeholder="Select Collection"
-              onChange={handleChange}
-            >
-              {collectionList.map((li, index) => {
-                return (
-                  <option key={index} value={index}>
-                    {li.returnValues.name}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
+
+          {collectionList.length !== 0 ? (
+            <div className="space-y-2">
+              <select
+                className="bg-blue-400 py-4 px-8 rounded-xl text-white font-bold text-xl disabled:bg-blue-200"
+                name="cars"
+                id="cars"
+                placeholder="Select Collection"
+                onChange={handleChange}
+              >
+                {collectionList.map((li, index) => {
+                  return (
+                    <option key={index} value={index}>
+                      {li.returnValues.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          ) : (
+            ''
+          )}
+
           <div className="space-y-2">
             <h3 className="font-semibold text-xl text-gray-700">Name</h3>
             <input

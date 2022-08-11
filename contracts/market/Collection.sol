@@ -6,6 +6,15 @@ import "../token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
+abstract contract INFTMarket {
+    function createCollectionNotification(
+        string memory name,
+        string memory symbol,
+        address collectionAddress,
+        address ownerOf
+    ) public virtual;
+}
+
 contract Collection is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _nftTokenId;
@@ -15,17 +24,26 @@ contract Collection is ERC721URIStorage {
         uint256 tokenId;
         address payable creator;
     }
-
     mapping(uint256 => MintedItem) private _minted;
     address private _ownerOfContract;
-
-    constructor(string memory name, string memory symble) ERC721(name, symble) {
-        _ownerOfContract = _origin();
-    }
 
     // function initialize(address marketPlcaeAddress_) public initializer {
     //     _marketPlcaeAddress = marketPlcaeAddress_;
     // }
+    constructor(
+        string memory name,
+        string memory symbol,
+        address marketAddress
+    ) ERC721(name, symbol) {
+        _ownerOfContract = _msgSender();
+
+        INFTMarket(marketAddress).createCollectionNotification(
+            name,
+            symbol,
+            address(this),
+            _ownerOfContract
+        );
+    }
 
     function creatorOf(uint256 tokenId) public view virtual returns (address) {
         return _minted[tokenId].creator;
@@ -38,10 +56,9 @@ contract Collection is ERC721URIStorage {
     {
         _nftTokenId.increment();
         uint256 newItemId = _nftTokenId.current();
-        _mint(_origin(), newItemId);
+        _mint(_msgSender(), newItemId);
         _setTokenURI(newItemId, tokenURI_);
         _storeMintedNFT(newItemId);
-        console.log("Token Id", newItemId);
         return newItemId;
     }
 
@@ -49,31 +66,7 @@ contract Collection is ERC721URIStorage {
         _minted[tokenId] = MintedItem(
             address(this),
             tokenId,
-            payable(_origin())
+            payable(_msgSender())
         );
     }
 }
-//     function getMintedNFT() public view returns (MintedItem[] memory) {
-//         uint256 totalItemCount = _mintedTokenId.current();
-//         uint256 itemCount = 0;
-//         uint256 currentIndex = 0;
-
-//         for (uint256 index = 0; index < totalItemCount; index++) {
-//             if (_minted[index + 1].creator == _origin()) {
-//                 itemCount += 1;
-//             }
-//         }
-
-//         MintedItem[] memory items = new MintedItem[](itemCount);
-
-//         for (uint256 index = 0; index < totalItemCount; index++) {
-//             if (_minted[index + 1].creator == _origin()) {
-//                 uint256 currentId = _minted[index + 1].tokenId;
-//                 MintedItem storage currentItem = _minted[currentId];
-//                 items[currentIndex] = currentItem;
-//                 currentIndex += 1;
-//             }
-//         }
-//         return items;
-//     }
-// }

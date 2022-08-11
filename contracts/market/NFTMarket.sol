@@ -7,8 +7,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
 import "../utils/Ownable.sol";
+import "../utils/Context.sol";
 
-contract NFTMarket is ReentrancyGuard, Ownable {
+contract NFTMarket is ReentrancyGuard, Ownable, Context {
     using Counters for Counters.Counter;
     Counters.Counter private _listingId;
 
@@ -25,7 +26,6 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         address collectionAddress; // Collection address
         address payable creator; // `creator` who create/mint this token
         address payable owner; // `owner` who own this token
-        bool isErc721; // type of token true/false
         State state; // token State Listed or sold
         uint256 price; // price of this token
     }
@@ -37,7 +37,6 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         address collectionAddress,
         address payable creator,
         address payable owner,
-        bool isErc721,
         uint256 price
     );
 
@@ -48,6 +47,13 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         address payable owner,
         bool isErc721,
         uint256 price
+    );
+
+    event CollectionCreated(
+        string name,
+        string symbol,
+        address collectionAddress,
+        address indexed ownerOf
     );
 
     constructor(uint256 marketFee) {
@@ -74,53 +80,37 @@ contract NFTMarket is ReentrancyGuard, Ownable {
     function createListing(
         uint256 tokenId,
         address collectionAddress,
-        bool isErc721,
         uint256 price
     ) public virtual returns (bool success) {
         _listingId.increment();
-
         uint256 newListingId = _listingId.current();
-
         require(
             _listings[newListingId].listingId != newListingId,
             "Item is already listed"
         );
-        if (isErc721) {
-            address _owner = IERC721(collectionAddress).ownerOf(tokenId);
+        address _owner = IERC721(collectionAddress).ownerOf(tokenId);
+        require(_owner == msg.sender, "This token not belongs to this address");
+        IERC721(collectionAddress).approve(address(this), tokenId); // collenction should be tx.origin
 
-            require(
-                _owner != msg.sender,
-                "This token not belongs to this address"
-            );
-            IERC721(collectionAddress).approve(address(this), tokenId); // collenction should be tx.origin
-            // IERC721(collectionAddress).transferFrom(
-            //     msg.sender,
-            //     address(this),
-            //     tokenId
-            // );
+        Listing memory listing = Listing(
+            newListingId,
+            tokenId,
+            collectionAddress,
+            payable(_owner),
+            payable(_owner),
+            State.LISTED,
+            price
+        );
+        _listings[newListingId] = listing;
 
-            Listing memory listing = Listing(
-                newListingId,
-                tokenId,
-                collectionAddress,
-                payable(_owner),
-                payable(_owner),
-                isErc721,
-                State.LISTED,
-                price
-            );
-            _listings[newListingId] = listing;
-
-            emit listed(
-                newListingId,
-                collectionAddress,
-                payable(_owner),
-                payable(_owner),
-                isErc721,
-                price
-            );
-            return true;
-        }
+        emit listed(
+            newListingId,
+            collectionAddress,
+            payable(_owner),
+            payable(_owner),
+            price
+        );
+        return true;
     }
 
     function buyListingItem(
@@ -131,24 +121,23 @@ contract NFTMarket is ReentrancyGuard, Ownable {
     ) public virtual returns (bool) {
         Listing memory listing = _listings[listingId_];
         uint256 price = listing.price;
-        require(price_ >= price, "Insufficient Balance");
+        require(price_ >= price, "Market - Insufficient Balance");
 
         uint256 listingId = listing.listingId;
         uint256 tokenId = listing.tokenId;
-        address owner = IERC721(collectionAddress).ownerOf(tokenId);
+        address ownerOf = IERC721(collectionAddress).ownerOf(tokenId);
+        
         address creator = payable(listing.creator);
-
-        IERC20(tokenAddress).transfer(owner, price);
+        IERC20(tokenAddress).transfer(ownerOf, price);
         IERC721(collectionAddress).transferFrom(
-            owner,
+            ownerOf,
             address(this),
             tokenId
         );
-        IERC721(collectionAddress).approve(msg.sender, tokenId);
-        IERC721(collectionAddress).transferFrom(
+        IERC721(collectionAddress).approve(_msgSender(), tokenId);
+        IERC721(collectionAddress).safeTransferFrom(
             address(this),
-
-            msg.sender,
+            _msgSender(),
             tokenId
         );
 
@@ -156,7 +145,7 @@ contract NFTMarket is ReentrancyGuard, Ownable {
             tokenId,
             collectionAddress,
             payable(creator),
-            payable(msg.sender),
+            payable(ownerOf),
             true,
             price
         );
@@ -174,4 +163,15 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         delete _listings[listingId];
         return true;
     }
+
+    function createCollectionNotification(
+        string memory name,
+        string memory symbol,
+        address collectionAddress,
+        address ownerOf
+    ) public virtual {
+        emit CollectionCreated(name, symbol, collectionAddress, ownerOf);
+    }
 }
+
+

@@ -12,6 +12,7 @@ import MakeCollectionModal from '../components/MakeCollectionModal';
 import Web3 from 'web3';
 import Market from '../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
 import { Market_ADDRESS } from '../config';
+import { uploadFile, uploadMetaData } from '../utils/upload.mjs';
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
@@ -31,28 +32,36 @@ const CreateNFT = () => {
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState({});
   const [collectionList, setCollectionList] = useState([]);
+  const [file, setFile] = useState(undefined);
 
   const router = useRouter();
 
+  // const onChange = async (event) => {
+  //   const file = event.target.files[0];
+  //   const fileUrl = await _uploadFile(file);
+  //   setFileUrl((preState) => (preState = fileUrl));
+  // };
+
   const onChange = async (event) => {
-    const file = event.target.files[0];
-    const fileUrl = await _uploadFile(file);
-    setFileUrl((preState) => (preState = fileUrl));
+    const _file = event.target.files[0];
+    const url = URL.createObjectURL(_file);
+    setFile(_file);
+    setFileUrl((preState) => (preState = url));
   };
 
   const creatingNftMetaData = async () => {
     const { name, description } = formInput;
     console.log(formInput);
     if (!name || !description || !fileUrl) return;
-    const data = JSON.stringify({
+    const data = {
       name,
       description,
-      image: fileUrl,
       attributes: attributes,
-    });
+    };
 
-    const metaDataUrl = await _uploadMetaData(data);
+    const metaDataUrl = await uploadMetaData(data, file);
     console.log(metaDataUrl);
+    console.log(selectedCollection.returnValues.nftContract);
     const tokenId = await _minting(
       selectedCollection.returnValues.nftContract,
       metaDataUrl

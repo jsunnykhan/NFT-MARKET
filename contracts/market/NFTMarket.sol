@@ -44,6 +44,8 @@ contract NFTMarket is ReentrancyGuard, Ownable {
         string symbol
     );
 
+    //store default nft collection
+
     constructor(uint256 marketFee) {
         _marketFee = marketFee;
     }

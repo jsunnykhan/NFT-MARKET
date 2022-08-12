@@ -49,45 +49,7 @@ describe("Token contract", function () {
     });
   });
 
-  // describe("Erc20 Token", () => {
-  //   it("should return totalSupply", async () => {
-  //     const balance = await erc20token.totalSupply();
-  //     expect(balance).to.equal(BigNumber.from(100000000000000000000000n));
-  //   });
-
-  //   it("should approve 7vs token", async () => {
-  //     const approve = await erc20token.approve(
-  //       addr1.address,
-  //       7000000000000000000n
-  //     );
-
-  //     const allowance = await erc20token.allowance(
-  //       owner.address,
-  //       addr1.address
-  //     );
-
-  //     expect(allowance).to.equal(7000000000000000000n);
-  //   });
-
-  //   it("should Transfer From 7Vs token to address1", async () => {
-  //     await erc20token.approve(addr1.address, 7000000000000000000n);
-  //     const allowance = await erc20token.allowance(
-  //       owner.address,
-  //       addr1.address
-  //     );
-
-  //     expect(allowance).to.equal(7000000000000000000n);
-
-  //     await erc20token
-  //       .connect(addr1)
-  //       .transferFrom(owner.address, addr1.address, 7000000000000000000n);
-  //     const balance = await erc20token.balanceOf(addr1.address);
-  //     const ownerBalance = await erc20token.balanceOf(owner.address);
-  //     console.log(ownerBalance.toString());
-  //     expect(balance).to.equal(7000000000000000000n);
-  //   });
-  // });
-
+  
   describe("Market", () => {
     it("should List a nft into a market", async () => {
       const tokenId = await collection.createToken("google.com");

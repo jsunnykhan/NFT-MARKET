@@ -1,58 +1,108 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect } from 'react';
+import { useState } from 'react';
 
-import { create as ipfsHttpClient } from "ipfs-http-client";
 
-import { useRouter } from "next/router";
-import Image from "next/image";
-import { _uploadFile, _uploadMetaData } from "../utils/fileUpload";
-import { _listingToMarket, _minting } from "../utils/NFT";
-import PropertiesModal from "../components/propertiesModal";
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import { _uploadFile, _uploadMetaData } from '../utils/fileUpload';
+import { _listingToMarket, _minting } from '../utils/NFT';
+import PropertiesModal from '../components/propertiesModal';
+import MakeCollectionModal from '../components/MakeCollectionModal';
+import Web3 from 'web3';
+import Market from '../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
+import { Market_ADDRESS } from '../config';
+import { uploadMetaData } from '../utils/upload.mjs';
 
-const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
   const [isDisable, setIsDisable] = useState(true);
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mint, setMint] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [formInput, setFormInput] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
+    collection: '',
+    symbol: '',
   });
+  const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState({});
+  const [collectionList, setCollectionList] = useState([]);
+  const [file, setFile] = useState(undefined);
 
   const router = useRouter();
 
+  // const onChange = async (event) => {
+  //   const file = event.target.files[0];
+  //   const fileUrl = await _uploadFile(file);
+  //   setFileUrl((preState) => (preState = fileUrl));
+  // };
+
   const onChange = async (event) => {
-    const file = event.target.files[0];
-    const fileUrl = await _uploadFile(file);
-    setFileUrl((preState) => (preState = fileUrl));
+    const _file = event.target.files[0];
+    const url = URL.createObjectURL(_file);
+    setFile(_file);
+    setFileUrl((preState) => (preState = url));
   };
 
   const creatingNftMetaData = async () => {
     const { name, description } = formInput;
+    console.log(formInput);
     if (!name || !description || !fileUrl) return;
-    const data = JSON.stringify({
+    const data = {
       name,
       description,
-      image: fileUrl,
       attributes: attributes,
-    });
+    };
 
-
-    const metaDataUrl = await _uploadMetaData(data);
-    console.log(metaDataUrl)
-    const tokenId = await _minting(metaDataUrl);
+    const metaDataUrl = await uploadMetaData(data, file);
+    console.log(metaDataUrl);
+    console.log(selectedCollection.returnValues.nftContract);
+    const tokenId = await _minting(
+      selectedCollection.returnValues.nftContract,
+      metaDataUrl
+    );
     console.log(tokenId);
-    router.push("/nft");
+    router.push('/nft');
+  };
+
+  const getEvents = async () => {
+    const web3 = new Web3(window.ethereum);
+    const marketContract = new web3.eth.Contract(Market.abi, Market_ADDRESS);
+    const option = {
+      filter: {
+        owner: await web3.eth.getAccounts(),
+      },
+      fromBlock: 0,
+      toBlock: 'latest',
+    };
+
+    const events = await marketContract.getPastEvents(
+      'CollectionCreated',
+      option
+    );
+    setCollectionList(events);
+    console.log(events);
+    setSelectedCollection(collectionList[0]);
+  };
+
+  const handleChange = (e) => {
+    console.log(collectionList[e.target.value]);
+    setSelectedCollection(collectionList[e.target.value]);
   };
 
   useEffect(() => {
-    if (formInput.name && formInput.description  && fileUrl) {
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload();
+    });
+
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
+    getEvents();
+    if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
-    }else{
+    } else {
       setIsDisable(true);
     }
   }, [formInput, fileUrl]);
@@ -73,6 +123,13 @@ const CreateNFT = () => {
               setIsModalOpen={setIsModalOpen}
             />
           </div>
+        )}
+        {isCollectionModalOpen && (
+          <MakeCollectionModal
+            getEvents={getEvents}
+            isCollectionModalOpen={isCollectionModalOpen}
+            setIsCollectionModalOpen={setIsCollectionModalOpen}
+          />
         )}
         <div className="flex flex-col space-y-5 w-2/5 my-5">
           <h2 className="flex font-semibold text-4xl mb-2 ">Create New Item</h2>
@@ -101,6 +158,39 @@ const CreateNFT = () => {
               />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <button
+              className="bg-blue-400 py-4 px-8 rounded-xl text-white font-bold text-xl disabled:bg-blue-200"
+              onClick={() => {
+                setIsCollectionModalOpen(true);
+              }}
+            >
+              Create Collection
+            </button>
+          </div>
+
+          {collectionList.length !== 0 ? (
+            <div className="space-y-2">
+              <select
+                className="bg-blue-400 py-4 px-8 rounded-xl text-white font-bold text-xl disabled:bg-blue-200"
+                name="cars"
+                id="cars"
+                placeholder="Select Collection"
+                onChange={handleChange}
+              >
+                {collectionList.map((li, index) => {
+                  return (
+                    <option key={index} value={index}>
+                      {li.returnValues.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          ) : (
+            ''
+          )}
 
           <div className="space-y-2">
             <h3 className="font-semibold text-xl text-gray-700">Name</h3>

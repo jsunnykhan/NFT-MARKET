@@ -1,8 +1,8 @@
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import { NFT_ADDRESS, Market_ADDRESS } from "../config";
-import NFT from "../artifacts/contracts/NFT.sol/NFT.json";
-import Market from "../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
+import { ethers } from 'ethers';
+import Web3Modal from 'web3modal';
+import { NFT_ADDRESS, Market_ADDRESS } from '../config';
+import NFT from '../artifacts/contracts/NFT.sol/NFT.json';
+import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json';
 
 const configure = async () => {
   const web3modal = new Web3Modal();
@@ -11,10 +11,11 @@ const configure = async () => {
   return provider;
 };
 
-export const _minting = async (url) => {
+export const _minting = async (collectionAddress, url) => {
   const provider = await configure();
   const signer = provider.getSigner();
-  const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, signer);
+  //will using same abi help???
+  const nftContract = new ethers.Contract(collectionAddress, NFT.abi, signer);
   let transaction = await nftContract.createNewToken(url);
   let tx = await transaction.wait();
   console.log(tx);
@@ -46,7 +47,7 @@ export const _listingToMarket = async (tokenId, price) => {
 
   let listingPrice = await marketContract.getMarketListingPrice();
   listingPrice = listingPrice.toString();
-  const pri = ethers.utils.parseUnits(price, "ether");
+  const pri = ethers.utils.parseUnits(price, 'ether');
   const transaction = await marketContract.addItemInMarket(
     NFT_ADDRESS,
     tokenId,

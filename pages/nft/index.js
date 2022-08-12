@@ -45,6 +45,7 @@ const Nft = () => {
     return { marketContract, nftContract };
   };
 
+  // update ipfs url to https
   const getMintedNft = async () => {
     const data = await _getMintedNFT();
 
@@ -70,6 +71,7 @@ const Nft = () => {
     setMintedNft((preState) => (preState = items));
   };
 
+  // update ipfs url to https
   const getNftCreated = async () => {
     const { marketContract, nftContract } = await contractInit();
 
@@ -96,6 +98,7 @@ const Nft = () => {
     setCreatedNft((preState) => (preState = items));
   };
 
+  // update ipfs url to https
   const getOwnedItems = async () => {
     const { marketContract, nftContract } = await contractInit();
 

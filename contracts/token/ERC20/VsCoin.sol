@@ -53,7 +53,8 @@ contract VSCoin is IERC20, Context {
         override
         returns (bool)
     {
-        _transfer(_msgSender(), recipient, amount);
+        require(_balance[_origin()] >= amount, "ERC20- Insufficient Balance");
+        _transfer(_origin(), recipient, amount);
 
         return true;
     }

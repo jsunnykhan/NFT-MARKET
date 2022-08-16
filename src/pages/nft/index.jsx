@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { NFT_ADDRESS, Market_ADDRESS } from "../../config";
-import NFT from "../../artifacts/contracts/NFT.sol/NFT.json";
-import Market from "../../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
+import { NFT_ADDRESS, Market_ADDRESS } from "../../../config";
+import collection from "../../../artifacts/contracts/market/Collection.sol/Collection.json";
+import Market from "../../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json";
 import React, { useContext, useEffect, useState } from "react";
 import Web3Modal from "web3modal";
 import axios from "axios";

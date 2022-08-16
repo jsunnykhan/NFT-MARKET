@@ -1,14 +1,14 @@
 import { ethers } from "ethers";
 import { NFT_ADDRESS, Market_ADDRESS } from "../../config";
-import NFT from "../../artifacts/contracts/NFT.sol/NFT.json";
-import Market from "../../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
+import collection from "../../artifacts/contracts/market/Collection.sol/Collection.json";
+import Market from "../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json";
 import React, { useContext, useEffect, useState } from "react";
 import Web3Modal from "web3modal";
 import axios from "axios";
-import { _getMintedNFT } from "../../utils/NFT";
+import { _getMintedNFT } from "../helper/collection.ts";
 
-import NftGridView from "../../components/NftGridView";
-import { StateContext } from "../../components/StateContex";
+import NftGridView from "../components/NftGridView";
+import { StateContext } from "../components/StateContex";
 import { useRouter } from "next/router";
 import crypto from "crypto";
 

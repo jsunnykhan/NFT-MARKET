@@ -4,8 +4,8 @@ import Image from "next/image";
 
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { _uploadFile, _uploadMetaData } from "../helper/fileUpload";
-import { signInRequestMetaMask } from "../helper/metamask";
-import { _listingToMarket, _minting } from "../helper/collection";
+import { signInRequestMetaMask } from "../helper/metamask.ts";
+import { _listingToMarket, _minting } from "../helper/collection.ts";
 import PropertiesModal from "../components/propertiesModal";
 
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;

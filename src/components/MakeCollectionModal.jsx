@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Market_ADDRESS } from '../config';
+import { Market_ADDRESS } from '../../config';
 import { ethers } from 'ethers';
 
-import NftContract from '../artifacts/contracts/NFT.sol/NFT.json';
+import Collection from '../../artifacts/contracts/market/Collection.sol/Collection.json';
 
 const MakeCollectionModal = (props) => {
   const { getEvents, isCollectionModalOpen, setIsCollectionModalOpen } = props;
@@ -14,17 +14,19 @@ const MakeCollectionModal = (props) => {
   });
 
   const handleContractCreation = async () => {
+    const { collection, symbol } = formInput;
+    if (!collection || !symbol) return;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const Nft = new ethers.ContractFactory(
-      NftContract.abi,
-      NftContract.bytecode,
+      Collection.abi,
+      Collection.bytecode,
       signer
     );
     const nft = await Nft.deploy(
-      Market_ADDRESS,
       formInput.collection,
-      formInput.symbol
+      formInput.symbol,
+      Market_ADDRESS
     );
     await nft.deployTransaction.wait();
     const nftAddress = nft.address;

@@ -1,31 +1,31 @@
-import { ethers } from "ethers";
-import { NFT_ADDRESS, Market_ADDRESS } from "../../config";
-import NFT from "../../artifacts/contracts/NFT.sol/NFT.json";
-import Market from "../../artifacts/contracts/NFTMarket.sol/NFTMarket.json";
-import React, { useContext, useEffect, useState } from "react";
-import Web3Modal from "web3modal";
-import axios from "axios";
-import { _getMintedNFT } from "../../utils/NFT";
+import { ethers } from 'ethers';
+import { NFT_ADDRESS, Market_ADDRESS } from '../../config';
+import NFT from '../../artifacts/contracts/market/Collection.sol/Collection.json';
+import Market from '../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
+import React, { useContext, useEffect, useState } from 'react';
+import Web3Modal from 'web3modal';
+import axios from 'axios';
+// import { _getMintedNFT } from '../../utils/NFT';
 
-import NftGridView from "../../components/NftGridView";
-import { StateContext } from "../../components/StateContex";
-import { useRouter } from "next/router";
-import crypto from "crypto";
+import NftGridView from '../components/NftGridView';
+import { StateContext } from '../components/StateContex';
+import { useRouter } from 'next/router';
+import crypto from 'crypto';
 
 const UserProfile = () => {
   const [mintedNft, setMintedNft] = useState([]);
   const [createdNft, setCreatedNft] = useState([]);
   const [ownedNft, setOwnedNft] = useState([]);
-  const [tabHandle, setTabHandler] = useState("mint");
+  const [tabHandle, setTabHandler] = useState('mint');
 
   const { setSingleNft } = useContext(StateContext);
 
   const router = useRouter();
 
   useEffect(() => {
-    getMintedNft();
-    getNftCreated();
-    getOwnedItems();
+    // getMintedNft();
+    // getNftCreated();
+    // getOwnedItems();
   }, []);
 
   const contractInit = async () => {
@@ -78,7 +78,7 @@ const UserProfile = () => {
       data.map(async (item) => {
         const tokenUri = await nftContract.tokenURI(item.tokenId);
         const metaData = await axios.get(tokenUri);
-        const price = ethers.utils.formatUnits(item.price.toString(), "ether");
+        const price = ethers.utils.formatUnits(item.price.toString(), 'ether');
         let formateItem = {
           price,
           tokenId: item.tokenId.toString(),
@@ -104,7 +104,7 @@ const UserProfile = () => {
       data.map(async (item) => {
         const tokenUri = await nftContract.tokenURI(item.tokenId);
         const metaData = await axios.get(tokenUri);
-        const price = ethers.utils.formatUnits(item.price.toString(), "ether");
+        const price = ethers.utils.formatUnits(item.price.toString(), 'ether');
         let formateItem = {
           price,
           tokenId: item.tokenId.toString(),
@@ -125,11 +125,11 @@ const UserProfile = () => {
   const redirectNftDetailPage = (nft) => {
     setSingleNft(nft);
     const hash = crypto
-      .createHash("sha256")
-      .update(nft.name + nft.tokenId + nft.seller + "/nft")
-      .digest("hex");
+      .createHash('sha256')
+      .update(nft.name + nft.tokenId + nft.seller + '/nft')
+      .digest('hex');
 
-    router.push(router.route + "/" + hash);
+    router.push(router.route + '/' + hash);
   };
 
   if (!createdNft.length && !mintedNft.length && !ownedNft.length) {
@@ -149,36 +149,36 @@ const UserProfile = () => {
       <div className="flex space-x-5 pb-10">
         <h2
           className={`bg-gray-100 ${
-            tabHandle === "mint" ? "bg-blue-500 text-white" : "text-black"
+            tabHandle === 'mint' ? 'bg-blue-500 text-white' : 'text-black'
           } px-5 py-2 rounded-full font-bold cursor-pointer`}
-          onClick={() => tabChangeHandler("mint")}
+          onClick={() => tabChangeHandler('mint')}
         >
           Minted Items
         </h2>
         <h2
           className={`bg-gray-100  ${
-            tabHandle === "created" ? "bg-blue-500 text-white" : "text-black"
+            tabHandle === 'created' ? 'bg-blue-500 text-white' : 'text-black'
           } px-5 py-2 rounded-full font-bold cursor-pointer`}
-          onClick={() => tabChangeHandler("created")}
+          onClick={() => tabChangeHandler('created')}
         >
           Selling Items
         </h2>
         <h2
           className={`bg-gray-100 ${
-            tabHandle === "owned" ? "bg-blue-500 text-white" : "text-black"
+            tabHandle === 'owned' ? 'bg-blue-500 text-white' : 'text-black'
           }  px-5 py-2 rounded-full font-bold cursor-pointer`}
-          onClick={() => tabChangeHandler("owned")}
+          onClick={() => tabChangeHandler('owned')}
         >
           Owned Items
         </h2>
       </div>
-      {tabHandle === "mint" ? (
+      {tabHandle === 'mint' ? (
         <NftGridView
           nftList={mintedNft}
           notFoundMessage="You never mint any NFT"
           redirectNftDetailPage={redirectNftDetailPage}
         />
-      ) : tabHandle === "created" ? (
+      ) : tabHandle === 'created' ? (
         <NftGridView
           nftList={createdNft}
           notFoundMessage="No NFT found that you Sell on Dark Sea"

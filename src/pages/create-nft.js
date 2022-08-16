@@ -1,4 +1,4 @@
-import CreateNFTToken from "../features/CreateNftToken";
+import CreateNFTToken from "../features/CreateNFTToken";
 import React from "react";
 import Head from "next/head";
 

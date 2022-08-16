@@ -1,3 +1,4 @@
+
 import { ethers } from 'ethers';
 import { NFT_ADDRESS, Market_ADDRESS } from '../../config';
 import NFT from '../../artifacts/contracts/market/Collection.sol/Collection.json';
@@ -11,6 +12,7 @@ import NftGridView from '../components/NftGridView';
 import { StateContext } from '../components/StateContex';
 import { useRouter } from 'next/router';
 import crypto from 'crypto';
+
 
 const UserProfile = () => {
   const [mintedNft, setMintedNft] = useState([]);

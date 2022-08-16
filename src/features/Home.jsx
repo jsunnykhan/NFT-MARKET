@@ -1,10 +1,10 @@
 import SingleGridView from "../components/SingleGridView";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Web3Modal from "web3modal";
 
 import { _getCollectionContract } from "../helper/contracts.ts";
+import Dashboard from "../components/Dashboard";
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
@@ -73,9 +73,9 @@ export default function Home() {
     }
   };
 
-  if (!nfts.length) {
-    return <h3>No NFT Listed yet !!</h3>;
-  }
+  // if (!nfts.length) {
+  //   return <h3>No NFT Listed yet !!</h3>;
+  // }
 
   const transferToken = async (nft) => {
     const web3modal = new Web3Modal();
@@ -138,16 +138,19 @@ export default function Home() {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-5 my-5 px-5">
-      {nfts.map((item) => (
-        <SingleGridView
-          key={item.tokenId}
-          nft={item}
-          isBuy={true}
-          buyNFT={transferToken}
-          processing={processing}
-        />
-      ))}
+    <div className="h-full flex flex-col">
+      <Dashboard />
+      <div className="grid grid-cols-4 gap-5 my-5 px-5 ">
+        {nfts.map((item) => (
+          <SingleGridView
+            key={item.tokenId}
+            nft={item}
+            isBuy={true}
+            buyNFT={transferToken}
+            processing={processing}
+          />
+        ))}
+      </div>
     </div>
   );
 }

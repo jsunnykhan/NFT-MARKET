@@ -14,6 +14,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
     Counters.Counter private _listingId;
 
     uint256 private _marketFee;
+    // add a default collection here
 
     enum State {
         LISTED,
@@ -50,10 +51,10 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
     );
 
     event CollectionCreated(
+        address indexed owner,
+        address indexed collectionAddress,
         string name,
-        string symbol,
-        address collectionAddress,
-        address indexed ownerOf
+        string symbol
     );
 
     constructor(uint256 marketFee) {
@@ -126,7 +127,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
         uint256 listingId = listing.listingId;
         uint256 tokenId = listing.tokenId;
         address ownerOf = IERC721(collectionAddress).ownerOf(tokenId);
-        
+
         address creator = payable(listing.creator);
         IERC20(tokenAddress).transfer(ownerOf, price);
         IERC721(collectionAddress).transferFrom(
@@ -165,13 +166,11 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
     }
 
     function createCollectionNotification(
-        string memory name,
-        string memory symbol,
+        address ownerOf,
         address collectionAddress,
-        address ownerOf
+        string memory name,
+        string memory symbol
     ) public virtual {
-        emit CollectionCreated(name, symbol, collectionAddress, ownerOf);
+        emit CollectionCreated(ownerOf, collectionAddress, name, symbol);
     }
 }
-
-

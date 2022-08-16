@@ -8,10 +8,10 @@ import "hardhat/console.sol";
 
 abstract contract INFTMarket {
     function createCollectionNotification(
-        string memory name,
-        string memory symbol,
+        address owner,
         address collectionAddress,
-        address ownerOf
+        string memory name,
+        string memory symbol
     ) public virtual;
 }
 
@@ -38,10 +38,10 @@ contract Collection is ERC721URIStorage {
         _ownerOfContract = _msgSender();
 
         INFTMarket(marketAddress).createCollectionNotification(
-            name,
-            symbol,
+            _ownerOfContract,
             address(this),
-            _ownerOfContract
+            name,
+            symbol
         );
     }
 

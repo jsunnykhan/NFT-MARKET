@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Home from "../features/Home";
 
-export default function HomePage() {
+export default function index() {
   return (
     <div>
       <Head>

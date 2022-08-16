@@ -2,15 +2,15 @@ import CreateNFTToken from "../features/CreateNftToken";
 import React from "react";
 import Head from "next/head";
 
-const CreateNFTPage = () => {
+const index = () => {
   return (
     <div>
       <Head>
-        <title>create nft</title>
+        <title>Create NFT</title>
       </Head>
       <CreateNFTToken />
     </div>
   );
 };
 
-export default CreateNFTPage;
+export default index;

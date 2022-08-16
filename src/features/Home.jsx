@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Web3Modal from "web3modal";
 
-import { _getCollectionContract } from "../helper/contracts";
+import { _getCollectionContract } from "../helper/contracts.ts";
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);

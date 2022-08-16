@@ -12,7 +12,7 @@ import { StateContext } from "../../components/StateContex";
 import { useRouter } from "next/router";
 import crypto from "crypto";
 
-const Nft = () => {
+const NftPage = () => {
   const [mintedNft, setMintedNft] = useState([]);
   const [createdNft, setCreatedNft] = useState([]);
   const [ownedNft, setOwnedNft] = useState([]);
@@ -45,7 +45,6 @@ const Nft = () => {
     return { marketContract, nftContract };
   };
 
-  // update ipfs url to https
   const getMintedNft = async () => {
     const data = await _getMintedNFT();
 
@@ -71,7 +70,6 @@ const Nft = () => {
     setMintedNft((preState) => (preState = items));
   };
 
-  // update ipfs url to https
   const getNftCreated = async () => {
     const { marketContract, nftContract } = await contractInit();
 
@@ -98,7 +96,6 @@ const Nft = () => {
     setCreatedNft((preState) => (preState = items));
   };
 
-  // update ipfs url to https
   const getOwnedItems = async () => {
     const { marketContract, nftContract } = await contractInit();
 
@@ -198,4 +195,4 @@ const Nft = () => {
   );
 };
 
-export default Nft;
+export default NftPage;

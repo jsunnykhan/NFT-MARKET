@@ -1,14 +1,10 @@
-import SingleGridView from '../components/SingleGridView';
-import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
+import SingleGridView from "../components/SingleGridView";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Web3Modal from "web3modal";
 
-import axios from 'axios';
-import Web3Modal from 'web3modal';
-
-import { NFT_ADDRESS, Market_ADDRESS, ERC20_TOKEN } from '../config';
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json';
-import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json';
-import Token from '../artifacts/contracts/VSCoin.sol/VSCoin.json';
+import { _getCollectionContract } from "../helper/contracts";
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
@@ -18,37 +14,28 @@ export default function Home() {
     getNFTS();
   }, []);
 
-  // update ipfs url to https
   const getNFTS = async () => {
-    const provider = new ethers.providers.JsonRpcProvider(
-      'https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac'
-      // "http://127.0.0.1:7545"
-    );
-    const nftContract = new ethers.Contract(NFT_ADDRESS, NFT.abi, provider);
-    const marketContract = new ethers.Contract(
-      Market_ADDRESS,
-      Market.abi,
-      provider
-    );
-    const data = await marketContract.fetchMarketItems();
-    const items = await Promise.all(
-      data.map(async (item) => {
-        const tokenUri = await nftContract.tokenURI(item.tokenId);
-        const metaData = await axios.get(tokenUri);
-        const price = ethers.utils.formatUnits(item.price.toString(), 'ether');
-        let formateItem = {
-          price,
-          tokenId: item.tokenId.toString(),
-          seller: item.seller,
-          owner: item.owner,
-          image: metaData.data.image,
-          name: metaData.data.name,
-          description: metaData.data.description,
-        };
-        return formateItem;
-      })
-    );
-    setNfts((preState) => (preState = items));
+    const collectionContract = _getCollectionContract();
+
+    // const data = await marketContract.fetchMarketItems();
+    // const items = await Promise.all(
+    //   data.map(async (item) => {
+    //     const tokenUri = await nftContract.tokenURI(item.tokenId);
+    //     const metaData = await axios.get(tokenUri);
+    //     const price = ethers.utils.formatUnits(item.price.toString(), "ether");
+    //     let formateItem = {
+    //       price,
+    //       tokenId: item.tokenId.toString(),
+    //       seller: item.seller,
+    //       owner: item.owner,
+    //       image: metaData.data.image,
+    //       name: metaData.data.name,
+    //       description: metaData.data.description,
+    //     };
+    //     return formateItem;
+    //   })
+    // );
+    // setNfts((preState) => (preState = items));
   };
 
   const buyNFT = async (nft) => {
@@ -68,7 +55,7 @@ export default function Home() {
     const vsContract = new ethers.Contract(ERC20_TOKEN, Token.abi, signer);
     console.log(marketContract, vsContract);
     try {
-      const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
+      const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
       console.log(price);
 
       const tx = await marketContract.createMarketSale(
@@ -76,11 +63,11 @@ export default function Home() {
         nft.tokenId,
         { value: price }
       );
-      console.log('4');
+      console.log("4");
       await tx.wait();
       setProcessing(false);
       getNFTS();
-      console.log('3');
+      console.log("3");
     } catch (error) {
       setProcessing(false);
     }
@@ -105,7 +92,7 @@ export default function Home() {
     );
 
     console.log(erc20Token);
-    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
+    const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
 
     // const tx = await erc20Token.approve(Market_ADDRESS, price);
     // await tx.wait();

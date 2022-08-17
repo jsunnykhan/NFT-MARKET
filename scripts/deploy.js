@@ -21,7 +21,6 @@ async function main() {
 
   const auction = await Auction.deploy();
   await auction.deployed();
-
   const auctionAddress = auction.address;
 
   console.log({ nftMarketAddress, nftAddress, vsCoinAddress, auctionAddress });

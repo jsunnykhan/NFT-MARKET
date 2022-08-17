@@ -1,21 +1,21 @@
 import { NFTStorage } from 'nft.storage';
 import { ipfsToHttp } from './ipfsToHttp.ts';
 
-const NFT_STORAGE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDY4MUI0MjAwMDJhNDU0YzJmRDk1NTFmOGE0QTdENkVBODQzRDRiOTIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2MDE5MTE2NjI2MiwibmFtZSI6Ik1hcmtldFBsYWNlIn0.PRmPgRxYx-0AZIg8YCP3-ltZHOAd6GB9HoAEE3taazg';
+const nftStorageKey = process.env.NFT_STORAGE_KEY;
 
 export const uploadMetaData = async (_metaData, file) => {
+  console.log(nftStorageKey);
   console.log(file);
-  const client = new NFTStorage({ token: NFT_STORAGE_KEY });
+  const client = new NFTStorage({ token: nftStorageKey });
   const nftMetaData = await client.store({
     name: _metaData.name,
     description: _metaData.description,
     image: file,
     properties: _metaData.attributes,
   });
-  // console.log(nftMetaData);
-  // console.log(nftMetaData.url);
-  // console.log(ipfsToHttp(nftMetaData.url));
+  console.log(nftMetaData);
+  console.log(nftMetaData.url);
+  console.log(ipfsToHttp(nftMetaData.url));
   return nftMetaData.url;
 };
 

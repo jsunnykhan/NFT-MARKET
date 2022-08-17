@@ -1,52 +1,38 @@
-import { NFTStorage, File } from 'nft.storage';
-import mime from 'mime';
+import { NFTStorage } from 'nft.storage';
+import { ipfsToHttp } from './ipfsToHttp.ts';
 
 const NFT_STORAGE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDY4MUI0MjAwMDJhNDU0YzJmRDk1NTFmOGE0QTdENkVBODQzRDRiOTIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2MDE5MTE2NjI2MiwibmFtZSI6Ik1hcmtldFBsYWNlIn0.PRmPgRxYx-0AZIg8YCP3-ltZHOAd6GB9HoAEE3taazg';
 
-export const uploadFile = async (file) => {
-  console.log(file);
-  let url = '';
-  const client = new NFTStorage({ token: NFT_STORAGE_KEY });
-  const cid = await client.storeBlob(file);
-  url = `https://ipfs.io/ipfs/${cid}`;
-  console.log(url);
-  return url;
-};
-
-export const uploadMetaData = async (metaData, file) => {
+export const uploadMetaData = async (_metaData, file) => {
   console.log(file);
   const client = new NFTStorage({ token: NFT_STORAGE_KEY });
-  const metadata = await client.store({
-    name: metaData.name,
-    description: metaData.description,
+  const nftMetaData = await client.store({
+    name: _metaData.name,
+    description: _metaData.description,
     image: file,
-    properties: metaData.attributes,
+    properties: _metaData.attributes,
   });
-  console.log(metadata);
-  const ipfsLink = metadata.data.image.href;
-  console.log(metadata.data.image.href);
-  const tempUrl = ipfsLink.slice(7, ipfsLink.length);
-  const finalUrl = 'https://nftstorage.link/ipfs/' + tempUrl;
-  console.log(finalUrl);
-  return metadata.url;
+  // console.log(nftMetaData);
+  // console.log(nftMetaData.url);
+  // console.log(ipfsToHttp(nftMetaData.url));
+  return nftMetaData.url;
 };
 
-/*
-https://bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper (4).jpg.ipfs.nftstorage.link
-
-
-ipfs://bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper (4).jpg
-
-https://nftstorage.link/ipfs/bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper (4).jpg
-
-https://nftstorage.link/ipfs/bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper
-*/
-
+/**
+ * https://bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper (4).jpg.ipfs.nftstorage.link
+ *
+ *
+ * ipfs://bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper (4).jpg
+ *
+ * https://nftstorage.link/ipfs/bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper (4).jpg
+ *
+ * https://nftstorage.link/ipfs/bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper
+ *
+ */
 
 // which one shall i use? ipfs or http
 // i can convert from ipfs to http
-
 
 /**
  *

@@ -1,30 +1,44 @@
 import Link from "next/link";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import StatusBar from "../../components/statusBar";
-import Drawer from "../../components/Drawer";
+
 import { StateContext } from "../../components/StateContex";
 import Image from "next/image";
 
+import { useConnect } from "../../helper/hooks/useConnect";
+
 const routes = [
   {
-    title: "Home",
+    title: "Explore",
     url: "/",
   },
   {
-    title: "My NFT",
+    title: "Collectors",
     url: "/nft",
   },
   {
-    title: "Create NFT",
-    url: "/create-nft",
+    title: "Create",
+    url: "/create",
+  },
+  {
+    title: "Resources",
+    url: "/resources",
   },
 ];
 
 const Layout = (props) => {
   const router = useRouter();
 
+  const [account, chainId, connect, isMetamask] = useConnect();
+
+  useEffect(() => {
+    const currentPath = router.route;
+    setPath(currentPath);
+  }, [router.route]);
+
   const { isHover, setIsHover } = useContext(StateContext);
+
+  const [path, setPath] = useState(routes[0].url);
 
   const handleHoverEffect = (path) => {
     if (path === "/nft") {
@@ -34,53 +48,57 @@ const Layout = (props) => {
 
   return (
     <div className="relative select-none">
-      <div className="bg-gray-50 flex items-center w-full h-16 z-50 top-0 sticky shadow-md">
-        <Link href={routes[0].url} passHref>
-          <div className="pl-10 flex items-center space-x-3 cursor-pointer min-w-max">
-            <Image
-              src="/Logo-reverse.png"
-              height={35}
-              width={30}
-              alt="Dark Sea"
-            />
-            <h2 className="font-bold text-3xl text-blue-500">Dark Sea</h2>
+      <div className="w-full bg-primary flex justify-center">
+        <div className="flex justify-between items-center sm:h-16 md:h-20 z-50 top-0 sticky shadow-md w-[90%]">
+          <div className="flex flex-1">
+            <Link href={routes[0].url} passHref>
+              <div className="flex items-center space-x-3 cursor-pointe min-w-max">
+                <Image
+                  src="/Logo-reverse.png"
+                  height={35}
+                  width={30}
+                  alt="unknown"
+                />
+                <h2 className="font-bold text-3xl text-secondary">Unknown</h2>
+              </div>
+            </Link>
           </div>
-        </Link>
-        <ul className="flex w-full justify-end pr-10 text-lg font-bold space-x-5">
-          {routes.map((item) => (
-            <div key={item.title} className="relative">
-              <Link href={item.url} passHref>
-                <li
-                  className="cursor-pointer hover:text-blue-400"
-                  onMouseOver={() => handleHoverEffect(item.url)}
+          <div className="flex-1">
+            <ul className="flex justify-center w-full text-lg font-normal sm:space-x-5 md:space-x-10 font-serif text-white">
+              {routes.map((item) => (
+                <div key={item.title} className="relative">
+                  <Link href={item.url} passHref>
+                    <li
+                      className={`cursor-pointer hover:text-secondary tracking-wide ${
+                        item.url == path && "text-secondary"
+                      }`}
+                      onMouseOver={() => handleHoverEffect(item.url)}
+                    >
+                      {item.title}
+                    </li>
+                  </Link>
+                </div>
+              ))}
+            </ul>
+          </div>
+          <div className="flex-1">
+            <div className="flex justify-end items-center">
+              {account ? (
+                <div className="w-10 h-10 rounded-full bg-secondary "></div>
+              ) : (
+                <div
+                  className="w-min px-10 truncate py-3 ring-1 ring-white-200 hover:ring-secondary rounded-full text-white font-medium text-lg cursor-pointer"
+                  onClick={() => connect()}
                 >
-                  {item.title}
-                </li>
-              </Link>
-
-              {item.url === router.route && (
-                <div className="absolute -bottom-5 w-full h-0.5 rounded-tr rounded-tl bg-blue-600"></div>
+                  <h3>Connect Wallet</h3>
+                </div>
               )}
-              {/* {router.route === "/nft" && isHover ? (
-                item.url === "/nft" ? (
-                  <div
-                    className="absolute top-12 right-0"
-                    onMouseLeave={handleHoverEffect}
-                  >
-                    <Drawer />
-                  </div>
-                ) : null
-              ) : null} */}
             </div>
-          ))}
-        </ul>
+          </div>
+        </div>
       </div>
 
       <div onMouseOver={() => setIsHover(false)}>{props.children}</div>
-
-      {/* <div className="bottom-5 sticky z-50 mx-5 ">
-        <StatusBar text="Minting ..."/>
-      </div> */}
     </div>
   );
 };

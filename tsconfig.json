@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "typeRoots": ["node_modules/@types", "node_modules/**/*.d.ts", "@types"]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/index.jsx",
+    "src/pages/create-nft.jsx"
+, "src/helper/metamask.ts"  ],
+  "exclude": ["node_modules"]
+}

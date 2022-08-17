@@ -1,10 +1,6 @@
 
 import { ethers } from "ethers";
-import { NFT_ADDRESS, Market_ADDRESS, ERC20_TOKEN, AUCTION_MARKET } from "../../config";
-import collection from "../../artifacts/contracts/market/Collection.sol/Collection.json";
-import market from "../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json";
-import token from "../../artifacts/contracts/token/ERC20/VsCoin.sol/VSCoin.json";
-import auction from "../../artifacts/contracts/market/AuctionMarket.sol/AuctionMarket.json"
+import { NFT_ADDRESS, collection, Market_ADDRESS, market, ERC20_TOKEN, token, AUCTION_MARKET, auction } from "./contractImport";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 const infuraApiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
@@ -13,13 +9,12 @@ const URL: string = `${baseURL}/${infuraApiKey}`;
 
 
 const _getProvider = (): ethers.providers.JsonRpcProvider => {
-    console.log(URL);
     const jsonRpcProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(URL);
     return jsonRpcProvider;
 }
 
-export const _getCollectionContract = (): ethers.Contract => {
-    const contract: ethers.Contract = new ethers.Contract(NFT_ADDRESS, collection.abi, _getProvider());
+export const _getCollectionContract = (address = NFT_ADDRESS): ethers.Contract => {
+    const contract: ethers.Contract = new ethers.Contract(address, collection.abi, _getProvider());
     return contract;
 }
 

@@ -126,7 +126,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
         uint256 listingId = listing.listingId;
         uint256 tokenId = listing.tokenId;
         address ownerOf = IERC721(collectionAddress).ownerOf(tokenId);
-        
+
         address creator = payable(listing.creator);
         IERC20(tokenAddress).transfer(ownerOf, price);
         IERC721(collectionAddress).transferFrom(
@@ -172,6 +172,24 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
     ) public virtual {
         emit CollectionCreated(name, symbol, collectionAddress, ownerOf);
     }
+
+    /*
+     *
+     *
+     *  fetch Market Listed Items
+     *
+     *
+     */
+
+    function listingItems() public view virtual returns (Listing[] memory) {
+        uint256 totalItems = _listingId.current();
+        Listing[] memory items = new Listing[](totalItems);
+
+        for (uint256 index = 0; index < totalItems; index++) {
+            Listing storage currentItem = _listings[index + 1];
+            items[index] = currentItem;
+        }
+
+        return items;
+    }
 }
-
-

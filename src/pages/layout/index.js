@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { StateContext } from "../../components/StateContex";
 import Image from "next/image";
 
-import { connect } from "../../helper/metamask.ts";
+import { useConnect } from "../../helper/hooks/useConnect";
 
 const routes = [
   {
@@ -29,14 +29,12 @@ const routes = [
 const Layout = (props) => {
   const router = useRouter();
 
+  const [account, chainId, connect, isMetamask] = useConnect();
+
   useEffect(() => {
     const currentPath = router.route;
     setPath(currentPath);
   }, [router.route]);
-
-  useEffect(() => {
-    connect();
-  }, [connect]);
 
   const { isHover, setIsHover } = useContext(StateContext);
 
@@ -52,7 +50,7 @@ const Layout = (props) => {
     <div className="relative select-none">
       <div className="w-full bg-primary flex justify-center">
         <div className="flex justify-between items-center sm:h-16 md:h-20 z-50 top-0 sticky shadow-md w-[90%]">
-          <div className="flex">
+          <div className="flex flex-1">
             <Link href={routes[0].url} passHref>
               <div className="flex items-center space-x-3 cursor-pointe min-w-max">
                 <Image
@@ -65,8 +63,8 @@ const Layout = (props) => {
               </div>
             </Link>
           </div>
-          <div>
-            <ul className="flex w-full text-lg font-normal sm:space-x-5 md:space-x-10 font-serif text-white">
+          <div className="flex-1">
+            <ul className="flex justify-center w-full text-lg font-normal sm:space-x-5 md:space-x-10 font-serif text-white">
               {routes.map((item) => (
                 <div key={item.title} className="relative">
                   <Link href={item.url} passHref>
@@ -83,12 +81,19 @@ const Layout = (props) => {
               ))}
             </ul>
           </div>
-
-          <div
-            className="px-10 py-3 ring-1 ring-white-200 hover:ring-secondary rounded-full text-white font-medium text-lg cursor-pointer"
-            onClick={() => connect()}
-          >
-            <h3>Connect Wallet</h3>
+          <div className="flex-1">
+            <div className="flex justify-end items-center">
+              {account ? (
+                <div className="w-10 h-10 rounded-full bg-secondary "></div>
+              ) : (
+                <div
+                  className="w-min px-10 truncate py-3 ring-1 ring-white-200 hover:ring-secondary rounded-full text-white font-medium text-lg cursor-pointer"
+                  onClick={() => connect()}
+                >
+                  <h3>Connect Wallet</h3>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import Home from "../features/Home.jsx";
 
 export default function index() {
   return (
-    <div className=" bg-black">
+    <div className="">
       <Head>
         <title>Home</title>
       </Head>

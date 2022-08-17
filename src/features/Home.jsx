@@ -171,8 +171,9 @@ export default function Home() {
 
   return (
     <div className="h-full flex flex-col w-full">
-      <Dashboard />
-      <div className="grid grid-cols-4 gap-5 my-5 px-5 ">
+      <Dashboard artWork={nfts.length} />
+      <h2></h2>
+      <div className="grid grid-cols-4 gap-5 pt-40">
         {nfts.length ? (
           nfts.map((item) => (
             <SingleGridView

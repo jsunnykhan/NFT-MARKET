@@ -6,7 +6,7 @@ import { NFT_ADDRESS, collection, Market_ADDRESS, market, ERC20_TOKEN, token, AU
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 const infuraApiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
 
-const URL: string = 'http://127.0.0.1:8545';
+const URL: string = baseURL!;
 
 const _getProvider = (): ethers.providers.JsonRpcProvider => {
   const jsonRpcProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(URL);

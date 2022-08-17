@@ -192,8 +192,14 @@ contract AuctionMarket is Context {
      * @param _tokenAddress The address of the ERC-20 contract
      */
     function auctionEnd(uint256 _auctionId, address _tokenAddress) public {
-        if (block.timestamp < auctionItems[_auctionId].auctionEndTime) {
+        /*
+	    if (block.timestamp < auctionItems[_auctionId].auctionEndTime) {
             revert("AUC105: Auction has not ended yet");
+        }
+       	*/
+
+        if (_msgSender() != owner) {
+            revert("AUC105: Only owner can end the auction");
         }
 
         if (auctionItems[_auctionId].auctionEnded) {

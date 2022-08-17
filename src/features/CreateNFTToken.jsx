@@ -94,7 +94,6 @@ const CreateNFTToken = () => {
   };
 
   const handleChange = (e) => {
-    console.log(collectionList[e.target.value]);
     setSelectedCollection(collectionList[e.target.value]);
   };
 

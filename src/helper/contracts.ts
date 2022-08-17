@@ -9,7 +9,6 @@ const infuraApiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
 const URL: string = 'http://127.0.0.1:8545';
 
 const _getProvider = (): ethers.providers.JsonRpcProvider => {
-
   const jsonRpcProvider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(URL);
   return jsonRpcProvider;
 }
@@ -17,6 +16,7 @@ const _getProvider = (): ethers.providers.JsonRpcProvider => {
 export const _getCollectionContract = (address = NFT_ADDRESS): ethers.Contract => {
   const contract: ethers.Contract = new ethers.Contract(address, collection.abi, _getProvider());
   return contract;
+
 }
 
 

@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: ["upload.wikimedia.org", "ipfs.infura.io"],
+    domains: ["upload.wikimedia.org", "ipfs.infura.io", "nftstorage.link"],
   },
 };
 

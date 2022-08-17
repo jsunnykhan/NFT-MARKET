@@ -190,13 +190,8 @@ contract AuctionMarket is Context {
      * @dev End an auction
      * @param _auctionId The id of the auction
      * @param _tokenAddress The address of the ERC-20 contract
-     * @param nftContract The address of the NFT contract
      */
-    function auctionEnd(
-        uint256 _auctionId,
-        address _tokenAddress,
-        address nftContract
-    ) public {
+    function auctionEnd(uint256 _auctionId, address _tokenAddress) public {
         if (block.timestamp < auctionItems[_auctionId].auctionEndTime) {
             revert("AUC105: Auction has not ended yet");
         }
@@ -209,6 +204,7 @@ contract AuctionMarket is Context {
         uint256 transferAmount = auctionItems[_auctionId].highestBid;
         address seller = auctionItems[_auctionId].seller;
         address highestBidder = auctionItems[_auctionId].highestBidder;
+        address nftContract = auctionItems[_auctionId].nftContract;
 
         if (auctionItems[_auctionId].highestBidder == address(0)) {
             auctionItems[_auctionId].auctionEnded = true;

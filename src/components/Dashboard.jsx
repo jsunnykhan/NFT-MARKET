@@ -25,7 +25,7 @@ const Dashboard = (props) => {
               <h3>Art work</h3>
             </div>
             <div className="text-white font-normal lg:text-xl font-serif flex justify-center flex-col items-center">
-              <h3>{collections}</h3>
+              <h3>{collections.length}</h3>
               <h3>Collections</h3>
             </div>
             <div className="text-white font-normal lg:text-xl font-serif flex justify-center flex-col items-center">

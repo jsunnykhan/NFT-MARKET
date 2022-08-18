@@ -7,7 +7,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <StateContextProvider>
       <Layout>
-        <div className="bg-white-100 min-h-screen">
+        <div >
           <Head>
             <meta
               name="viewport"

@@ -3,11 +3,11 @@ import Home from "../features/Home.jsx";
 
 export default function index() {
   return (
-    <div className=" bg-black">
+    <div className="">
       <Head>
         <title>Home</title>
       </Head>
-      <div className="px-[5%] py-20 flex">
+      <div className="py-20">
         <Home />
       </div>
     </div>

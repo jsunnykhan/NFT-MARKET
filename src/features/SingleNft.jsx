@@ -1,40 +1,67 @@
-import React, { useContext, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 
-import { StateContext } from "../../components/StateContex";
-
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { VscListSelection } from "react-icons/vsc";
-import { MdOutlineBookmark } from "react-icons/md";
-import SellModal from "../../components/sellModal";
-import { _listingToMarket } from "../../utils/NFT";
-import { BigNumber } from "ethers";
-import { useRouter } from "next/router";
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { VscListSelection } from 'react-icons/vsc';
+import { MdOutlineBookmark } from 'react-icons/md';
+import SellModal from '../components/sellModal';
+import { _getSingleNft } from '../helper/collection.ts';
+import { _listingToMarket } from '../helper/collection.ts';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
   const [isProOpen, setIsProOpen] = useState(false);
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
-  const [price, setPrice] = useState("");
-
-  const { singleNft } = useContext(StateContext);
-
-  const router = useRouter();
+  const [price, setPrice] = useState('');
+  const [singleNft, setSingleNft] = useState({});
+  const [image, setImage] = useState();
+  const [tokenId, setTokenId] = useState('');
 
   const listingItemIntoMarket = async () => {
     setIsSellModalOpen(false);
-    
     if (singleNft.tokenId) {
       const listingMarket = await _listingToMarket(singleNft.tokenId, price);
-      setPrice("");
+      setPrice('');
       console.log(listingMarket);
       router.push('/');
     }
   };
 
+  const extractDetail = (addressToken) => {
+    const collectionAddress = addressToken.slice(0, 42);
+    const tokenId = addressToken.slice(43, addressToken.length);
+    return { tokenId, collectionAddress };
+  };
+
   const sellModalOpen = () => {
     setIsSellModalOpen(true);
   };
+
+  const getNftDetails = async () => {
+    const addressToken = window.location.pathname.split('/').pop();
+    console.log(addressToken);
+    const { tokenId, collectionAddress } = extractDetail(addressToken);
+    const singleNft = await _getSingleNft(tokenId, collectionAddress);
+    setTokenId(tokenId);
+    const tempNft = {
+      tokenId: tokenId,
+      collectionAddress: collectionAddress,
+      image: singleNft.imageUrl,
+      owner: singleNft.owner,
+      name: singleNft.name,
+      description: singleNft.description,
+      properties: singleNft.properties,
+    };
+    console.log(singleNft.imageUrl);
+    setImage(singleNft.imageUrl);
+    console.log(tempNft);
+    setSingleNft(singleNft);
+  };
+
+  console.log(image);
+  useEffect(() => {
+    getNftDetails();
+  }, []);
 
   return (
     <div className="w-full h-screen relative">
@@ -52,7 +79,12 @@ const SingleNFT = () => {
           <div className=" h-3/5 shadow-lg rounded-md ring-1 ring-purple-100">
             <div className="relative w-full h-[90%] rounded-t-md overflow-hidden">
               <Image
-                src={singleNft?.image}
+                // src={singleNft?.image}
+                src={
+                  image === undefined
+                    ? 'https://nftstorage.link/ipfs/bafybeiazxj5ftmh526gxjn3rowrnl5mrjflg3sxbqk32od4fc6lnk3ct4q/wallpaperflare.com_wallpaper (4).jpg'
+                    : image
+                }
                 alt={singleNft.name}
                 layout="fill"
                 objectFit="cover"
@@ -108,23 +140,23 @@ const SingleNFT = () => {
         </div>
 
         <div className="w-[70%] ml-2">
-          <div className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
+          <div className="h-max shadow-lg px-5 py-5 mb-4 space-y-5 ring-1 ring-purple-100 rounded">
             <div className="flex space-x-2">
-              <p className="font-medium">Created by</p>
-              <p className="text-blue-600 truncate w-20">{singleNft.seller}</p>
+              <p className="font-medium">Owned by</p>
+              <p className="text-blue-600 w-20">{singleNft.owner}</p>
             </div>
             <div className="flex space-x-3">
               <h3 className="font-semibold capitalize text-4xl">
                 {singleNft.name}
               </h3>
               <h3 className="font-semibold capitalize text-4xl">
-                {"#" + singleNft.tokenId}
+                {'#' + tokenId}
               </h3>
             </div>
-            <div className="flex space-x-2">
-              <p className="font-medium">Owned by</p>
-              <p className="text-blue-600 truncate w-20">{singleNft.owner}</p>
-            </div>
+            {/* <div className="flex space-x-2">
+              <p className="font-medium">Created by</p>
+              <p className="text-blue-600 truncate w-20">{singleNft.seller}</p>
+            </div> */}
             <div>
               <button
                 className="w-[20%] bg-blue-600 text-white text-2xl font-semibold py-3 rounded-lg"
@@ -134,10 +166,15 @@ const SingleNFT = () => {
               </button>
             </div>
           </div>
+          <div className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
+            <div className="flex space-x-3">
+              <h2 className="font-semibold capitalize text-2xl">NFT History</h2>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default NFTDetail;
+export default SingleNFT;

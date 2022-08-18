@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { uploadMetaData } from '../helper/upload';
 import { signInRequestMetaMask } from '../helper/metamask.ts';
@@ -14,7 +13,6 @@ import Web3 from 'web3';
 import Market from '../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
 import { Market_ADDRESS } from '../../config';
 import { data } from 'autoprefixer';
-
 
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;
 // const client = ipfsHttpClient(`${ipfsBaseUrl}`);

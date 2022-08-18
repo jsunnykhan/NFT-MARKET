@@ -5,7 +5,7 @@ const index = () => {
   return (
     <div>
       <Head>
-        <title>Home</title>
+        <title>NFT</title>
       </Head>
       <SingleNFT />
     </div>

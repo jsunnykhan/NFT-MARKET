@@ -5,7 +5,7 @@ const index = () => {
   return (
     <div>
       <Head>
-        <title>Create NFT</title>
+        <title>My Collection</title>
       </Head>
       <UserProfile />
     </div>

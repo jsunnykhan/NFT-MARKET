@@ -48,18 +48,18 @@ const Layout = (props) => {
 
   return (
     <div className="relative select-none">
-      <div className="w-full bg-primary shadow-2xl shadow-white flex justify-center">
+      <div className="w-full bg-primary flex fixed top-0 justify-center">
         <div className="flex justify-between items-center sm:h-16 md:h-20 z-50 top-0 sticky shadow-md w-[90%]">
-          <div className="flex flex-1">
+          <div className="flex flex-1 ">
             <Link href={routes[0].url} passHref>
-              <div className="flex items-center space-x-3 cursor-pointe min-w-max">
+              <div className="flex items-center space-x-3 cursor-pointer min-w-max">
                 <Image
                   src="/Logo-reverse.png"
-                  height={35}
-                  width={30}
+                  height={30}
+                  width={25}
                   alt="unknown"
                 />
-                <h2 className="font-bold text-3xl text-secondary">Unknown</h2>
+                <h2 className="font-semibold text-2xl text-secondary font-serif">Unknown</h2>
               </div>
             </Link>
           </div>

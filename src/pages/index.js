@@ -7,7 +7,7 @@ export default function index() {
       <Head>
         <title>Home</title>
       </Head>
-      <div className="px-[5%] py-20 flex">
+      <div className="py-20">
         <Home />
       </div>
     </div>

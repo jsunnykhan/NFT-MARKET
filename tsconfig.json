@@ -23,6 +23,6 @@
     "**/*.tsx",
     "src/pages/index.jsx",
     "src/pages/create-nft.jsx"
-, "src/helper/metamask.ts"  ],
+, "src/helper/metamask.ts", "src/helper/events.ts", "src/helper/hooks/useNFT.js"  ],
   "exclude": ["node_modules"]
 }

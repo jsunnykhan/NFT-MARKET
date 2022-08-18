@@ -48,7 +48,7 @@ const Layout = (props) => {
 
   return (
     <div className="relative select-none">
-      <div className="w-full bg-primary  shadow-2xl shadow-white flex justify-center">
+      <div className="w-full bg-primary shadow-2xl shadow-white flex justify-center">
         <div className="flex justify-between items-center sm:h-16 md:h-20 z-50 top-0 sticky shadow-md w-[90%]">
           <div className="flex flex-1">
             <Link href={routes[0].url} passHref>
@@ -98,7 +98,9 @@ const Layout = (props) => {
         </div>
       </div>
 
-      <div className="bg-primary min-h-screen">{props.children}</div>
+      <div className="bg-primary text-white min-h-screen flex justify-center">
+        <div className="w-[90%] ">{props.children}</div>
+      </div>
     </div>
   );
 };

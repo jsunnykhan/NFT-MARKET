@@ -45,6 +45,10 @@ contract Collection is ERC721URIStorage {
         );
     }
 
+    function contractOwner() public view virtual returns (address) {
+        return _ownerOfContract;
+    }
+
     function creatorOf(uint256 tokenId) public view virtual returns (address) {
         return _minted[tokenId].creator;
     }

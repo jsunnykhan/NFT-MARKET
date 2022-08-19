@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   images: {
     domains: ["upload.wikimedia.org", "ipfs.infura.io", "nftstorage.link"],
   },

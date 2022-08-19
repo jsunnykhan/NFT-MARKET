@@ -23,8 +23,17 @@ export default function Home() {
   const init = async () => {
     const market = _getMarketContract();
     const col = await _getAllCollections();
-    setCollections((pre) => (pre = col));
-    console.log(col);
+
+    const collection = col.map((item) => {
+      const newItem = {
+        address: item.returnValues.collectionAddress,
+        name: item.returnValues.name,
+        owner: item.returnValues.owner,
+        symbol: item.returnValues.symbol,
+      };
+      return newItem;
+    });
+    setCollections((pre) => (pre = collection));
     let listOfItem;
     try {
       const data = await market.listingItems();
@@ -158,7 +167,7 @@ export default function Home() {
 
   return (
     <div className="h-full flex flex-col w-full">
-      <Dashboard artWork={nfts.length} collections={collections} />
+      <Dashboard artWork={nfts.length} collections={collections.length} />
       <div className="pt-40 space-y-10 text-3xl">
         <h2 className="text-white font-serif font-semibold">
           Top Collections{" "}
@@ -166,7 +175,7 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4 gap-5">
           {collections.length ? (
             collections.map((item, index) =>
-             index <= 20 ? (
+              index <= 20 ? (
                 <SingleCollection
                   key={item.address + item.transactionHash}
                   index={index}

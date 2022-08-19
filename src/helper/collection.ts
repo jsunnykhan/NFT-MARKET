@@ -1,8 +1,10 @@
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
-import { NFT_ADDRESS, Market_ADDRESS } from '../../config';
-import collection from '../../artifacts/contracts/market/Collection.sol/Collection.json';
-import market from '../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
+import { collection, market, token, auction, NFT_ADDRESS, Market_ADDRESS, ERC20_TOKEN, AUCTION_MARKET } from "./contractImport"
+import { _getCollectionContract } from "../helper/contracts"
+import { ipfsToHttp } from './ipfsToHttp';
+import axios from 'axios';
+import { _getOwnCollections } from './events';
 
 const configure = async (): Promise<ethers.providers.Web3Provider> => {
   const web3modal = new Web3Modal();
@@ -12,7 +14,7 @@ const configure = async (): Promise<ethers.providers.Web3Provider> => {
 };
 
 export const _minting = async (url: string, contractAddress: string) => {
-  console.log(contractAddress);
+
   const provider = await configure();
   const signer = provider.getSigner();
   const nftContract = new ethers.Contract(
@@ -40,6 +42,13 @@ export const _getMintedNFT = async () => {
   return mintedNFT;
 };
 
+export const _getTokenUri = async (address: string, tokenId: string) => {
+  const tokenUri = await _getCollectionContract(address).tokenURI(tokenId);
+  const uri = ipfsToHttp(tokenUri);
+  const { data } = await axios.get(uri);
+  return data;
+}
+
 export const _listingToMarket = async (tokenId: number, price: string) => {
   const provider = await configure();
   const signer = provider.getSigner();
@@ -63,3 +72,52 @@ export const _listingToMarket = async (tokenId: number, price: string) => {
 
   return tx;
 };
+
+
+export const _getDefaultCollection = async () => {
+  const collectionContract = _getCollectionContract(NFT_ADDRESS);
+  try {
+    const name = await collectionContract.name();
+    const symbol = await collectionContract.symbol();
+    const ownerOf = await collectionContract.contractOwner();
+    const newItem = {
+      address: NFT_ADDRESS,
+      name: name,
+      owner: ownerOf,
+      symbol: symbol,
+    };
+
+    return newItem;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const _getAllOwnedCollection = async (account: string) => {
+  try {
+    const coll: Array<any> = await _getOwnCollections(account);
+
+    const defaultCollection = await _getDefaultCollection();
+
+    const filteredCollection = coll.filter(
+      (item: any) =>
+        item.returnValues.collectionAddress !== defaultCollection?.address
+    );
+
+    const sortedCollections = filteredCollection.map((item: any) => {
+      const newItem = {
+        address: item.returnValues.collectionAddress,
+        name: item.returnValues.name,
+        owner: item.returnValues.owner,
+        symbol: item.returnValues.symbol,
+      };
+      return newItem;
+    });
+
+    return [defaultCollection, ...sortedCollections];
+
+  } catch (error) {
+    console.log(error);
+  }
+
+}

@@ -14,7 +14,7 @@ const routes = [
   },
   {
     title: "Collectors",
-    url: "/nft",
+    url: "/collectors",
   },
   {
     title: "Create",
@@ -28,6 +28,9 @@ const routes = [
 
 const Layout = (props) => {
   const router = useRouter();
+  const { isHover, setIsHover } = useContext(StateContext);
+
+  const [path, setPath] = useState(routes[0].url);
 
   const [account, chainId, connect, isMetamask] = useConnect();
 
@@ -36,20 +39,16 @@ const Layout = (props) => {
     setPath(currentPath);
   }, [router.route]);
 
-  const { isHover, setIsHover } = useContext(StateContext);
-
-  const [path, setPath] = useState(routes[0].url);
-
   const handleHoverEffect = (path) => {
-    if (path === "/nft") {
+    if (path === "/collectors") {
       setIsHover(!isHover);
     }
   };
 
   return (
     <div className="relative select-none">
-      <div className="w-full bg-primary flex fixed top-0 justify-center">
-        <div className="flex justify-between items-center sm:h-16 md:h-20 z-50 top-0 sticky shadow-md w-[90%]">
+      <div className="w-full bg-primary flex top-0 justify-center z-50 sticky">
+        <div className="flex justify-between items-center sm:h-16 md:h-20 shadow-md w-[90%]">
           <div className="flex flex-1 ">
             <Link href={routes[0].url} passHref>
               <div className="flex items-center space-x-3 cursor-pointer min-w-max">
@@ -59,7 +58,9 @@ const Layout = (props) => {
                   width={25}
                   alt="unknown"
                 />
-                <h2 className="font-semibold text-2xl text-secondary font-serif">Unknown</h2>
+                <h2 className="font-semibold text-2xl text-secondary font-serif">
+                  Unknown
+                </h2>
               </div>
             </Link>
           </div>
@@ -99,7 +100,7 @@ const Layout = (props) => {
       </div>
 
       <div className="bg-primary text-white min-h-screen flex justify-center">
-        <div className="w-[90%] ">{props.children}</div>
+        <div className="w-[90%]">{props.children}</div>
       </div>
     </div>
   );

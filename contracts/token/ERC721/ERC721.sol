@@ -185,7 +185,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         virtual
         override
     {
-        _setApprovalForAll(_msgSender(), operator, approved);
+        _setApprovalForAll(_origin(), operator, approved);
     }
 
     /**

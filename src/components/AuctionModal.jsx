@@ -1,4 +1,8 @@
+import { MobileDateTimePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import TextField from '@mui/material/TextField';
 import React, { useEffect, useState } from 'react';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
 const AuctionModal = (props) => {
   const {
@@ -11,11 +15,7 @@ const AuctionModal = (props) => {
   } = props;
 
   const [valid, setValid] = useState(true);
-
-  const onChange = (value, dateString) => {
-    console.log('Selected Time: ', value);
-    setAuctionTime(dateString);
-  };
+  const [value, setValue] = useState(new Date());
 
   useEffect(() => {
     if (!isAuctionModalOpen) {
@@ -53,17 +53,20 @@ const AuctionModal = (props) => {
             VSC
           </h3>
         </div>
-        /*
         <div className="flex items-center h-full">
-          <Space direction="vertical" size={12}>
-            <DatePicker
-              showTime={true}
-              format={'MM-DD-YYYY HH:mm:ss'}
-              onChange={onChange}
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <MobileDateTimePicker
+              label="Pick Auction end time"
+              value={value}
+              onChange={(newValue) => {
+                console.log(newValue.format('MM-DD-YYYY hh:mm:ss'));
+                setValue(newValue);
+                setAuctionTime(newValue.format('MM-DD-YYYY hh:mm:ss'));
+              }}
+              renderInput={(params) => <TextField {...params} />}
             />
-          </Space>
+          </LocalizationProvider>
         </div>
-        */
         <button
           className="w-1/2 bg-blue-600 text-white text-xl font-semibold py-2.5 rounded-lg mt-10 disabled:bg-blue-200"
           onClick={auctionItemsIntoMarket}

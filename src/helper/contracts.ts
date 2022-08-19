@@ -16,7 +16,6 @@ const _getProvider = (): ethers.providers.JsonRpcProvider => {
 export const _getCollectionContract = (address = NFT_ADDRESS): ethers.Contract => {
   const contract: ethers.Contract = new ethers.Contract(address, collection.abi, _getProvider());
   return contract;
-
 }
 
 

@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Image from "next/image";
 
-
-import { create as ipfsHttpClient } from 'ipfs-http-client';
-import { uploadMetaData } from '../helper/upload';
-import { signInRequestMetaMask } from '../helper/metamask.ts';
-import { _listingToMarket, _minting } from '../helper/collection.ts';
-import PropertiesModal from '../components/propertiesModal';
-import MakeCollectionModal from '../components/MakeCollectionModal';
-import Dropdown from '../components/Dropdown';
-import Web3 from 'web3';
-import Market from '../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
-import { Market_ADDRESS } from '../../config';
-import { data } from 'autoprefixer';
-
+import { create as ipfsHttpClient } from "ipfs-http-client";
+import { uploadMetaData } from "../helper/upload";
+import { signInRequestMetaMask } from "../helper/metamask.ts";
+import { _listingToMarket, _minting } from "../helper/collection.ts";
+import PropertiesModal from "../components/propertiesModal";
+import MakeCollectionModal from "../components/MakeCollectionModal";
+import Dropdown from "../components/Dropdown";
+import Web3 from "web3";
+import Market from "../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json";
+import { Market_ADDRESS } from "../../config";
+import { data } from "autoprefixer";
 
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;
 // const client = ipfsHttpClient(`${ipfsBaseUrl}`);
@@ -25,8 +23,8 @@ const CreateNFTToken = () => {
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formInput, setFormInput] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState({});
@@ -61,7 +59,7 @@ const CreateNFTToken = () => {
       selectedCollection.returnValues.collectionAddress
     );
     console.log(tokenId);
-    router.push('/nft');
+    router.push("/collectors");
   };
 
   const getEvents = async () => {
@@ -72,21 +70,21 @@ const CreateNFTToken = () => {
         owner: await web3.eth.getAccounts(),
       },
       fromBlock: 0,
-      toBlock: 'latest',
+      toBlock: "latest",
     };
 
     const defaultCollEvent = await marketContract.getPastEvents(
-      'CollectionCreated',
+      "CollectionCreated",
       {
         fromBlock: 0,
-        toBlock: 'latest',
+        toBlock: "latest",
       }
     );
     console.log(defaultCollEvent);
 
     setCollectionList([defaultCollEvent[0]]);
     const events = await marketContract.getPastEvents(
-      'CollectionCreated',
+      "CollectionCreated",
       option
     );
     setCollectionList((data) => [...data, ...events]);
@@ -100,11 +98,11 @@ const CreateNFTToken = () => {
   };
 
   useEffect(() => {
-    window.ethereum.on('accountsChanged', () => {
+    window.ethereum.on("accountsChanged", () => {
       window.location.reload();
     });
 
-    window.ethereum.on('chainChanged', () => {
+    window.ethereum.on("chainChanged", () => {
       window.location.reload();
     });
     getEvents();
@@ -116,8 +114,8 @@ const CreateNFTToken = () => {
   }, [formInput, fileUrl]);
 
   const attributeModalHandler = async () => {
-    await signInRequestMetaMask();
-    // setIsModalOpen(true);
+    // await signInRequestMetaMask();
+    setIsModalOpen(true);
   };
 
   return (
@@ -186,7 +184,7 @@ const CreateNFTToken = () => {
               />
             </div>
           ) : (
-            ''
+            ""
           )}
           <div className="space-y-2">
             <h3 className="font-semibold text-xl text-gray-700">Name</h3>

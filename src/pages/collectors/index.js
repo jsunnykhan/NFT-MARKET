@@ -1,13 +1,13 @@
 import React from "react";
 import Head from "next/head";
-import UserProfile from "../../features/UserProfile";
+import Collectors from "../../features/Collectors";
 const index = () => {
   return (
     <div>
       <Head>
-        <title>Create NFT</title>
+        <title>Collectors</title>
       </Head>
-      <UserProfile />
+      <Collectors />
     </div>
   );
 };

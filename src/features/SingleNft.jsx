@@ -7,6 +7,10 @@ import { MdOutlineBookmark } from 'react-icons/md';
 import SellModal from '../components/sellModal';
 import { _getSingleNft } from '../helper/collection.ts';
 import { _listingToMarket } from '../helper/collection.ts';
+import { _getCreator } from '../helper/events/getCreator';
+import AuctionModal from '../components/AuctionModal';
+import { _startAuction } from '../helper/auction.ts';
+import { toSeconds, toMiliseonds } from '../helper/convertTime.ts';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
@@ -17,6 +21,10 @@ const SingleNFT = () => {
   const [image, setImage] = useState();
   const [tokenId, setTokenId] = useState('');
 
+  const [isAuctionModalOpen, setIsAuctionModalOpen] = useState(false);
+  const [basePrice, setBasePrice] = useState('');
+  const [auctionTime, setAuctionTime] = useState('');
+
   const listingItemIntoMarket = async () => {
     setIsSellModalOpen(false);
     if (singleNft.tokenId) {
@@ -25,6 +33,21 @@ const SingleNFT = () => {
       console.log(listingMarket);
       router.push('/');
     }
+  };
+
+  const auctionItemsIntoMarket = async () => {
+    console.log(auctionTime);
+    const auctionEndTimeInSec = toSeconds(auctionTime);
+    const duration = Math.ceil((toMiliseonds(auctionTime) - Date.now()) / 1000);
+    console.log(duration);
+    await _startAuction(
+      singleNft.collectionAddress,
+      singleNft.tokenId,
+      singleNft.creator,
+      duration,
+      basePrice
+    );
+    setIsAuctionModalOpen(false);
   };
 
   const extractDetail = (addressToken) => {
@@ -37,11 +60,16 @@ const SingleNFT = () => {
     setIsSellModalOpen(true);
   };
 
+  const auctionModalOpen = () => {
+    setIsAuctionModalOpen(true);
+  };
+
   const getNftDetails = async () => {
     const addressToken = window.location.pathname.split('/').pop();
     console.log(addressToken);
     const { tokenId, collectionAddress } = extractDetail(addressToken);
     const singleNft = await _getSingleNft(tokenId, collectionAddress);
+    const creator = await _getCreator(collectionAddress, tokenId);
     setTokenId(tokenId);
     const tempNft = {
       tokenId: tokenId,
@@ -49,16 +77,14 @@ const SingleNFT = () => {
       image: singleNft.imageUrl,
       owner: singleNft.owner,
       name: singleNft.name,
+      creator,
       description: singleNft.description,
       properties: singleNft.properties,
     };
-    console.log(singleNft.imageUrl);
     setImage(singleNft.imageUrl);
-    console.log(tempNft);
-    setSingleNft(singleNft);
+    setSingleNft(tempNft);
   };
 
-  console.log(image);
   useEffect(() => {
     getNftDetails();
   }, []);
@@ -72,6 +98,16 @@ const SingleNFT = () => {
           listingItemIntoMarket={listingItemIntoMarket}
           isSellModalOpen={isSellModalOpen}
           setIsSellModalOpen={setIsSellModalOpen}
+        />
+      )}
+      {isAuctionModalOpen && (
+        <AuctionModal
+          basePrice={basePrice}
+          setBasePrice={setBasePrice}
+          auctionItemsIntoMarket={auctionItemsIntoMarket}
+          isAuctionModalOpen={isAuctionModalOpen}
+          setAuctionTime={setAuctionTime}
+          setIsAuctionModalOpen={setIsAuctionModalOpen}
         />
       )}
       <div className="w-full px-10 py-10 flex h-screen justify-between space-x-5">
@@ -121,7 +157,7 @@ const SingleNFT = () => {
             </div>
             {isProOpen && (
               <div className="bg-gray-300 bg-opacity-25 px-3 h-max grid gap-x-5 gap-y-4 py-5 overflow-x-hidden">
-                {singleNft?.attributes?.map((data, index) => (
+                {singleNft?.properties?.map((data, index) => (
                   <div
                     key={index}
                     className="px-10 py-2 shadow-xl rounded-md bg-blue-100 w-max flex flex-col ring-1 ring-purple-200 justify-center mx-auto items-center "
@@ -153,16 +189,22 @@ const SingleNFT = () => {
                 {'#' + tokenId}
               </h3>
             </div>
-            {/* <div className="flex space-x-2">
+            <div className="flex space-x-2">
               <p className="font-medium">Created by</p>
-              <p className="text-blue-600 truncate w-20">{singleNft.seller}</p>
-            </div> */}
-            <div>
+              <p className="text-blue-600 w-20">{singleNft.creator}</p>
+            </div>
+            <div className="flex justify-start">
               <button
-                className="w-[20%] bg-blue-600 text-white text-2xl font-semibold py-3 rounded-lg"
+                className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg"
                 onClick={sellModalOpen}
               >
                 Sell
+              </button>
+              <button
+                className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg mx-2"
+                onClick={auctionModalOpen}
+              >
+                Auction
               </button>
             </div>
           </div>

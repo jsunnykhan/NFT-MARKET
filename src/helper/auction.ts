@@ -24,14 +24,19 @@ export const _startAuction = async (
     Auction.abi,
     signer
   );
+  const valueInWei = ethers.utils.parseEther(baseValue);
+  console.log(valueInWei);
   const transactionGoing = await auctionMarket.startAuction(
     collectionAddress,
     tokenId,
     creator,
     biddingTime,
-    baseValue
+    valueInWei,
+    {
+      value: ethers.utils.parseUnits('.01', 'ether'),
+    }
   );
-  const tx = transactionGoing.wait();
+  const tx = await transactionGoing.wait();
   console.log(tx);
 
   // can be used to fetch additional information
@@ -47,10 +52,10 @@ export const _bid = async (auctionId: any, amount: any) => {
   );
   const transactionGoing = await auctionMarket.bid(
     auctionId,
-    amount,
+    ethers.utils.parseUnits(amount, 'ether'),
     ERC20_TOKEN
   );
-  const tx = transactionGoing.wait();
+  const tx = await transactionGoing.wait();
   console.log(tx);
 };
 
@@ -67,6 +72,33 @@ export const _endAuction = async (auctionId: any) => {
     auctionId,
     ERC20_TOKEN
   );
+  const tx = await transactionGoing.wait();
+  console.log(tx);
+};
+
+export const _getAllAuctionItems = async () => {
+  const provider = await configureProvider();
+  const signer = provider.getSigner();
+  const auctionMarket = new ethers.Contract(
+    AUCTION_MARKET,
+    Auction.abi,
+    signer
+  );
+  const transactionGoing = await auctionMarket.getAllAuctionItems();
   const tx = transactionGoing.wait();
   console.log(tx);
+};
+
+export const _getSingleAuctionItem = async (auctionId: any) => {
+  const provider = await configureProvider();
+  const signer = provider.getSigner();
+  const auctionMarket = new ethers.Contract(
+    AUCTION_MARKET,
+    Auction.abi,
+    signer
+  );
+  console.log(auctionId);
+  const transactionGoing = await auctionMarket.getSingleAuctionItem(auctionId);
+  console.log(transactionGoing);
+  return transactionGoing;
 };

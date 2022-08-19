@@ -279,6 +279,18 @@ contract AuctionMarket is Context {
 
         return _auctionItems;
     }
+
+    function getSingleAuctionItem(uint256 auctionId)
+        external
+        view
+        returns (AuctionItem memory)
+    {
+        return auctionItems[auctionId];
+    }
+
+    function getListingPrice() external view returns (uint256) {
+        return listingPrice;
+    }
 }
 
 // vs coin interface

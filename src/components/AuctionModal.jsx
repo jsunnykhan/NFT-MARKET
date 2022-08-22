@@ -59,9 +59,9 @@ const AuctionModal = (props) => {
               label="Pick Auction end time"
               value={value}
               onChange={(newValue) => {
-                console.log(newValue.format('MM-DD-YYYY hh:mm:ss'));
+                console.log(newValue.format('MM-DD-YYYY HH:mm:ss'));
                 setValue(newValue);
-                setAuctionTime(newValue.format('MM-DD-YYYY hh:mm:ss'));
+                setAuctionTime(newValue.format('MM-DD-YYYY HH:mm:ss'));
               }}
               renderInput={(params) => <TextField {...params} />}
             />

@@ -162,3 +162,4 @@ export const _getAllOwnedCollection = async (account: string) => {
     console.log(error);
   }
 };
+

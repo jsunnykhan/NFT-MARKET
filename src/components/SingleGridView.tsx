@@ -1,9 +1,22 @@
 import Image from "next/image";
 import React, { useState } from "react";
-import { ipfsToHttp } from "../helper/ipfsToHttp.ts";
+import { ipfsToHttp } from "../helper/ipfsToHttp";
 
-const SingleGridView = (props) => {
-  const { nft, isBuy, buyNFT, processing } = props;
+enum Types {
+  AUCTION,
+  SELL,
+  NORMAL,
+}
+
+interface propsType {
+  nft: any;
+  buyNFT: Function;
+  types?: Types;
+  processing: boolean;
+}
+
+const SingleGridView = (props: propsType) => {
+  const { nft, types, buyNFT, processing } = props;
   const [process, setProcess] = useState(false);
   return (
     <div className="h-full w-full rounded cursor-pointer ring-1 ring-secondary ring-opacity-40">
@@ -37,19 +50,31 @@ const SingleGridView = (props) => {
           </div>
         </div>
 
-        {isBuy && (
+        {types === Types.SELL ? (
           <div className="flex justify-end pr-2 pb-2">
             <button
               className="bg-orange-400 px-3 py-2 rounded font-semibold text-base"
               onClick={() => {
                 setProcess(true);
-                buyNFT(nft);
+                buyNFT(nft.id, nft.address);
               }}
             >
               {processing && process ? "Processing.." : "Buy NFT"}
             </button>
           </div>
-        )}
+        ) : types === Types.AUCTION ? (
+          <div className="flex justify-end pr-2 pb-2">
+            <button
+              className="bg-orange-400 px-3 py-2 rounded font-semibold text-base"
+              onClick={() => {
+                setProcess(true);
+                buyNFT(nft.id, nft.address);
+              }}
+            >
+              {processing && process ? "Processing.." : "Bid"}
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

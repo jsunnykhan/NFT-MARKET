@@ -23,7 +23,7 @@
     "**/*.tsx",
     "src/pages/index.jsx",
 
-    "src/pages/create-nft.jsx",
+    "src/pages/create-nft.jsx",, "src/features/Home.jsx"
     "src/helper/metamask.ts",
     "src/helper/events/approveEvent.js",
     "src/helper/events/transferEvent.js",

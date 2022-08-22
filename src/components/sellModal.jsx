@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const SellModal = (props) => {
   const {
@@ -27,7 +27,7 @@ const SellModal = (props) => {
   //   }
   // };
   return (
-    <div className="absolute top-0 left-0 right-0 bottom-0 z-30 w-full h-full bg-black bg-opacity-60 min-w-full min-h-screen">
+    <div className="text-primary absolute top-0 left-0 right-0 bottom-0 z-30 w-full h-full bg-black bg-opacity-60 min-w-full min-h-screen">
       <div className="relative w-max h-max mt-40 m-auto items-center bg-white ring-1 ring-purple-100 rounded p-5">
         <p
           className="absolute top-0 right-3 font-bold cursor-pointer p-2"
@@ -39,7 +39,7 @@ const SellModal = (props) => {
           Please Enter Your NFT Price
         </h3>
         <p className="text-sm font-semibold pb-3">
-          require vsc coin{" "}
+          require vsc coin{' '}
           <span className="text-red-600 font-extrabold">*</span>
         </p>
         <div className="flex items-center h-full">

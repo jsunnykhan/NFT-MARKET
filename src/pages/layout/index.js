@@ -46,7 +46,7 @@ const Layout = (props) => {
   };
 
   return (
-    <div className="relative select-none">
+    <div className="relative font-serif select-none">
       <div className="w-full bg-primary flex top-0 justify-center z-50 sticky">
         <div className="flex justify-between items-center sm:h-16 md:h-20 shadow-md w-[90%]">
           <div className="flex flex-1 ">

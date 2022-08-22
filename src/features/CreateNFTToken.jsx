@@ -1,25 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
+import React, { useEffect, useState, CSSProperties } from "react";
+import { useRouter } from "next/router";
+import Image from "next/image";
 
-import { uploadMetaData } from '../helper/upload';
+import { uploadMetaData } from "../helper/upload";
 
-import { _listingToMarket, _minting } from '../helper/collection.ts';
-import PropertiesModal from '../components/propertiesModal';
-import MakeCollectionModal from '../components/MakeCollectionModal';
-import Dropdown from '../components/Dropdown.tsx';
-import Web3 from 'web3';
-import Market from '../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json';
-import { Market_ADDRESS } from '../../config';
+import { _listingToMarket, _minting } from "../helper/collection.ts";
+import PropertiesModal from "../components/propertiesModal";
+import MakeCollectionModal from "../components/MakeCollectionModal";
+import Dropdown from "../components/Dropdown.tsx";
 
 import {
   _getAllOwnedCollection,
   _getDefaultCollection,
-} from '../helper/collection.ts';
-import { useConnect } from '../helper/hooks/useConnect';
+} from "../helper/collection.ts";
+import { useConnect } from "../helper/hooks/useConnect";
 
+import CustomModal from "../components/CustomModal";
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;
-// const client = ipfsHttpClient(`${ipfsBaseUrl}`);
 
 const CreateNFTToken = () => {
   const [fileUrl, setFileUrl] = useState(null);
@@ -27,14 +24,15 @@ const CreateNFTToken = () => {
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formInput, setFormInput] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState({});
   const [collections, setCollections] = useState([]);
   const [file, setFile] = useState(undefined);
-  const [collectionAddress, setCollectionAddress] = useState('');
+  const [collectionAddress, setCollectionAddress] = useState("");
+
   const router = useRouter();
 
   const onChange = async (event) => {
@@ -83,53 +81,10 @@ const CreateNFTToken = () => {
     console.log(selectedCollection.address);
     const tokenId = await _minting(metaDataUrl, selectedCollection.address);
     console.log(tokenId);
-    router.push('/collectors');
-  };
-
-  // const getEvents = async () => {
-  //   const web3 = new Web3(window.ethereum);
-  //   const marketContract = new web3.eth.Contract(Market.abi, Market_ADDRESS);
-  //   const option = {
-  //     filter: {
-  //       owner: await web3.eth.getAccounts(),
-  //     },
-  //     fromBlock: 0,
-  //     toBlock: "latest",
-  //   };
-
-  //   const defaultCollEvent = await marketContract.getPastEvents(
-  //     "CollectionCreated",
-  //     {
-  //       fromBlock: 0,
-  //       toBlock: "latest",
-  //     }
-  //   );
-  //   console.log(defaultCollEvent);
-
-  //   setCollectionList([defaultCollEvent[0]]);
-  //   const events = await marketContract.getPastEvents(
-  //     "CollectionCreated",
-  //     option
-  //   );
-  //   setCollectionList((data) => [...data, ...events]);
-  //   // setCollectionList(events);
-  //   setSelectedCollection(collectionList[0]);
-  //   console.log(collectionList);
-  // };
-
-  const handleChange = (e) => {
-    setSelectedCollection(collectionList[e.target.value]);
+    router.push("/collectors");
   };
 
   useEffect(() => {
-    window.ethereum.on('accountsChanged', () => {
-      window.location.reload();
-    });
-
-    window.ethereum.on('chainChanged', () => {
-      window.location.reload();
-    });
-    // getEvents();
     if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
     } else {
@@ -150,14 +105,14 @@ const CreateNFTToken = () => {
     <div className="w-full">
       <div className="flex mx-auto justify-center relative">
         {isModalOpen && (
-          <div className="absolute w-full h-full min-w-full min-h-screen bg-black bg-opacity-60 z-40">
+          <CustomModal>
             <PropertiesModal
               attributes={attributes}
               setAttributes={setAttributes}
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
             />
-          </div>
+          </CustomModal>
         )}
         {isCollectionModalOpen && (
           <MakeCollectionModal
@@ -166,15 +121,16 @@ const CreateNFTToken = () => {
             getAllOwnedCollection={getAllOwnedCollection}
           />
         )}
+
         <div className="flex flex-col space-y-5 w-2/5 my-5">
           <h2 className="flex font-medium text-4xl mb-2 font-serif">
             Create New NFT
           </h2>
           <div className="space-y-2">
-            <h3 className="font-semibold text-base text-gray-700">
+            <h3 className="font-medium text-base text-gray-700">
               Image, Video, Audio, or 3D Model
             </h3>
-            <div className="relative h-[25vh] w-[25vh] rounded-full bg-slate-200 border-dotted border-2 border-gray-500">
+            <div className="relative h-[20vw] w-1/2 rounded bg-slate-200 border-dotted border-2 border-gray-500">
               {fileUrl && (
                 <Image
                   src={fileUrl}
@@ -182,7 +138,7 @@ const CreateNFTToken = () => {
                   height={500}
                   objectFit="cover"
                   alt="image"
-                  className="rounded-full"
+                  className="rounded"
                 />
               )}
 
@@ -205,11 +161,11 @@ const CreateNFTToken = () => {
             </div>
           ) : null}
           <div className="space-y-2">
-            <h3 className="font-semibold text-xl text-gray-700">Name</h3>
+            <h3 className="text-base font-medium text-gray-700">Name</h3>
             <input
               type="text"
               required
-              className="ring-1 ring-gray-300  bg-none  px-3 py-3 rounded w-full transition-all duration-300 hover:shadow-md outline-none focus:ring-gray-400"
+              className="ring-1 ring-gray-300  bg-primary  px-3 py-3 rounded w-full transition-all duration-300 hover:shadow-md outline-none focus:ring-gray-400"
               placeholder="NFT Name"
               onChange={(event) =>
                 setFormInput((preState) => ({
@@ -220,11 +176,11 @@ const CreateNFTToken = () => {
             />
           </div>
           <div className="space-y-2">
-            <h3 className="font-semibold text-xl text-gray-700">Description</h3>
+            <h3 className="text-base font-medium text-gray-700">Description</h3>
             <textarea
               type="text"
               required
-              className="ring-1 ring-gray-300  bg-none  px-3 py-3 rounded w-full transition-all duration-300 hover:shadow-md outline-none focus:ring-gray-400"
+              className="ring-1 ring-gray-300 bg-primary px-3 py-3 rounded w-full transition-all duration-300 hover:shadow-md outline-none focus:ring-gray-400"
               placeholder="NFT Description"
               onChange={(event) =>
                 setFormInput((preState) => ({
@@ -240,7 +196,9 @@ const CreateNFTToken = () => {
               <h3 className="font-semibold text-xl text-gray-700 ">
                 Properties
               </h3>
-              <p>Textual traits that show up as rectangles</p>
+              <p className="font-medium text-base ">
+                Textual traits that show up as rectangles
+              </p>
             </div>
             <button
               onClick={attributeModalHandler}

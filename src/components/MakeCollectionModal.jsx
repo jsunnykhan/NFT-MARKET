@@ -32,7 +32,6 @@ const MakeCollectionModal = (props) => {
       Market_ADDRESS
     );
     await nft.deployTransaction.wait();
-    const nftAddress = nft.address;
     getAllOwnedCollection();
     setIsCollectionModalOpen(false);
   };

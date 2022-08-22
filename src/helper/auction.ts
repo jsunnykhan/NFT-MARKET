@@ -84,9 +84,9 @@ export const _getAllAuctionItems = async () => {
     Auction.abi,
     signer
   );
-  const transactionGoing = await auctionMarket.getAllAuctionItems();
-  const tx = transactionGoing.wait();
-  console.log(tx);
+  const items = await auctionMarket.getAllAuctionItems();
+  console.log(items);
+  return items;
 };
 
 export const _getSingleAuctionItem = async (auctionId: any) => {

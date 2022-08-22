@@ -1,24 +1,34 @@
-import SingleGridView from "../components/SingleGridView";
-import { ethers } from "ethers";
-import { useEffect, useState } from "react";
-import Web3Modal from "web3modal";
-import { _getAllCollections } from "../helper/events.ts";
-import axios from "axios";
+import SingleGridView from '../components/SingleGridView';
+import { ethers } from 'ethers';
+import { useEffect, useState } from 'react';
+import Web3Modal from 'web3modal';
+import { _getAllCollections } from '../helper/events.ts';
+import axios from 'axios';
 import {
   _getMarketContract,
   _getCollectionContract,
-} from "../helper/contracts.ts";
-import Dashboard from "../components/Dashboard";
-import SingleCollection from "../components/SingleCollectionView";
+} from '../helper/contracts.ts';
+import Dashboard from '../components/Dashboard';
+import SingleCollection from '../components/SingleCollectionView';
+import { _getAllAuctionItems } from '../helper/auction.ts';
+import NftGridView from '../components/NftGridView';
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
+  const [auctionItems, setAuctionItems] = useState([]);
   const [collections, setCollections] = useState([]);
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     init();
+    getAuctionItems();
   }, []);
+
+  const getAuctionItems = async () => {
+    const items = await _getAllAuctionItems();
+    console.log(items);
+    setAuctionItems(items);
+  };
 
   const init = async () => {
     const market = _getMarketContract();
@@ -46,7 +56,7 @@ export default function Home() {
           );
           const price = ethers.utils.formatUnits(
             item.price.toString(),
-            "ether"
+            'ether'
           );
           const listingId = item.listingId.toString();
           const metaData = await axios.get(tokenUri);
@@ -56,7 +66,7 @@ export default function Home() {
             tokenId: item.tokenId.toString(),
             creator: item.creator,
             owner: item.owner,
-            collection: address,
+            collectionAddress: address,
             image: metaData.data.image,
             name: metaData.data.name,
             description: metaData.data.description,
@@ -68,6 +78,16 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const redirectNFTDetailPage = (tokenId, collection) => {
+    const link = `nft/${collection}:${tokenId}`;
+    router.push(link);
+  };
+
+  const redirectAuctionDetailPage = (auctionId) => {
+    const link = `nft/${collection}:${auctionId}`;
+    router.push(link);
   };
 
   const buyNFT = async (nft) => {
@@ -87,7 +107,7 @@ export default function Home() {
     const vsContract = new ethers.Contract(ERC20_TOKEN, Token.abi, signer);
     console.log(marketContract, vsContract);
     try {
-      const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
+      const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
       console.log(price);
 
       const tx = await marketContract.createMarketSale(
@@ -95,11 +115,11 @@ export default function Home() {
         nft.tokenId,
         { value: price }
       );
-      console.log("4");
+      console.log('4');
       await tx.wait();
       setProcessing(false);
       getNFTS();
-      console.log("3");
+      console.log('3');
     } catch (error) {
       setProcessing(false);
     }
@@ -120,7 +140,7 @@ export default function Home() {
     );
 
     console.log(erc20Token);
-    const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
+    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
 
     // const tx = await erc20Token.approve(Market_ADDRESS, price);
     // await tx.wait();
@@ -170,7 +190,7 @@ export default function Home() {
       <Dashboard artWork={nfts.length} collections={collections.length} />
       <div className="pt-40 space-y-10 text-3xl">
         <h2 className="text-white font-serif font-semibold">
-          Top Collections{" "}
+          Top Collections{' '}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4 gap-5">
           {collections.length ? (
@@ -192,15 +212,23 @@ export default function Home() {
         <h2 className="text-white font-serif font-semibold">Top NFT </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {nfts.length ? (
-            nfts.map((item) => (
-              <SingleGridView
-                key={item.listingId}
-                nft={item}
-                isBuy={true}
-                buyNFT={transferToken}
-                processing={processing}
-              />
-            ))
+            <NftGridView
+              nftList={nfts}
+              redirectDetailPage={redirectNFTDetailPage}
+            />
+          ) : (
+            <div>Loading ..</div>
+          )}
+        </div>
+      </div>
+      <div className="pt-20 space-y-10 text-3xl">
+        <h2 className="text-white font-serif font-semibold">On Auction</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {nfts.length ? (
+            <NftGridView
+              nftList={nfts}
+              redirectDetailPage={redirectNFTDetailPage}
+            />
           ) : (
             <div>Loading ..</div>
           )}

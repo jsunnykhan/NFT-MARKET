@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   _getOwnCollections,
   _getCollectionOwnMintedItems,
-} from "../helper/events.ts";
-import axios from "axios";
+} from '../helper/events.ts';
+import axios from 'axios';
 
-import { _getTokenUri, _getAllOwnedCollection } from "../helper/collection.ts";
-import NftGridView from "../components/NftGridView";
-import { useRouter } from "next/router";
-import GlowingButton from "../components/GlowingButton";
-import { useConnect } from "../helper/hooks/useConnect";
-import SingleCollection from "../components/SingleCollectionView";
+import { _getTokenUri, _getAllOwnedCollection } from '../helper/collection.ts';
+import NftGridView from '../components/NftGridView';
+import { useRouter } from 'next/router';
+import GlowingButton from '../components/GlowingButton';
+import { useConnect } from '../helper/hooks/useConnect';
+import SingleCollection from '../components/SingleCollectionView';
 
 const Collectors = () => {
   const [mintedItems, setMintedItems] = useState([]);
   const [collections, setCollections] = useState([]);
   const [ownedNft, setOwnedNft] = useState([]);
-  const [tabHandle, setTabHandler] = useState("owned");
+  const [tabHandle, setTabHandler] = useState('owned');
 
   const router = useRouter();
 
@@ -69,7 +69,7 @@ const Collectors = () => {
                 name: data.name,
                 description: data.description,
                 image: data.image,
-                address: collection.address,
+                collectionAddress: collection.address,
                 tokenId: item.returnValues.tokenId,
               };
 
@@ -86,6 +86,8 @@ const Collectors = () => {
       console.error(error);
     }
   };
+
+  console.log(mintedItems);
 
   // const contractInit = async () => {
   //   const web3modal = new Web3Modal();
@@ -181,14 +183,9 @@ const Collectors = () => {
   //   setOwnedNft((preState) => (preState = items));
   // };
 
-  const redirectNftDetailPage = (nft) => {
-    setSingleNft(nft);
-    const hash = crypto
-      .createHash("sha256")
-      .update(nft.name + nft.tokenId + nft.seller + "/nft")
-      .digest("hex");
-
-    router.push(router.route + "/" + hash);
+  const redirectNftDetailPage = (tokenId, collection) => {
+    const link = `collectors/${collection}:${tokenId}`;
+    router.push(link);
   };
 
   // if (!createdNft.length && !mintedNft.length && !ownedNft.length) {
@@ -205,16 +202,16 @@ const Collectors = () => {
 
   const tabInfo = [
     {
-      name: "Owned items",
-      route: "owned",
+      name: 'Owned items',
+      route: 'owned',
     },
     {
-      name: "Collections",
-      route: "collection",
+      name: 'Collections',
+      route: 'collection',
     },
     {
-      name: "Minted items",
-      route: "mint",
+      name: 'Minted items',
+      route: 'mint',
     },
   ];
 
@@ -233,7 +230,7 @@ const Collectors = () => {
         </div>
       </div>
 
-      {tabHandle === "mint" ? (
+      {tabHandle === 'mint' ? (
         <div>
           <NftGridView
             nftList={mintedItems}
@@ -241,7 +238,7 @@ const Collectors = () => {
             redirectNftDetailPage={redirectNftDetailPage}
           />
         </div>
-      ) : tabHandle === "collection" ? (
+      ) : tabHandle === 'collection' ? (
         <div className="w-full space-y-5">
           <h2 className="font-semibold underline underline-offset-8 text-2xl font-mono">
             Collections

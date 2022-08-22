@@ -21,7 +21,7 @@ export default function Home() {
 
   useEffect(() => {
     init();
-    getAuctionItems();
+    // getAuctionItems();
   }, []);
 
   const getAuctionItems = async () => {

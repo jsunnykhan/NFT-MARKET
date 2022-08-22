@@ -45,7 +45,7 @@ const PropertiesModal = (props) => {
   };
 
   return (
-    <div className="flex justify-center items-center py-10">
+    <div className="flex justify-center items-center py-10 text-primary">
       <div className="w-2/5 rounded bg-white px-5">
         <div className="flex justify-between items-center px-5 py-5">
           <h2 className="text-2xl font-semibold"></h2>

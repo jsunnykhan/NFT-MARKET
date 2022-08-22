@@ -4,6 +4,7 @@ import { _getCollectionContract } from "../helper/contracts.ts";
 import SingleGridView from "../components/SingleGridView";
 import axios from "axios";
 import { ipfsToHttp } from "../helper/ipfsToHttp.ts";
+import Profile from "../components/Profile";
 
 const Collection = (props) => {
   const { address } = props;
@@ -55,7 +56,8 @@ const Collection = (props) => {
   console.log(items);
 
   return (
-    <div className="py-20">
+    <div className="py-5">
+      <Profile />
       <div className="flex flex-col space-y-2">
         <h2 className="text-3xl font-mono capitalize">{details.name}</h2>
         <h3 className="text-white-100 truncate">

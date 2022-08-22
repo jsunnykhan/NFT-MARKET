@@ -10,7 +10,8 @@ import { _listingToMarket } from '../helper/collection.ts';
 import { _getCreator } from '../helper/events/getCreator';
 import AuctionModal from '../components/AuctionModal';
 import { _startAuction } from '../helper/auction.ts';
-import { toSeconds, toMiliseonds } from '../helper/convertTime.ts';
+import { toMiliseonds } from '../helper/convertTime.ts';
+import { useRouter } from 'next/router';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
@@ -25,10 +26,16 @@ const SingleNFT = () => {
   const [basePrice, setBasePrice] = useState('');
   const [auctionTime, setAuctionTime] = useState('');
 
+  const router = useRouter();
+
   const listingItemIntoMarket = async () => {
     setIsSellModalOpen(false);
     if (singleNft.tokenId) {
-      const listingMarket = await _listingToMarket(singleNft.tokenId, price);
+      const listingMarket = await _listingToMarket(
+        singleNft.tokenId,
+        price,
+        singleNft.collectionAddress
+      );
       setPrice('');
       console.log(listingMarket);
       router.push('/');
@@ -37,7 +44,6 @@ const SingleNFT = () => {
 
   const auctionItemsIntoMarket = async () => {
     console.log(auctionTime);
-    const auctionEndTimeInSec = toSeconds(auctionTime);
     const duration = Math.ceil((toMiliseonds(auctionTime) - Date.now()) / 1000);
     console.log(duration);
     await _startAuction(

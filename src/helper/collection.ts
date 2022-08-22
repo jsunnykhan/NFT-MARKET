@@ -1,12 +1,20 @@
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 
-import { collection, market, token, auction, NFT_ADDRESS, Market_ADDRESS, ERC20_TOKEN, AUCTION_MARKET } from "./contractImport"
-import { _getCollectionContract } from "../helper/contracts"
+import {
+  collection,
+  market,
+  token,
+  auction,
+  NFT_ADDRESS,
+  Market_ADDRESS,
+  ERC20_TOKEN,
+  AUCTION_MARKET,
+} from './contractImport';
+import { _getCollectionContract } from '../helper/contracts';
 import { ipfsToHttp } from './ipfsToHttp';
 import axios from 'axios';
 import { _getOwnCollections } from './events';
-
 
 const configure = async (): Promise<ethers.providers.Web3Provider> => {
   const web3modal = new Web3Modal();
@@ -16,7 +24,6 @@ const configure = async (): Promise<ethers.providers.Web3Provider> => {
 };
 
 export const _minting = async (url: string, contractAddress: string) => {
-
   const provider = await configure();
   const signer = provider.getSigner();
   const collectionContract = new ethers.Contract(
@@ -53,9 +60,13 @@ export const _getTokenUri = async (address: string, tokenId: string) => {
   const uri = ipfsToHttp(tokenUri);
   const { data } = await axios.get(uri);
   return data;
-}
+};
 
-export const _listingToMarket = async (tokenId: number, price: string) => {
+export const _listingToMarket = async (
+  tokenId: number,
+  price: string,
+  collectionAddress: string
+) => {
   const provider = await configure();
   const signer = provider.getSigner();
   const marketContract = new ethers.Contract(
@@ -64,21 +75,20 @@ export const _listingToMarket = async (tokenId: number, price: string) => {
     signer
   );
 
-  let listingPrice = await marketContract.getMarketListingPrice();
+  let listingPrice = await marketContract.getMarketFee();
   listingPrice = listingPrice.toString();
+  const listPrice = ethers.utils.parseUnits(listingPrice, 'ether');
   const pri = ethers.utils.parseUnits(price, 'ether');
-  const transaction = await marketContract.addItemInMarket(
-    NFT_ADDRESS,
+  const transaction = await marketContract.createListing(
     tokenId,
-    pri,
-    { value: listingPrice }
+    collectionAddress,
+    pri
   );
 
   const tx = await transaction.wait();
 
   return tx;
 };
-
 
 export const _getSingleNft = async (tokenId: any, collectionAddress: any) => {
   const provider = await configure();
@@ -107,7 +117,6 @@ export const _getSingleNft = async (tokenId: any, collectionAddress: any) => {
   return nft;
 };
 
-
 export const _getDefaultCollection = async () => {
   const collectionContract = _getCollectionContract(NFT_ADDRESS);
   try {
@@ -125,7 +134,7 @@ export const _getDefaultCollection = async () => {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const _getAllOwnedCollection = async (account: string) => {
   try {
@@ -149,9 +158,7 @@ export const _getAllOwnedCollection = async (account: string) => {
     });
 
     return [defaultCollection, ...sortedCollections];
-
   } catch (error) {
     console.log(error);
   }
-
-}
+};

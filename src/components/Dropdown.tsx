@@ -34,7 +34,7 @@ const Dropdown = (props: propsType) => {
         <h3 className="text-base font-serif">Choose Collection</h3>
 
         <div className="w-full overflow-x-auto no-scrollbar scroll-auto">
-          <div className="flex flex-row items-center p-2 space-x-5 w-screen">
+          <div className="flex flex-row items-center p-2 space-x-5 w-max">
             <div
               className="flex flex-col items-center justify-center ring-[0.5px] ring-white-100 w-28 h-28 rounded-lg cursor-pointer "
               onClick={createCollection}

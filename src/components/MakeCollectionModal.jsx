@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import Collection from "../../artifacts/contracts/market/Collection.sol/Collection.json";
-import { Market_ADDRESS } from "../helper/contractImport.ts";
+import React, { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import Collection from '../../artifacts/contracts/market/Collection.sol/Collection.json';
+import { Market_ADDRESS } from '../helper/contractImport.ts';
 
 const MakeCollectionModal = (props) => {
-  const { isCollectionModalOpen, setIsCollectionModalOpen } = props;
+  const {
+    isCollectionModalOpen,
+    setIsCollectionModalOpen,
+    getAllOwnedCollection,
+  } = props;
 
   const [valid, setValid] = useState(true);
   const [formInput, setFormInput] = useState({
-    collection: "",
-    symbol: "",
+    collection: '',
+    symbol: '',
   });
 
   const handleContractCreation = async () => {
@@ -29,6 +33,7 @@ const MakeCollectionModal = (props) => {
     );
     await nft.deployTransaction.wait();
     const nftAddress = nft.address;
+    getAllOwnedCollection();
     setIsCollectionModalOpen(false);
   };
 

@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Market_ADDRESS } from '../../config';
-import { ethers } from 'ethers';
-
-import Collection from '../../artifacts/contracts/market/Collection.sol/Collection.json';
+import React, { useEffect, useState } from "react";
+import { ethers } from "ethers";
+import Collection from "../../artifacts/contracts/market/Collection.sol/Collection.json";
+import { Market_ADDRESS } from "../helper/contractImport.ts";
 
 const MakeCollectionModal = (props) => {
-  const { getEvents, isCollectionModalOpen, setIsCollectionModalOpen } = props;
+  const { isCollectionModalOpen, setIsCollectionModalOpen } = props;
 
   const [valid, setValid] = useState(true);
   const [formInput, setFormInput] = useState({
-    collection: '',
-    symbol: '',
+    collection: "",
+    symbol: "",
   });
 
   const handleContractCreation = async () => {
@@ -31,7 +30,6 @@ const MakeCollectionModal = (props) => {
     await nft.deployTransaction.wait();
     const nftAddress = nft.address;
     setIsCollectionModalOpen(false);
-    getEvents();
   };
 
   useEffect(() => {
@@ -42,7 +40,7 @@ const MakeCollectionModal = (props) => {
   }, [isCollectionModalOpen]);
 
   return (
-    <div className="absolute top-0 left-0 right-0 bottom-0 z-30 w-full h-full bg-black bg-opacity-60 min-w-full min-h-screen">
+    <div className="absolute top-0 left-0 right-0 bottom-0 z-30 w-full h-full bg-black bg-opacity-60 min-w-full min-h-screen text-primary">
       <div className="relative w-max h-max mt-40 m-auto items-center bg-white ring-1 ring-purple-100 rounded p-5 mb-3">
         <p
           className="absolute top-0 right-3 font-bold cursor-pointer p-2"

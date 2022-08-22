@@ -2,17 +2,18 @@ import SingleGridView from "../components/SingleGridView";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import Web3Modal from "web3modal";
-
+import { _getAllCollections } from "../helper/events.ts";
 import axios from "axios";
-
 import {
   _getMarketContract,
   _getCollectionContract,
 } from "../helper/contracts.ts";
 import Dashboard from "../components/Dashboard";
+import SingleCollection from "../components/SingleCollectionView";
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
@@ -21,9 +22,22 @@ export default function Home() {
 
   const init = async () => {
     const market = _getMarketContract();
+    const col = await _getAllCollections();
+
+    const collection = col.map((item) => {
+      const newItem = {
+        address: item.returnValues.collectionAddress,
+        name: item.returnValues.name,
+        owner: item.returnValues.owner,
+        symbol: item.returnValues.symbol,
+      };
+      return newItem;
+    });
+    setCollections((pre) => (pre = collection));
     let listOfItem;
     try {
       const data = await market.listingItems();
+
       listOfItem = await Promise.all(
         data.map(async (item) => {
           const address = item.collectionAddress;
@@ -34,8 +48,10 @@ export default function Home() {
             item.price.toString(),
             "ether"
           );
+          const listingId = item.listingId.toString();
           const metaData = await axios.get(tokenUri);
           let formateItem = {
+            listingId,
             price,
             tokenId: item.tokenId.toString(),
             creator: item.creator,
@@ -52,26 +68,6 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
-
-    // const data = await marketContract.fetchMarketItems();
-    // const items = await Promise.all(
-    //   data.map(async (item) => {
-    //     const tokenUri = await nftContract.tokenURI(item.tokenId);
-    //     const metaData = await axios.get(tokenUri);
-    //     const price = ethers.utils.formatUnits(item.price.toString(), "ether");
-    //     let formateItem = {
-    //       price,
-    //       tokenId: item.tokenId.toString(),
-    //       seller: item.seller,
-    //       owner: item.owner,
-    //       image: metaData.data.image,
-    //       name: metaData.data.name,
-    //       description: metaData.data.description,
-    //     };
-    //     return formateItem;
-    //   })
-    // );
-    // setNfts((preState) => (preState = items));
   };
 
   const buyNFT = async (nft) => {
@@ -171,21 +167,44 @@ export default function Home() {
 
   return (
     <div className="h-full flex flex-col w-full">
-      <Dashboard />
-      <div className="grid grid-cols-4 gap-5 my-5 px-5 ">
-        {nfts.length ? (
-          nfts.map((item) => (
-            <SingleGridView
-              key={item.tokenId}
-              nft={item}
-              isBuy={true}
-              buyNFT={transferToken}
-              processing={processing}
-            />
-          ))
-        ) : (
-          <div>Loading ..</div>
-        )}
+      <Dashboard artWork={nfts.length} collections={collections.length} />
+      <div className="pt-40 space-y-10 text-3xl">
+        <h2 className="text-white font-serif font-semibold">
+          Top Collections{" "}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4 gap-5">
+          {collections.length ? (
+            collections.map((item, index) =>
+              index <= 20 ? (
+                <SingleCollection
+                  key={item.address + item.transactionHash}
+                  index={index}
+                  item={item}
+                />
+              ) : null
+            )
+          ) : (
+            <div>Loading ..</div>
+          )}
+        </div>
+      </div>
+      <div className="pt-20 space-y-10 text-3xl">
+        <h2 className="text-white font-serif font-semibold">Top NFT </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {nfts.length ? (
+            nfts.map((item) => (
+              <SingleGridView
+                key={item.listingId}
+                nft={item}
+                isBuy={true}
+                buyNFT={transferToken}
+                processing={processing}
+              />
+            ))
+          ) : (
+            <div>Loading ..</div>
+          )}
+        </div>
       </div>
     </div>
   );

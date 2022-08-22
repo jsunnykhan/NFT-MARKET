@@ -38,7 +38,7 @@
     border: 1px solid #ebebeb;
     border-radius: 0.25rem;
     text-decoration: none;
-    color: #000;
+    color: #ffff;
   }
 
   .show-counter .countdown {
@@ -61,5 +61,41 @@
     text-transform: uppercase;
     font-size: 0.75rem;
     line-height: 1rem;
+  }
+}
+
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: none;
+    background: black;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #4d0066;
+    border-radius: 10px;
+  }
+
+  .center {
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }

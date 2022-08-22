@@ -22,10 +22,17 @@
     "**/*.ts",
     "**/*.tsx",
     "src/pages/index.jsx",
+
     "src/pages/create-nft.jsx",
     "src/helper/metamask.ts",
     "src/helper/events/approveEvent.js",
-    "src/helper/events/transferEvent.js"
+    "src/helper/events/transferEvent.js",
+
+    "src/pages/create-nft.jsx",
+    "src/helper/metamask.ts",
+    "src/helper/events.ts",
+    "src/helper/hooks/useNFT.js",
+    "src/features/CreateNFTToken.jsx"
   ],
   "exclude": ["node_modules"]
 }

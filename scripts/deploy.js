@@ -31,13 +31,13 @@ async function main() {
     auctionAddress,
   };
 
-  const configFIle = `export const Market_ADDRESS = "${nftMarketAddress}";
+  const configFile = `export const Market_ADDRESS = "${nftMarketAddress}";
   export const NFT_ADDRESS = "${nftAddress}";
   export const ERC20_TOKEN = "${vsCoinAddress}";
   export const AUCTION_MARKET = "${auctionAddress}";
   `;
 
-  fs.writeFileSync('./config.js', configFIle);
+  fs.writeFileSync('./config.js', configFile);
 
   console.log({ nftMarketAddress, nftAddress, vsCoinAddress, auctionAddress });
 }

@@ -8,7 +8,11 @@ export const useConnect = () => {
 
   useEffect(() => {
     if (window.ethereum) {
-      setIsMetamask((pre) => (pre = true));
+      if (window.ethereum.isMetamask) {
+        setIsMetamask((pre) => (pre = true));
+      } else {
+        setIsMetamask((pre) => (pre = false));
+      }
       init();
 
       try {
@@ -22,8 +26,6 @@ export const useConnect = () => {
       } catch (error) {
         console.error(error);
       }
-    } else {
-      setIsMetamask((pre) => (pre = false));
     }
   }, []);
 

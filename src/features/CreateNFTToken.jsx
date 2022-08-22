@@ -2,17 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 
-import { create as ipfsHttpClient } from "ipfs-http-client";
 import { uploadMetaData } from "../helper/upload";
 import { signInRequestMetaMask } from "../helper/metamask.ts";
 import { _listingToMarket, _minting } from "../helper/collection.ts";
 import PropertiesModal from "../components/propertiesModal";
 import MakeCollectionModal from "../components/MakeCollectionModal";
-import Dropdown from "../components/Dropdown";
+import Dropdown from "../components/Dropdown.tsx";
 import Web3 from "web3";
 import Market from "../../artifacts/contracts/market/NFTMarket.sol/NFTMarket.json";
 import { Market_ADDRESS } from "../../config";
-import { data } from "autoprefixer";
+
+import {
+  _getAllOwnedCollection,
+  _getDefaultCollection,
+} from "../helper/collection.ts";
+import { useConnect } from "../helper/hooks/useConnect";
 
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;
 // const client = ipfsHttpClient(`${ipfsBaseUrl}`);
@@ -28,9 +32,9 @@ const CreateNFTToken = () => {
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState({});
-  const [collectionList, setCollectionList] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [file, setFile] = useState(undefined);
-
+  const [collectionAddress, setCollectionAddress] = useState("");
   const router = useRouter();
 
   const onChange = async (event) => {
@@ -38,6 +42,27 @@ const CreateNFTToken = () => {
     const url = URL.createObjectURL(_file);
     setFile(_file);
     setFileUrl((preState) => (preState = url));
+  };
+
+  const [account, chainId, connect, isMetamask] = useConnect();
+
+  useEffect(() => {
+    if (account) {
+      getAllOwnedCollection();
+    } else {
+      getDefaultCollection();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account]);
+
+  const getAllOwnedCollection = async () => {
+    const collectionList = await _getAllOwnedCollection(account);
+    setCollections((pre) => (pre = collectionList));
+  };
+
+  const getDefaultCollection = async () => {
+    const defaultCollection = await _getDefaultCollection();
+    setCollections((pre) => (pre = [defaultCollection]));
   };
 
   const creatingNftMetaData = async () => {
@@ -62,40 +87,42 @@ const CreateNFTToken = () => {
     router.push("/collectors");
   };
 
-  const getEvents = async () => {
-    const web3 = new Web3(window.ethereum);
-    const marketContract = new web3.eth.Contract(Market.abi, Market_ADDRESS);
-    const option = {
-      filter: {
-        owner: await web3.eth.getAccounts(),
-      },
-      fromBlock: 0,
-      toBlock: "latest",
-    };
+  // const getEvents = async () => {
+  //   const web3 = new Web3(window.ethereum);
+  //   const marketContract = new web3.eth.Contract(Market.abi, Market_ADDRESS);
+  //   const option = {
+  //     filter: {
+  //       owner: await web3.eth.getAccounts(),
+  //     },
+  //     fromBlock: 0,
+  //     toBlock: "latest",
+  //   };
 
-    const defaultCollEvent = await marketContract.getPastEvents(
-      "CollectionCreated",
-      {
-        fromBlock: 0,
-        toBlock: "latest",
-      }
-    );
-    console.log(defaultCollEvent);
+  //   const defaultCollEvent = await marketContract.getPastEvents(
+  //     "CollectionCreated",
+  //     {
+  //       fromBlock: 0,
+  //       toBlock: "latest",
+  //     }
+  //   );
+  //   console.log(defaultCollEvent);
 
-    setCollectionList([defaultCollEvent[0]]);
-    const events = await marketContract.getPastEvents(
-      "CollectionCreated",
-      option
-    );
-    setCollectionList((data) => [...data, ...events]);
-    // setCollectionList(events);
-    setSelectedCollection(collectionList[0]);
-    console.log(collectionList);
-  };
+  //   setCollectionList([defaultCollEvent[0]]);
+  //   const events = await marketContract.getPastEvents(
+  //     "CollectionCreated",
+  //     option
+  //   );
+  //   setCollectionList((data) => [...data, ...events]);
+  //   // setCollectionList(events);
+  //   setSelectedCollection(collectionList[0]);
+  //   console.log(collectionList);
+  // };
 
   const handleChange = (e) => {
     setSelectedCollection(collectionList[e.target.value]);
   };
+
+  console.log(collectionAddress);
 
   useEffect(() => {
     window.ethereum.on("accountsChanged", () => {
@@ -105,7 +132,7 @@ const CreateNFTToken = () => {
     window.ethereum.on("chainChanged", () => {
       window.location.reload();
     });
-    getEvents();
+    // getEvents();
     if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
     } else {
@@ -116,6 +143,10 @@ const CreateNFTToken = () => {
   const attributeModalHandler = async () => {
     // await signInRequestMetaMask();
     setIsModalOpen(true);
+  };
+
+  const createCollection = () => {
+    setIsCollectionModalOpen((pre) => (pre = true));
   };
 
   return (
@@ -133,13 +164,12 @@ const CreateNFTToken = () => {
         )}
         {isCollectionModalOpen && (
           <MakeCollectionModal
-            getEvents={getEvents}
             isCollectionModalOpen={isCollectionModalOpen}
             setIsCollectionModalOpen={setIsCollectionModalOpen}
           />
         )}
         <div className="flex flex-col space-y-5 w-2/5 my-5">
-          <h2 className="flex font-semibold text-4xl mb-2 ">Create New Item</h2>
+          <h2 className="flex font-medium text-4xl mb-2 font-serif">Create New NFT</h2>
           <div className="space-y-2">
             <h3 className="font-semibold text-base text-gray-700">
               Image, Video, Audio, or 3D Model
@@ -165,27 +195,15 @@ const CreateNFTToken = () => {
               />
             </div>
           </div>
-
-          <div className="space-y-2">
-            <button
-              className="bg-blue-400 py-4 px-8 rounded-xl text-white font-bold text-xl disabled:bg-blue-200"
-              onClick={() => {
-                setIsCollectionModalOpen(true);
-              }}
-            >
-              Create Collection
-            </button>
-          </div>
-          {collectionList.length !== 0 ? (
+          {collections.length !== 0 ? (
             <div className="space-y-2">
               <Dropdown
-                onChange={handleChange}
-                collectionList={collectionList}
+                setCollectionAddress={setCollectionAddress}
+                collections={collections}
+                createCollection={createCollection}
               />
             </div>
-          ) : (
-            ""
-          )}
+          ) : null}
           <div className="space-y-2">
             <h3 className="font-semibold text-xl text-gray-700">Name</h3>
             <input

@@ -221,7 +221,7 @@ const Auction = () => {
               <ul>
                 {bidEvents.map((event) => {
                   return (
-                    <li>
+                    <li key={event.transactionHash}>
                       {event.returnValues.bidder} bid{' '}
                       {ethers.utils.formatUnits(event.returnValues.bid)}
                     </li>

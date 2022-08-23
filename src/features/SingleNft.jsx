@@ -15,6 +15,11 @@ import { ERC20_TOKEN } from '../helper/contractImport.ts';
 import axios from 'axios';
 import moment from 'moment';
 import { _getTransferEvents } from '../helper/events/transferEvent';
+import {
+  _getListedItemStatus,
+  _getNftPrice,
+  _buyNft,
+} from '../helper/market.ts';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
@@ -26,15 +31,16 @@ const SingleNFT = () => {
   const [tokenId, setTokenId] = useState('');
   const [history, setHistory] = useState([]);
   const [collectionAddress, setCollectionAddress] = useState('');
-
+  const [listingStatus, setListingStatus] = useState(false);
+  const [listingId, setListingId] = useState('');
   const [isAuctionModalOpen, setIsAuctionModalOpen] = useState(false);
   const [basePrice, setBasePrice] = useState('');
   const [auctionTime, setAuctionTime] = useState('');
+  const [listedPrice, setListedPrice] = useState('');
 
   const router = useRouter();
 
   const listingItemIntoMarket = async () => {
-    setIsSellModalOpen(false);
     if (singleNft.tokenId) {
       const listingMarket = await _listingToMarket(
         singleNft.tokenId,
@@ -44,6 +50,7 @@ const SingleNFT = () => {
       setPrice('');
       console.log(listingMarket);
       router.push('/');
+      setIsSellModalOpen(false);
     }
   };
 
@@ -76,10 +83,25 @@ const SingleNFT = () => {
     setIsAuctionModalOpen(false);
   };
 
+  const buyNft = async () => {
+    await _buyNft(listingId, collectionAddress, listedPrice);
+    router.push('/collectors');
+  };
+
   const extractDetail = (addressToken) => {
     const collectionAddress = addressToken.slice(0, 42);
+    console.log(collectionAddress);
     const tokenId = addressToken.slice(43, addressToken.length);
-    return { tokenId, collectionAddress };
+    console.log(tokenId);
+    const quearyString = window.location.search;
+    console.log(typeof quearyString);
+    let listingId;
+    if (quearyString) {
+      const param = new URLSearchParams(quearyString);
+      console.log(param.get('id'));
+      listingId = param.get('id');
+    }
+    return { tokenId, collectionAddress, listingId };
   };
 
   const sellModalOpen = () => {
@@ -113,10 +135,28 @@ const SingleNFT = () => {
     setHistory(transferEvents);
   };
 
+  const isListed = async (listingId) => {
+    const islisted = await _getListedItemStatus(listingId);
+    setListingStatus(islisted);
+    if (islisted) {
+      const price = await _getNftPrice(listingId);
+      setListedPrice(price);
+    }
+  };
+
   useEffect(() => {
     const addressToken = window.location.pathname.split('/').pop();
     console.log(addressToken);
-    const { tokenId, collectionAddress } = extractDetail(addressToken);
+    const { tokenId, collectionAddress, listingId } =
+      extractDetail(addressToken);
+    if (listingId) {
+      setListingId(listingId);
+      isListed(listingId);
+      setCollectionAddress(collectionAddress);
+      setTokenId(tokenId);
+      getNftDetails(collectionAddress, tokenId);
+      getHistory(collectionAddress, tokenId);
+    }
     setCollectionAddress(collectionAddress);
     setTokenId(tokenId);
     getNftDetails(collectionAddress, tokenId);
@@ -227,20 +267,36 @@ const SingleNFT = () => {
               <p className="font-medium">Created by</p>
               <p className="text-blue-600 w-20">{singleNft.creator}</p>
             </div>
-            <div className="flex justify-start">
-              <button
-                className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg"
-                onClick={sellModalOpen}
-              >
-                Sell
-              </button>
-              <button
-                className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg mx-2"
-                onClick={auctionModalOpen}
-              >
-                Auction
-              </button>
-            </div>
+            {!listingStatus ? (
+              <div className="flex justify-start">
+                <button
+                  className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg"
+                  onClick={sellModalOpen}
+                >
+                  Sell
+                </button>
+                <button
+                  className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg mx-2"
+                  onClick={auctionModalOpen}
+                >
+                  Auction
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-start">
+                  <div>Price: {listedPrice} VSC</div>
+                </div>
+                <div className="flex justify-start">
+                  <button
+                    className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg"
+                    onClick={buyNft}
+                  >
+                    Buy
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           <div className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
             <div className="flex space-x-3">

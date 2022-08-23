@@ -27,7 +27,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
         address collectionAddress; // Collection address
         address payable creator; // `creator` who create/mint this token
         address payable owner; // `owner` who own this token
-        State state; // token State Listed or sold
+        bool listed; // token State Listed or sold
         uint256 price; // price of this token
     }
 
@@ -78,6 +78,15 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
         return _listings[listingId];
     }
 
+    function getListingStatus(uint256 listingId)
+        public
+        view
+        virtual
+        returns (bool)
+    {
+        return _listings[listingId].listed;
+    }
+
     function createListing(
         uint256 tokenId,
         address collectionAddress,
@@ -99,7 +108,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
             collectionAddress,
             payable(_owner),
             payable(_owner),
-            State.LISTED,
+            true,
             price
         );
         _listings[newListingId] = listing;

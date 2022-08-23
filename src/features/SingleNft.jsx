@@ -5,13 +5,21 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { VscListSelection } from 'react-icons/vsc';
 import { MdOutlineBookmark } from 'react-icons/md';
 import SellModal from '../components/sellModal';
-import { _getSingleNft } from '../helper/collection.ts';
-import { _listingToMarket } from '../helper/collection.ts';
+import { _getSingleNft, _listingToMarket } from '../helper/collection.ts';
 import { _getCreator } from '../helper/events/getCreator';
 import AuctionModal from '../components/AuctionModal';
 import { _startAuction } from '../helper/auction.ts';
 import { toMiliseonds } from '../helper/convertTime.ts';
 import { useRouter } from 'next/router';
+import { ERC20_TOKEN } from '../helper/contractImport.ts';
+import axios from 'axios';
+import moment from 'moment';
+import { _getTransferEvents } from '../helper/events/transferEvent';
+import {
+  _getListedItemStatus,
+  _getNftPrice,
+  _buyNft,
+} from '../helper/market.ts';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
@@ -21,15 +29,18 @@ const SingleNFT = () => {
   const [singleNft, setSingleNft] = useState({});
   const [image, setImage] = useState();
   const [tokenId, setTokenId] = useState('');
-
+  const [history, setHistory] = useState([]);
+  const [collectionAddress, setCollectionAddress] = useState('');
+  const [listingStatus, setListingStatus] = useState(false);
+  const [listingId, setListingId] = useState('');
   const [isAuctionModalOpen, setIsAuctionModalOpen] = useState(false);
   const [basePrice, setBasePrice] = useState('');
   const [auctionTime, setAuctionTime] = useState('');
+  const [listedPrice, setListedPrice] = useState('');
 
   const router = useRouter();
 
   const listingItemIntoMarket = async () => {
-    setIsSellModalOpen(false);
     if (singleNft.tokenId) {
       const listingMarket = await _listingToMarket(
         singleNft.tokenId,
@@ -39,6 +50,7 @@ const SingleNFT = () => {
       setPrice('');
       console.log(listingMarket);
       router.push('/');
+      setIsSellModalOpen(false);
     }
   };
 
@@ -53,13 +65,43 @@ const SingleNFT = () => {
       duration,
       basePrice
     );
+    const currentTime = moment().format('YYYY-MM-DDTHH:mm:ss');
+    console.log(currentTime.toString());
+    const durationInHour = Math.ceil(duration / 3600);
+    const response = await axios.post(
+      'http://159.89.3.212:8860/api/v1/auction',
+      {
+        auction_id: singleNft.tokenId,
+        token_address: ERC20_TOKEN,
+        nft_contract: singleNft.collectionAddress,
+        auction_created_time: currentTime,
+        auction_start_time: currentTime,
+        duration: durationInHour,
+      }
+    );
+    console.log(response);
     setIsAuctionModalOpen(false);
+  };
+
+  const buyNft = async () => {
+    await _buyNft(listingId, collectionAddress, listedPrice);
+    router.push('/collectors');
   };
 
   const extractDetail = (addressToken) => {
     const collectionAddress = addressToken.slice(0, 42);
+    console.log(collectionAddress);
     const tokenId = addressToken.slice(43, addressToken.length);
-    return { tokenId, collectionAddress };
+    console.log(tokenId);
+    const quearyString = window.location.search;
+    console.log(typeof quearyString);
+    let listingId;
+    if (quearyString) {
+      const param = new URLSearchParams(quearyString);
+      console.log(param.get('id'));
+      listingId = param.get('id');
+    }
+    return { tokenId, collectionAddress, listingId };
   };
 
   const sellModalOpen = () => {
@@ -70,13 +112,9 @@ const SingleNFT = () => {
     setIsAuctionModalOpen(true);
   };
 
-  const getNftDetails = async () => {
-    const addressToken = window.location.pathname.split('/').pop();
-    console.log(addressToken);
-    const { tokenId, collectionAddress } = extractDetail(addressToken);
+  const getNftDetails = async (collectionAddress, tokenId) => {
     const singleNft = await _getSingleNft(tokenId, collectionAddress);
     const creator = await _getCreator(collectionAddress, tokenId);
-    setTokenId(tokenId);
     const tempNft = {
       tokenId: tokenId,
       collectionAddress: collectionAddress,
@@ -91,8 +129,38 @@ const SingleNFT = () => {
     setSingleNft(tempNft);
   };
 
+  const getHistory = async (collectionAddress, tokenId) => {
+    const transferEvents = await _getTransferEvents(collectionAddress, tokenId);
+    console.log(transferEvents);
+    setHistory(transferEvents);
+  };
+
+  const isListed = async (listingId) => {
+    const islisted = await _getListedItemStatus(listingId);
+    setListingStatus(islisted);
+    if (islisted) {
+      const price = await _getNftPrice(listingId);
+      setListedPrice(price);
+    }
+  };
+
   useEffect(() => {
-    getNftDetails();
+    const addressToken = window.location.pathname.split('/').pop();
+    console.log(addressToken);
+    const { tokenId, collectionAddress, listingId } =
+      extractDetail(addressToken);
+    if (listingId) {
+      setListingId(listingId);
+      isListed(listingId);
+      setCollectionAddress(collectionAddress);
+      setTokenId(tokenId);
+      getNftDetails(collectionAddress, tokenId);
+      getHistory(collectionAddress, tokenId);
+    }
+    setCollectionAddress(collectionAddress);
+    setTokenId(tokenId);
+    getNftDetails(collectionAddress, tokenId);
+    getHistory(collectionAddress, tokenId);
   }, []);
 
   return (
@@ -199,25 +267,58 @@ const SingleNFT = () => {
               <p className="font-medium">Created by</p>
               <p className="text-blue-600 w-20">{singleNft.creator}</p>
             </div>
-            <div className="flex justify-start">
-              <button
-                className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg"
-                onClick={sellModalOpen}
-              >
-                Sell
-              </button>
-              <button
-                className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg mx-2"
-                onClick={auctionModalOpen}
-              >
-                Auction
-              </button>
-            </div>
+            {!listingStatus ? (
+              <div className="flex justify-start">
+                <button
+                  className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg"
+                  onClick={sellModalOpen}
+                >
+                  Sell
+                </button>
+                <button
+                  className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg mx-2"
+                  onClick={auctionModalOpen}
+                >
+                  Auction
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-start">
+                  <div>Price: {listedPrice} VSC</div>
+                </div>
+                <div className="flex justify-start">
+                  <button
+                    className="w-[20%] bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg"
+                    onClick={buyNft}
+                  >
+                    Buy
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           <div className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
             <div className="flex space-x-3">
               <h2 className="font-semibold capitalize text-2xl">NFT History</h2>
             </div>
+            {history.length !== 0 ? (
+              <ul>
+                {history.map((event) => {
+                  return (
+                    <li key={event.transactionHash}>
+                      <span className="truncate">
+                        {event.returnValues.from}
+                      </span>{' '}
+                      to{' '}
+                      <span className="truncate">{event.returnValues.to}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p>No bids</p>
+            )}
           </div>
         </div>
       </div>

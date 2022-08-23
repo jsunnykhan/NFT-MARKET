@@ -35,9 +35,9 @@ const Auction = () => {
     await _bid(auctionId, price);
     const events = await _getBidEvents();
     setBidEvents(events);
-    if (events.length !== 0) {
-      setHIghestBid(events[events.length - 1].returnValues);
-    }
+    // if (events.length !== 0) {
+    //   setHIghestBid(events[events.length - 1].returnValues);
+    // }
     setIsBidModalOpen(false);
   };
 
@@ -60,7 +60,7 @@ const Auction = () => {
     );
     const events = await _getBidEvents(auctionId);
     setBidEvents(events);
-    setHIghestBid(events[events.length - 1]);
+    // setHIghestBid(events[events.length - 1]);
     setAucitonId(auctionId);
     const tID = auctionItem.tokenId.toString();
     const bValue = ethers.utils.formatUnits(
@@ -173,7 +173,7 @@ const Auction = () => {
           <div className="h-max shadow-lg px-5 py-5 mb-4 space-y-5 ring-1 ring-purple-100 rounded">
             <div className="flex space-x-2">
               <p className="font-medium">Created by</p>
-              <p className="text-blue-600 truncate w-40">{singleNft.creator}</p>
+              <p className="text-blue-600 w-40">{singleNft.creator}</p>
             </div>
             <div className="flex space-x-3">
               <h3 className="font-semibold capitalize text-4xl">
@@ -188,9 +188,7 @@ const Auction = () => {
             </div>
             <div className="flex space-x-2">
               <p className="font-medium">Base price: </p>
-              <p className="text-blue-600 truncate w-20">
-                {singleNft.baseValue} VSC
-              </p>
+              <p className="text-blue-600 w-20">{singleNft.baseValue} VSC</p>
             </div>
             {/* <div className="flex space-x-2">
               {bidEvents.length !== 0 ? (

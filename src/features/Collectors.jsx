@@ -67,6 +67,7 @@ const Collectors = () => {
                 item.returnValues.tokenId
               );
               const details = {
+                id: item.returnValues.tokenId,
                 name: data.name,
                 description: data.description,
                 image: data.image,
@@ -136,7 +137,7 @@ const Collectors = () => {
           <NftGridView
             nftList={mintedItems}
             notFoundMessage="You never mint any NFT"
-            redirectNftDetailPage={redirectNftDetailPage}
+            redirectDetailPage={redirectNftDetailPage}
           />
         </div>
       ) : tabHandle === 'collection' ? (

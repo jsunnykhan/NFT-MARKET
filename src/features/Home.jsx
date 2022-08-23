@@ -24,7 +24,7 @@ export default function Home() {
 
   useEffect(() => {
     init();
-    // getAuctionItems();
+    getAuctionItems();
   }, []);
 
   const getAuctionItems = async () => {
@@ -93,10 +93,7 @@ export default function Home() {
            * should it work?
            * unsupported ipfs protocol
            */
-          const metaData = await _getTokenUri(
-            address,
-            item.tokenId.toString()
-          );
+          const metaData = await _getTokenUri(address, item.tokenId.toString());
           let formatItem = {
             listingId,
             price,

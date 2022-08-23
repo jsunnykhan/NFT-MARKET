@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,7 +96,14 @@
     margin: auto;
     top: 50%;
     left: 50%;
-    -webkit-transform: translate(-50%,-20%);
+    -webkit-transform: translate(-50%, -20%);
     transform: translate(-50%, -20%);
+  }
+  .center_mid {
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
   }
 }

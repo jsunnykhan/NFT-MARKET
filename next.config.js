@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['upload.wikimedia.org', 'ipfs.infura.io', 'nftstorage.link'],
+    domains: ['159.89.3.212', 'ipfs.infura.io', 'nftstorage.link'],
   },
   env: {
     NFT_STORAGE_KEY:

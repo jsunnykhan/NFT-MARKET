@@ -1,4 +1,3 @@
-import SingleGridView from '../components/SingleGridView';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import Web3Modal from 'web3modal';
@@ -12,12 +11,16 @@ import Dashboard from '../components/Dashboard';
 import SingleCollection from '../components/SingleCollectionView';
 import { _getAllAuctionItems } from '../helper/auction.ts';
 import NftGridView from '../components/NftGridView';
+import { _getTokenUri } from '../helper/collection.ts';
+import { useRouter } from 'next/router';
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
   const [auctionItems, setAuctionItems] = useState([]);
   const [collections, setCollections] = useState([]);
   const [processing, setProcessing] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     init();
@@ -27,10 +30,36 @@ export default function Home() {
   const getAuctionItems = async () => {
     const items = await _getAllAuctionItems();
     console.log(items);
-    setAuctionItems(items);
+
+    const tempItems = await Promise.all(
+      items.map(async (item) => {
+        const metaData = await _getTokenUri(
+          item.address,
+          item.tokenId.toString()
+        );
+        let formatItem = {
+          id: item.auctionId.toString(),
+          tokenId: item.tokenId.toString(),
+          creator: item.creator,
+          owner: item.seller,
+          collectionAddress: item.nftContract,
+          price: ethers.utils.formatUnits(item.baseValue.toString(), 'ether'),
+          image: metaData.image,
+          name: metaData.name,
+          description: metaData.description,
+        };
+        return formatItem;
+      })
+    );
+
+    console.log(tempItems);
+    setAuctionItems(tempItems);
   };
 
   const init = async () => {
+    /**
+     * Get collection
+     */
     const market = _getMarketContract();
     const col = await _getAllCollections();
 
@@ -44,6 +73,10 @@ export default function Home() {
       return newItem;
     });
     setCollections((pre) => (pre = collection));
+
+    /**
+     * Get Nfts
+     */
     let listOfItem;
     try {
       const data = await market.listingItems();
@@ -59,10 +92,15 @@ export default function Home() {
             'ether'
           );
           const listingId = item.listingId.toString();
+          /**
+           * should it work?
+           * unsupported ipfs protocol
+           */
           const metaData = await axios.get(tokenUri);
-          let formateItem = {
+          let formatItem = {
             listingId,
             price,
+            id: item.tokenId.toString(),
             tokenId: item.tokenId.toString(),
             creator: item.creator,
             owner: item.owner,
@@ -71,7 +109,7 @@ export default function Home() {
             name: metaData.data.name,
             description: metaData.data.description,
           };
-          return formateItem;
+          return formatItem;
         })
       );
       setNfts((pre) => (pre = listOfItem));
@@ -80,13 +118,22 @@ export default function Home() {
     }
   };
 
+  /**
+   * @dev Create nft page link and push
+   * @param {string|Number} tokenId
+   * @param {string} collection
+   */
   const redirectNFTDetailPage = (tokenId, collection) => {
-    const link = `nft/${collection}:${tokenId}`;
+    const link = `collectors/${collection}:${tokenId}`;
     router.push(link);
   };
 
-  const redirectAuctionDetailPage = (auctionId) => {
-    const link = `nft/${collection}:${auctionId}`;
+  /**
+   * @dev Create auction page link and push
+   * @param {string|Number} auctionId
+   */
+  const redirectAuctionDetailPage = (auctionId, collection) => {
+    const link = `auction/${collection}:${auctionId}`;
     router.push(link);
   };
 
@@ -210,7 +257,7 @@ export default function Home() {
       </div>
       <div className="pt-20 space-y-10 text-3xl">
         <h2 className="text-white font-serif font-semibold">Top NFT </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div>
           {nfts.length ? (
             <NftGridView
               nftList={nfts}
@@ -223,11 +270,11 @@ export default function Home() {
       </div>
       <div className="pt-20 space-y-10 text-3xl">
         <h2 className="text-white font-serif font-semibold">On Auction</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {nfts.length ? (
+        <div>
+          {auctionItems.length ? (
             <NftGridView
-              nftList={nfts}
-              redirectDetailPage={redirectNFTDetailPage}
+              nftList={auctionItems}
+              redirectDetailPage={redirectAuctionDetailPage}
             />
           ) : (
             <div>Loading ..</div>

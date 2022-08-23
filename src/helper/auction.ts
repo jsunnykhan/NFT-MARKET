@@ -25,7 +25,6 @@ export const _startAuction = async (
     signer
   );
   const valueInWei = ethers.utils.parseEther(baseValue);
-  console.log(valueInWei);
   const transactionGoing = await auctionMarket.startAuction(
     collectionAddress,
     tokenId,
@@ -85,7 +84,7 @@ export const _getAllAuctionItems = async () => {
     signer
   );
   const items = await auctionMarket.getAllAuctionItems();
-  console.log(items);
+  
   return items;
 };
 

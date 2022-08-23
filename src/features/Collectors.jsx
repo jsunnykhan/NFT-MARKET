@@ -23,6 +23,12 @@ const Collectors = () => {
   const [account, chainId, connect, isMetamask] = useConnect();
 
   useEffect(() => {
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload();
+    });
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
     if (account) {
       init();
     } else {

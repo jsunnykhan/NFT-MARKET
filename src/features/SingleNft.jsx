@@ -145,6 +145,12 @@ const SingleNFT = () => {
   };
 
   useEffect(() => {
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload();
+    });
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
     const addressToken = window.location.pathname.split('/').pop();
     console.log(addressToken);
     const { tokenId, collectionAddress, listingId } =

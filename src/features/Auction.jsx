@@ -88,6 +88,12 @@ const Auction = () => {
   console.log(bidEvents);
 
   useEffect(() => {
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload();
+    });
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
     getAuctionDetails();
   }, []);
 

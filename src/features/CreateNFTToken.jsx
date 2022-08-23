@@ -1,21 +1,21 @@
-import React, { useEffect, useState, CSSProperties } from "react";
-import { useRouter } from "next/router";
-import Image from "next/image";
+import React, { useEffect, useState, CSSProperties } from 'react';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 
-import { uploadMetaData } from "../helper/upload";
+import { uploadMetaData } from '../helper/upload';
 
-import { _listingToMarket, _minting } from "../helper/collection.ts";
-import PropertiesModal from "../components/propertiesModal";
-import MakeCollectionModal from "../components/MakeCollectionModal";
-import Dropdown from "../components/Dropdown.tsx";
+import { _listingToMarket, _minting } from '../helper/collection.ts';
+import PropertiesModal from '../components/propertiesModal';
+import MakeCollectionModal from '../components/MakeCollectionModal';
+import Dropdown from '../components/Dropdown.tsx';
 
 import {
   _getAllOwnedCollection,
   _getDefaultCollection,
-} from "../helper/collection.ts";
-import { useConnect } from "../helper/hooks/useConnect";
+} from '../helper/collection.ts';
+import { useConnect } from '../helper/hooks/useConnect';
 
-import CustomModal from "../components/CustomModal";
+import CustomModal from '../components/CustomModal';
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;
 
 const CreateNFTToken = () => {
@@ -24,14 +24,14 @@ const CreateNFTToken = () => {
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formInput, setFormInput] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState({});
   const [collections, setCollections] = useState([]);
   const [file, setFile] = useState(undefined);
-  const [collectionAddress, setCollectionAddress] = useState("");
+  const [collectionAddress, setCollectionAddress] = useState('');
 
   const router = useRouter();
 
@@ -45,6 +45,12 @@ const CreateNFTToken = () => {
   const [account, chainId, connect, isMetamask] = useConnect();
 
   useEffect(() => {
+    window.ethereum.on('accountsChanged', () => {
+      window.location.reload();
+    });
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
     if (account) {
       getAllOwnedCollection();
     } else {
@@ -81,7 +87,7 @@ const CreateNFTToken = () => {
     console.log(selectedCollection.address);
     const tokenId = await _minting(metaDataUrl, selectedCollection.address);
     console.log(tokenId);
-    router.push("/collectors");
+    router.push('/collectors');
   };
 
   useEffect(() => {

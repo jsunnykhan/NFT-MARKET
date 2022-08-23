@@ -12,6 +12,9 @@ import AuctionModal from '../components/AuctionModal';
 import { _startAuction } from '../helper/auction.ts';
 import { toMiliseonds } from '../helper/convertTime.ts';
 import { useRouter } from 'next/router';
+import { ERC20_TOKEN } from '../helper/contractImport.ts';
+import axios from 'axios';
+import moment from 'moment';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
@@ -53,6 +56,20 @@ const SingleNFT = () => {
       duration,
       basePrice
     );
+    const currentTime = moment().format('YYYY-MM-DDTHH:mm:ss');
+    console.log(currentTime.toString());
+    const response = await axios.post(
+      'http://159.89.3.212:8860/api/v1/auction',
+      {
+        auction_id: singleNft.tokenId,
+        token_address: ERC20_TOKEN,
+        nft_contract: singleNft.collectionAddress,
+        auction_created_time: currentTime,
+        auction_start_time: currentTime,
+        duration: 1,
+      }
+    );
+    console.log(response);
     setIsAuctionModalOpen(false);
   };
 

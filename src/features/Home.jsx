@@ -1,16 +1,15 @@
+import Web3Modal from 'web3modal';
+import Dashboard from '../components/Dashboard';
+import SingleCollection from '../components/SingleCollectionView';
+import NftGridView from '../components/NftGridView';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import Web3Modal from 'web3modal';
 import { _getAllCollections } from '../helper/events.ts';
-import axios from 'axios';
 import {
   _getMarketContract,
   _getCollectionContract,
 } from '../helper/contracts.ts';
-import Dashboard from '../components/Dashboard';
-import SingleCollection from '../components/SingleCollectionView';
 import { _getAllAuctionItems } from '../helper/auction.ts';
-import NftGridView from '../components/NftGridView';
 import { _getTokenUri } from '../helper/collection.ts';
 import { useRouter } from 'next/router';
 

@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import NftGridView from '../components/NftGridView';
+import GlowingButton from '../components/GlowingButton';
+import SingleCollection from '../components/SingleCollectionView';
 import {
   _getOwnCollections,
   _getCollectionOwnMintedItems,
 } from '../helper/events.ts';
-import axios from 'axios';
-
 import { _getTokenUri, _getAllOwnedCollection } from '../helper/collection.ts';
-import NftGridView from '../components/NftGridView';
 import { useRouter } from 'next/router';
-import GlowingButton from '../components/GlowingButton';
 import { useConnect } from '../helper/hooks/useConnect';
-import SingleCollection from '../components/SingleCollectionView';
 
 const Collectors = () => {
   const [mintedItems, setMintedItems] = useState([]);

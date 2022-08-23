@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-
+import axios from 'axios';
+import moment from 'moment';
+import SellModal from '../components/sellModal';
+import AuctionModal from '../components/AuctionModal';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { VscListSelection } from 'react-icons/vsc';
 import { MdOutlineBookmark } from 'react-icons/md';
-import SellModal from '../components/sellModal';
 import { _getSingleNft, _listingToMarket } from '../helper/collection.ts';
 import { _getCreator } from '../helper/events/getCreator';
-import AuctionModal from '../components/AuctionModal';
 import { _startAuction } from '../helper/auction.ts';
 import { toMiliseonds } from '../helper/convertTime.ts';
 import { useRouter } from 'next/router';
 import { ERC20_TOKEN } from '../helper/contractImport.ts';
-import axios from 'axios';
-import moment from 'moment';
 import { _getTransferEvents } from '../helper/events/transferEvent';
 import {
   _getListedItemStatus,

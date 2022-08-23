@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { _getCollectionMintedItems } from "../helper/events.ts";
-import { _getCollectionContract } from "../helper/contracts.ts";
+import Profile from "../components/Profile";
 import SingleGridView from "../components/SingleGridView";
 import axios from "axios";
+import { _getCollectionMintedItems } from "../helper/events.ts";
+import { _getCollectionContract } from "../helper/contracts.ts";
 import { ipfsToHttp } from "../helper/ipfsToHttp.ts";
-import Profile from "../components/Profile";
+
 
 const Collection = (props) => {
   const { address } = props;

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import CountdownTimer from '../components/timer/CountdownTimer';
+import BidModal from '../components/BidModal';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { VscListSelection } from 'react-icons/vsc';
 import { MdOutlineBookmark } from 'react-icons/md';
 import { _bid } from '../helper/auction.ts';
-import CountdownTimer from '../components/timer/CountdownTimer';
-import BidModal from '../components/BidModal';
 import { _getSingleAuctionItem } from '../helper/auction.ts';
 import { _getSingleNft } from '../helper/collection.ts';
 import { ethers } from 'ethers';

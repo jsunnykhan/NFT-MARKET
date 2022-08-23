@@ -35,9 +35,9 @@ const Auction = () => {
     await _bid(auctionId, price);
     const events = await _getBidEvents();
     setBidEvents(events);
-    if (events.length !== 0) {
-      setHIghestBid(events[events.length - 1].returnValues);
-    }
+    // if (events.length !== 0) {
+    //   setHIghestBid(events[events.length - 1].returnValues);
+    // }
     setIsBidModalOpen(false);
   };
 
@@ -60,7 +60,7 @@ const Auction = () => {
     );
     const events = await _getBidEvents(auctionId);
     setBidEvents(events);
-    setHIghestBid(events[events.length - 1]);
+    // setHIghestBid(events[events.length - 1]);
     setAucitonId(auctionId);
     const tID = auctionItem.tokenId.toString();
     const bValue = ethers.utils.formatUnits(

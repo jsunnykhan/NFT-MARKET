@@ -15,7 +15,6 @@ import { ERC20_TOKEN } from '../helper/contractImport.ts';
 import axios from 'axios';
 import moment from 'moment';
 import { _getTransferEvents } from '../helper/events/transferEvent';
-import { ethers } from 'ethers';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);

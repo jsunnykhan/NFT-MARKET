@@ -37,6 +37,10 @@ export default function Home() {
           item.address,
           item.tokenId.toString()
         );
+        /**
+         * @key id: For NftGridview component to have a common attribute
+         * to create the link
+         */
         let formatItem = {
           id: item.auctionId.toString(),
           tokenId: item.tokenId.toString(),
@@ -90,8 +94,8 @@ export default function Home() {
           );
           const listingId = item.listingId.toString();
           /**
-           * should it work?
-           * unsupported ipfs protocol
+           * @key id: For NftGridview component to have a common attribute
+           * to create the link
            */
           const metaData = await _getTokenUri(address, item.tokenId.toString());
           let formatItem = {

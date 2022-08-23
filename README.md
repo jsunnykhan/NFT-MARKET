@@ -1,15 +1,30 @@
-# Basic Sample Hardhat Project
+<-- Project Name -->
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+This is a NFT Marketplace built for Ethereum blockchain network. 
 
-Try running some of the following tasks:
+<-- Overall description of NFT and the project -->
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+<b>Technology stack:</b>
+
+<b>Demo:</b>
+
+<b>Features:</b>
+
+<b>Dependencies:</b>
+
+<b>How to run:</b>
+
+<b>User Guide:</b>
+
+<b>Upcoming features:</b>
+
+<b>Known issues:</b>
+
+<b>Where to get help:</b>
+
+<b>References:</b>
+
+
+
+
+

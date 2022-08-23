@@ -40,7 +40,7 @@ const AuctionModal = (props) => {
           require vsc coin{' '}
           <span className="text-red-600 font-extrabold">*</span>
         </p>
-        <div className="flex items-center h-full">
+        <div className="flex items-center h-full mb-4">
           <input
             className="bg-gray-100 w-full outline-none px-5 py-3 rounded-l-md"
             type="text"

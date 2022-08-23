@@ -84,9 +84,6 @@ export default function Home() {
       listOfItem = await Promise.all(
         data.map(async (item) => {
           const address = item.collectionAddress;
-          const tokenUri = await _getCollectionContract(address).tokenURI(
-            item.tokenId
-          );
           const price = ethers.utils.formatUnits(
             item.price.toString(),
             'ether'
@@ -96,7 +93,10 @@ export default function Home() {
            * should it work?
            * unsupported ipfs protocol
            */
-          const metaData = await axios.get(tokenUri);
+          const metaData = await _getTokenUri(
+            address,
+            item.tokenId.toString()
+          );
           let formatItem = {
             listingId,
             price,
@@ -105,9 +105,9 @@ export default function Home() {
             creator: item.creator,
             owner: item.owner,
             collectionAddress: address,
-            image: metaData.data.image,
-            name: metaData.data.name,
-            description: metaData.data.description,
+            image: metaData.image,
+            name: metaData.name,
+            description: metaData.description,
           };
           return formatItem;
         })

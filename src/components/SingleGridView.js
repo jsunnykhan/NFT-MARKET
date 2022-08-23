@@ -5,6 +5,8 @@ import { ipfsToHttp } from "../helper/ipfsToHttp.ts";
 const SingleGridView = (props) => {
   const { nft, isBuy, buyNFT, processing } = props;
   const [process, setProcess] = useState(false);
+
+ 
   return (
     <div className="h-full w-full rounded cursor-pointer ring-1 ring-secondary ring-opacity-40">
       <div className="h-[200px] relative">

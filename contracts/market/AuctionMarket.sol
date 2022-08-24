@@ -74,12 +74,12 @@ contract AuctionMarket is Context {
         address payable _creator,
         uint256 _biddingTime,
         uint256 _baseValue
-    ) public payable {
+    ) public {
         require(_baseValue > 0, "Price must be at least 1wei");
-        require(
-            msg.value >= listingPrice,
-            "You have to pay 0.01 ether to create Nft"
-        );
+        // require(
+        //     msg.value >= listingPrice,
+        //     "You have to pay 0.01 ether to create Nft"
+        // );
 
         uint256 auctionId = _itemID.current();
         auctionItems[auctionId] = AuctionItem(
@@ -103,7 +103,7 @@ contract AuctionMarket is Context {
          */
         // IERC721(_nftContract).transferFrom(_msgSender(), address(this), _tokenId);
 
-        IERC721(_nftContract).setApprovalForAll(address(this), true);
+        IERC721(_nftContract).approve(address(this), _tokenId);
 
         emit AuctionStarted(
             auctionId,
@@ -243,14 +243,9 @@ contract AuctionMarket is Context {
         );
     }
 
-    // Future Feature
-    // function terminateAuction(uint256 _auctionId) public {
-    //     address seller = auctionItems[_auctionId].seller;
-    //     bool auctionEnded = auctionItems[_auctionId].auctionEnded;
-    //     if(seller != tx.origin /* _msgSender() */ && !auctionEnded){
-
-    //     }
-    // }
+    function terminateAuction(uint256 _auctionId) public {
+        auctionItems[_auctionId].auctionEnded = true;
+    }
 
     // fetch functions
 
@@ -258,9 +253,11 @@ contract AuctionMarket is Context {
         uint256 totalItemCount = _itemID.current();
 
         AuctionItem[] memory _auctionItems = new AuctionItem[](totalItemCount);
+        uint256 currentIndex = 0;
         for (uint256 i = 0; i < totalItemCount; i++) {
             if (!auctionItems[i].auctionEnded) {
-                _auctionItems[i] = auctionItems[i];
+                _auctionItems[currentIndex] = auctionItems[i];
+                currentIndex++;
             }
         }
 

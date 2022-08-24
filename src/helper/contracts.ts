@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import {
   NFT_ADDRESS,
   collection,
@@ -16,7 +16,7 @@ const infuraApiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
 
 const URL: string = baseURL!;
 
-const _getProvider = (): ethers.providers.JsonRpcProvider => {
+const _getProvider = () => {
   const jsonRpcProvider: ethers.providers.JsonRpcProvider =
     new ethers.providers.JsonRpcProvider(baseURL);
   return jsonRpcProvider;
@@ -43,7 +43,7 @@ export const _getMarketContract = (): ethers.Contract => {
   return contract;
 };
 
-export const _getERC20Contract = (): ethers.Contract => {
+export const _getERC20Contract = () => {
   const contract: ethers.Contract = new ethers.Contract(
     ERC20_TOKEN,
     token.abi,
@@ -60,3 +60,14 @@ export const _getAuctionContract = (): ethers.Contract => {
   );
   return contract;
 };
+
+
+export const _getBalance = async (address: string) => {
+  const balance = await _getProvider().getBalance(address);
+  return Number(balance.toString()) / 10 ** 18;
+}
+
+export const _getNativeBalance = async (address: string) => {
+  const balance = await _getERC20Contract().balanceOf(address);
+  return Number(balance.toString()) / 10 ** 18;
+}

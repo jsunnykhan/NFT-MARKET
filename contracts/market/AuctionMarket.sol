@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../token/ERC721/ERC721.sol";
 import "../utils/Context.sol";
+import "hardhat/console.sol";
 
 contract AuctionMarket is Context {
     using Counters for Counters.Counter;
@@ -23,7 +24,7 @@ contract AuctionMarket is Context {
         address highestBidder;
         uint256 highestBid;
         bool auctionEnded;
-        bool sold;
+        bool auctionListed;
     }
 
     // make private
@@ -80,6 +81,7 @@ contract AuctionMarket is Context {
         //     msg.value >= listingPrice,
         //     "You have to pay 0.01 ether to create Nft"
         // );
+        _itemID.increment();
 
         uint256 auctionId = _itemID.current();
         auctionItems[auctionId] = AuctionItem(
@@ -93,10 +95,9 @@ contract AuctionMarket is Context {
             address(0),
             0,
             false,
-            false
+            true
         );
 
-        _itemID.increment();
         /**
          * @change
          * instead of transferring to the contract, need to just list
@@ -231,7 +232,7 @@ contract AuctionMarket is Context {
 
         IERC721(nftContract).transferFrom(seller, highestBidder, tokenId);
 
-        auctionItems[_auctionId].sold = true;
+        auctionItems[_auctionId].auctionListed = false;
         auctionItems[_auctionId].auctionEnded = true;
 
         emit AuctionEnded(
@@ -245,21 +246,37 @@ contract AuctionMarket is Context {
 
     function terminateAuction(uint256 _auctionId) public {
         auctionItems[_auctionId].auctionEnded = true;
+        auctionItems[_auctionId].auctionListed = false;
     }
 
     // fetch functions
 
     function getAllAuctionItems() public view returns (AuctionItem[] memory) {
         uint256 totalItemCount = _itemID.current();
-
-        AuctionItem[] memory _auctionItems = new AuctionItem[](totalItemCount);
+        
         uint256 currentIndex = 0;
+        uint256 count = 0;
+
         for (uint256 i = 0; i < totalItemCount; i++) {
-            if (!auctionItems[i].auctionEnded) {
-                _auctionItems[currentIndex] = auctionItems[i];
-                currentIndex++;
+            if (auctionItems[i + 1].auctionListed == true) {
+                count += 1;
             }
         }
+        AuctionItem[] memory _auctionItems = new AuctionItem[](count);
+
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            console.log(auctionItems[i + 1].auctionListed);
+            if (auctionItems[i + 1].auctionListed == true) {
+                console.log("inside");
+                AuctionItem storage tempItem = auctionItems[i + 1];
+                _auctionItems[currentIndex] = tempItem;
+                currentIndex++;
+            }
+            console.log(i);
+            console.log(currentIndex);
+        }
+
+        console.log(_auctionItems.length);
 
         return _auctionItems;
     }

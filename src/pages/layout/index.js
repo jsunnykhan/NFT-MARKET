@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import { StateContext } from "../../components/StateContex";
 import Image from "next/image";
 
-import { useConnect } from "../../helper/hooks/useConnect";
+import SideBar from "../../components/SideBar.tsx";
+import { useConnect } from "../../helper/hooks/useConnect.ts";
 
 const routes = [
   {
@@ -31,6 +32,7 @@ const Layout = (props) => {
   const { isHover, setIsHover } = useContext(StateContext);
 
   const [path, setPath] = useState(routes[0].url);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [account, chainId, connect, isMetamask] = useConnect();
 
@@ -85,7 +87,10 @@ const Layout = (props) => {
           <div className="flex-1">
             <div className="flex justify-end items-center">
               {account ? (
-                <div className="w-10 h-10 rounded-full bg-secondary "></div>
+                <div
+                  className="w-10 h-10 rounded-full bg-secondary cursor-pointer"
+                  onClick={() => setSidebarOpen((pre) => (pre = !pre))}
+                ></div>
               ) : (
                 <div
                   className="w-min px-10 truncate py-3 ring-1 ring-white-200 hover:ring-secondary rounded-full text-white font-medium text-lg cursor-pointer"
@@ -99,8 +104,14 @@ const Layout = (props) => {
         </div>
       </div>
 
-      <div className="bg-primary text-white min-h-screen flex justify-center">
-        <div className="w-[90%]">{props.children}</div>
+      <div className="relative bg-primary text-white min-h-screen flex justify-center overflow-hidden">
+        {sidebarOpen && <SideBar />}
+        <div
+          className="w-[90%]"
+          onClick={() => setSidebarOpen((pre) => (pre = false))}
+        >
+          {props.children}
+        </div>
       </div>
     </div>
   );

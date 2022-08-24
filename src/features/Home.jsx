@@ -13,6 +13,7 @@ import { _getAllAuctionItems } from '../helper/auction.ts';
 import { _getTokenUri } from '../helper/collection.ts';
 import { useRouter } from 'next/router';
 
+
 export default function Home() {
   const [nfts, setNfts] = useState([]);
   const [auctionItems, setAuctionItems] = useState([]);
@@ -34,7 +35,6 @@ export default function Home() {
 
   const getAuctionItems = async () => {
     const items = await _getAllAuctionItems();
-    console.log(items);
 
     const tempItems = await Promise.all(
       items.map(async (item) => {
@@ -52,7 +52,7 @@ export default function Home() {
           creator: item.creator,
           owner: item.seller,
           collectionAddress: item.nftContract,
-          price: ethers.utils.formatUnits(item.baseValue.toString(), 'ether'),
+          price: ethers.utils.formatUnits(item.baseValue.toString(), "ether"),
           image: metaData.image,
           name: metaData.name,
           description: metaData.description,
@@ -60,8 +60,6 @@ export default function Home() {
         return formatItem;
       })
     );
-
-    console.log(tempItems);
     setAuctionItems(tempItems);
   };
 
@@ -95,7 +93,7 @@ export default function Home() {
           const address = item.collectionAddress;
           const price = ethers.utils.formatUnits(
             item.price.toString(),
-            'ether'
+            "ether"
           );
           const listingId = item.listingId.toString();
           /**
@@ -160,7 +158,7 @@ export default function Home() {
     const vsContract = new ethers.Contract(ERC20_TOKEN, Token.abi, signer);
     console.log(marketContract, vsContract);
     try {
-      const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
+      const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
       console.log(price);
 
       const tx = await marketContract.createMarketSale(
@@ -168,11 +166,11 @@ export default function Home() {
         nft.tokenId,
         { value: price }
       );
-      console.log('4');
+      console.log("4");
       await tx.wait();
       setProcessing(false);
       getNFTS();
-      console.log('3');
+      console.log("3");
     } catch (error) {
       setProcessing(false);
     }
@@ -193,7 +191,7 @@ export default function Home() {
     );
 
     console.log(erc20Token);
-    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
+    const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
 
     // const tx = await erc20Token.approve(Market_ADDRESS, price);
     // await tx.wait();
@@ -240,10 +238,14 @@ export default function Home() {
 
   return (
     <div className="h-full flex flex-col w-full">
-      <Dashboard artWork={nfts.length} collections={collections.length} />
+      <Dashboard
+        artWork={nfts.length}
+        collections={collections.length}
+        auctions={auctionItems.length}
+      />
       <div className="pt-40 space-y-10 text-3xl">
         <h2 className="text-white font-serif font-semibold">
-          Top Collections{' '}
+          Top Collections{" "}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4 gap-5">
           {collections.length ? (

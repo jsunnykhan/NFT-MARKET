@@ -81,7 +81,7 @@ export default function Home() {
     setCollections((pre) => (pre = collection));
 
     /**
-     * Get Nfts
+     * Get listed Nfts
      */
     let listOfItem;
     try {
@@ -128,8 +128,8 @@ export default function Home() {
    * @param {string|Number} tokenId
    * @param {string} collection
    */
-  const redirectNFTDetailPage = (tokenId, collection) => {
-    const link = `collectors/${collection}:${tokenId}`;
+  const redirectNFTDetailPage = (tokenId, collection, id) => {
+    const link = `collectors/${collection}:${tokenId}?id=${id}`;
     router.push(link);
   };
 

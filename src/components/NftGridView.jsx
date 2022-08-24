@@ -10,9 +10,17 @@ const NftGridView = (props) => {
           return (
             <div
               key={item.tokenId}
-              onClick={() =>
-                redirectDetailPage(item.id, item.collectionAddress)
-              }
+              onClick={() => {
+                if (item.listingId) {
+                  redirectDetailPage(
+                    item.id,
+                    item.collectionAddress,
+                    item.listingId
+                  );
+                } else {
+                  redirectDetailPage(item.id, item.collectionAddress);
+                }
+              }}
             >
               <SingleGridView
                 key={item.tokenId}

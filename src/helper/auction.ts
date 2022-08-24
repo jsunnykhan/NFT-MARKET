@@ -30,10 +30,7 @@ export const _startAuction = async (
     tokenId,
     creator,
     biddingTime,
-    valueInWei,
-    {
-      value: ethers.utils.parseUnits('.01', 'ether'),
-    }
+    valueInWei
   );
   const tx = await transactionGoing.wait();
   console.log(tx);

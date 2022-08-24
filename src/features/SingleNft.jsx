@@ -79,6 +79,7 @@ const SingleNFT = () => {
       }
     );
     console.log(response);
+    router.push('/');
     setIsAuctionModalOpen(false);
   };
 

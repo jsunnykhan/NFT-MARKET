@@ -74,10 +74,6 @@ export const _listingToMarket = async (
     market.abi,
     signer
   );
-
-  let listingPrice = await marketContract.getMarketFee();
-  listingPrice = listingPrice.toString();
-  const listPrice = ethers.utils.parseUnits(listingPrice, 'ether');
   const pri = ethers.utils.parseUnits(price, 'ether');
   const transaction = await marketContract.createListing(
     tokenId,

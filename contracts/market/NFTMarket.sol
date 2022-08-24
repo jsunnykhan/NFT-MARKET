@@ -194,10 +194,14 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
     function listingItems() public view virtual returns (Listing[] memory) {
         uint256 totalItems = _listingId.current();
         Listing[] memory items = new Listing[](totalItems);
+        uint256 indexCounter = 0;
 
         for (uint256 index = 0; index < totalItems; index++) {
-            Listing storage currentItem = _listings[index + 1];
-            items[index] = currentItem;
+            if (getListingStatus(index + 1) == true) {
+                Listing storage currentItem = _listings[index + 1];
+                items[indexCounter] = currentItem;
+                indexCounter++;
+            }
         }
 
         return items;

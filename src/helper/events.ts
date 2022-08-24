@@ -66,7 +66,7 @@ export const _getCollectionMintedItems = async (address: string) => {
 
     return collections;
   } else {
-    return "ABI Not Found"
+    return "ABI Not Found";
   }
 };
 
@@ -90,6 +90,6 @@ export const _getCollectionOwnMintedItems = async (address: string, owner: strin
 
     return collections;
   } else {
-    return "ABI Not Found"
+    return "ABI Not Found";
   }
 };

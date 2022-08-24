@@ -12,7 +12,7 @@ module.exports = {
   networks: {
     hardhat: {},
     localhost: {
-      url: "http://127.0.0.1:8545",
+      url: "http://127.0.0.1:7545",
     },
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac`,

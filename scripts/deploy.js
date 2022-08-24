@@ -24,17 +24,10 @@ async function main() {
   await auction.deployed();
   const auctionAddress = auction.address;
 
-  const contracts = {
-    nftMarketAddress,
-    nftAddress,
-    vsCoinAddress,
-    auctionAddress,
-  };
-
   const configFile = `export const Market_ADDRESS = "${nftMarketAddress}";
-  export const NFT_ADDRESS = "${nftAddress}";
-  export const ERC20_TOKEN = "${vsCoinAddress}";
-  export const AUCTION_MARKET = "${auctionAddress}";
+export const NFT_ADDRESS = "${nftAddress}";
+export const ERC20_TOKEN = "${vsCoinAddress}";
+export const AUCTION_MARKET = "${auctionAddress}";
   `;
 
   fs.writeFileSync('./config.js', configFile);

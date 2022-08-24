@@ -14,8 +14,6 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 const infuraApiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
 
 
-const URL: string = baseURL!;
-
 const _getProvider = () => {
   const jsonRpcProvider: ethers.providers.JsonRpcProvider =
     new ethers.providers.JsonRpcProvider(baseURL);

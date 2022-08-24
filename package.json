@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx hardhat run --network rinkeby scripts/deploy.js && next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "npx hardhat run --network localhost scripts/deploy.js"
+    "deploy": "npx hardhat run --network rinkeby scripts/deploy.js"
   },
   "dependencies": {
     "@emotion/react": "^11.10.0",

@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import { Market_ADDRESS, AUCTION_MARKET, ERC20_TOKEN } from '../../config';
 import Auction from '../../artifacts/contracts/market/AuctionMarket.sol/AuctionMarket.json';
+import { _getAuctionContract } from './contracts';
 
 const configureProvider = async (): Promise<ethers.providers.Web3Provider> => {
   const web3Modal = new Web3Modal();
@@ -76,15 +77,8 @@ export const _endAuction = async (auctionId: any) => {
 };
 
 export const _getAllAuctionItems = async () => {
-  const provider = await configureProvider();
-  const signer = provider.getSigner();
-  const auctionMarket = new ethers.Contract(
-    AUCTION_MARKET,
-    Auction.abi,
-    signer
-  );
-  const items = await auctionMarket.getAllAuctionItems();
-  
+  const auction = _getAuctionContract()
+  const items = await auction.getAllAuctionItems();
   return items;
 };
 

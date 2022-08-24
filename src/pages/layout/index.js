@@ -105,7 +105,11 @@ const Layout = (props) => {
       </div>
 
       <div className="relative bg-primary text-white min-h-screen flex justify-center overflow-hidden">
-        {sidebarOpen && <SideBar />}
+        {sidebarOpen ? (
+          <SideBar sidebarOpen={sidebarOpen} />
+        ) : (
+          <SideBar sidebarOpen={sidebarOpen} />
+        )}
         <div
           className="w-[90%]"
           onClick={() => setSidebarOpen((pre) => (pre = false))}

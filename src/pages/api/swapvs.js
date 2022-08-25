@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   try {
     const value = ethers.utils.parseUnits(amount.toString(), "ether");
     const provider = new ethers.providers.JsonRpcProvider(
-      "http://127.0.0.1:7545"
+      "http://127.0.0.1:8545"
     );
     const signer = new ethers.Wallet(privateKey, provider);
     const contract = new ethers.Contract(ERC20_TOKEN, token.abi, signer);

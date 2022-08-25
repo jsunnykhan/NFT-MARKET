@@ -42,7 +42,9 @@ const Collectors = () => {
   const connectWallet = async () => {
     try {
       await connect();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   const getAllOwnedCollection = async () => {

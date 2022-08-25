@@ -6,13 +6,15 @@ require("dotenv").config();
 
 const fs = require("fs");
 const privateKey = fs.readFileSync(".secret").toString();
+const aseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
+console.log(aseUrl)
 module.exports = {
   // defaultNetwork: "rinkeby",
   networks: {
     hardhat: {},
     localhost: {
-      url: "http://127.0.0.1:7545",
+      url: "http://127.0.0.1:8545",
     },
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/9c7ba9f1cbfc4f42b2540b8efee326ac`,

@@ -23,7 +23,7 @@ const NftGridView = (props) => {
               }}
             >
               <SingleGridView
-                key={item.tokenId}
+                key={item.id}
                 nft={item}
                 isBuy={false}
                 processing={false}

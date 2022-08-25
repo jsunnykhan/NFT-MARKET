@@ -1,17 +1,17 @@
-import React, { useEffect, useState, CSSProperties } from 'react';
-import PropertiesModal from '../components/propertiesModal';
-import MakeCollectionModal from '../components/MakeCollectionModal';
-import Dropdown from '../components/Dropdown.tsx';
-import Image from 'next/image';
-import CustomModal from '../components/CustomModal';
-import { useRouter } from 'next/router';
-import { uploadMetaData } from '../helper/upload';
-import { _listingToMarket, _minting } from '../helper/collection.ts';
+import React, { useEffect, useState, CSSProperties } from "react";
+import PropertiesModal from "../components/propertiesModal";
+import MakeCollectionModal from "../components/MakeCollectionModal";
+import Dropdown from "../components/Dropdown.tsx";
+import Image from "next/image";
+import CustomModal from "../components/CustomModal";
+import { useRouter } from "next/router";
+import { uploadMetaData } from "../helper/upload";
+import { _listingToMarket, _minting } from "../helper/collection.ts";
 import {
   _getAllOwnedCollection,
   _getDefaultCollection,
-} from '../helper/collection.ts';
-import { useConnect } from '../helper/hooks/useConnect';
+} from "../helper/collection.ts";
+import { useConnect } from "../helper/hooks/useConnect";
 
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;
 
@@ -21,14 +21,14 @@ const CreateNFTToken = () => {
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formInput, setFormInput] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState({});
   const [collections, setCollections] = useState([]);
   const [file, setFile] = useState(undefined);
-  const [collectionAddress, setCollectionAddress] = useState('');
+  const [collectionAddress, setCollectionAddress] = useState("");
 
   const router = useRouter();
 
@@ -42,12 +42,6 @@ const CreateNFTToken = () => {
   const [account, chainId, connect, isMetamask] = useConnect();
 
   useEffect(() => {
-    window.ethereum.on('accountsChanged', () => {
-      window.location.reload();
-    });
-    window.ethereum.on('chainChanged', () => {
-      window.location.reload();
-    });
     if (account) {
       getAllOwnedCollection();
     } else {
@@ -84,7 +78,7 @@ const CreateNFTToken = () => {
     console.log(selectedCollection.address);
     const tokenId = await _minting(metaDataUrl, selectedCollection.address);
     console.log(tokenId);
-    router.push('/collectors');
+    router.push("/collectors");
   };
 
   useEffect(() => {
@@ -133,7 +127,7 @@ const CreateNFTToken = () => {
             <h3 className="font-medium text-base text-gray-700">
               Image, Video, Audio, or 3D Model
             </h3>
-            <div className="relative h-[20vw] w-1/2 rounded bg-slate-200 border-dotted border-2 border-gray-500">
+            <div className="relative h-[15vw] w-[15vw] rounded bg-slate-200 border-dotted border-2 border-gray-500">
               {fileUrl && (
                 <Image
                   src={fileUrl}
@@ -148,8 +142,9 @@ const CreateNFTToken = () => {
               <input
                 type="file"
                 name="nft-file"
+                
                 onChange={onChange}
-                className="absolute opacity-0 rounded-full w-40 h-40"
+                className="absolute opacity-0 rounded-full w-full h-full"
                 required
               />
             </div>

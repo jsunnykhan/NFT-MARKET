@@ -2,9 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useConnect } from "../helper/hooks/useConnect";
 
 import { FaPowerOff } from "react-icons/fa";
-import { _getBalance, _getNativeBalance } from "helper/contracts";
+import {
+  _getBalance,
+  _getERC20Contract,
+  _getERC20ContractWithSigner,
+  _getNativeBalance,
+} from "helper/contracts";
 import CustomSvg from "./CustomSvg";
 import axios from "axios";
+import { ethers } from "ethers";
 
 interface Chain {
   chainId: number;
@@ -56,6 +62,8 @@ const SideBar = (props: propsType) => {
   const [selected, setSelected] = useState<string>("eth");
   const [inputField, setInputField] = useState<string>("");
 
+  const [reload, setReload] = useState(false);
+
   useEffect(() => {
     if (account) {
       const chainInfo = chain(`${chainId}`);
@@ -71,7 +79,7 @@ const SideBar = (props: propsType) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, chainId]);
+  }, [account, chainId, reload]);
 
   const getBalance = async (account: string) => {
     const balances = await _getBalance(account);
@@ -90,11 +98,31 @@ const SideBar = (props: propsType) => {
   };
 
   const swapCoin = async () => {
-    const data = await axios.post("/api/swapvs", {
-      amount: inputField,
-      address: account,
-    });
-    console.log(data.data);
+    if (inputField.length) {
+      const contracts = _getERC20ContractWithSigner();
+      const value = ethers.utils.parseUnits(inputField.toString(), "ether");
+      const eth = ethers.utils.parseUnits(
+        (Number(value.toString()) / 2).toString(),
+        "wei"
+      );
+
+      try {
+        const tx = await contracts.swapEthToVs(account, value, { value: eth });
+        await tx.wait();
+        const data = await axios.post("/api/swap-vs", {
+          amount: value,
+          address: account,
+          eth: eth,
+        });
+
+        if (data.status === 200) {
+          setInputField((pre) => (pre = ""));
+          setReload((pre) => (pre = !pre));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
   return (
     <div className="fixed right-2 z-40">
@@ -142,6 +170,7 @@ const SideBar = (props: propsType) => {
               className="px-5 py-3 rounded-md  w-full bg-gray-800 shadow-md focus:outline-none text-white-100 text-sm"
               placeholder="Amount of VS Coin"
               value={inputField}
+              required
               onChange={(event) =>
                 setInputField((pre) => (pre = event.target.value))
               }

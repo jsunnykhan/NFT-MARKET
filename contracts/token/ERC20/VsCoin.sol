@@ -4,12 +4,13 @@ import "./IERC20.sol";
 import "../../utils/Context.sol";
 
 contract VSCoin is IERC20, Context {
-    address private _admin;
+    address payable private _admin;
     string private _name;
     string private _symbol;
     uint256 private _totalSupply;
 
     mapping(address => uint256) private _balance;
+    mapping(address => bytes32) private swapHash;
 
     mapping(address => mapping(address => uint256)) private _allowances;
 
@@ -24,7 +25,7 @@ contract VSCoin is IERC20, Context {
         _name = "VS Coin";
         _symbol = "VSC";
         _mint(_msgSender(), 1000000 * 10**18);
-        _admin = _msgSender();
+        _admin = payable(_msgSender());
     }
 
     function totalSupply() public view virtual returns (uint256) {
@@ -167,6 +168,35 @@ contract VSCoin is IERC20, Context {
         address owner = highestBidder;
         uint256 currentAllowance = allowance(owner, spender);
         _approval(owner, spender, currentAllowance + addedValue);
+        return true;
+    }
+
+    function swapEthToVs(address to, uint256 amount)
+        public
+        payable
+        returns (bytes32)
+    {
+        require(
+            _admin != _msgSender(),
+            "You Cannot Buy this Coin At this moment"
+        );
+        bytes32 kHash = keccak256(abi.encodePacked(msg.value, amount, to));
+        swapHash[_origin()] = kHash;
+        payable(address(_admin)).transfer(msg.value);
+        return kHash;
+    }
+
+    function verifySwapHash(
+        uint256 eth,
+        address to,
+        uint256 amount
+    ) public returns (bool) {
+        require(
+            swapHash[to] == keccak256(abi.encodePacked(eth, amount, to)),
+            "Invalid hash no trace found"
+        );
+        transfer(to, amount);
+        delete swapHash[to];
         return true;
     }
 }

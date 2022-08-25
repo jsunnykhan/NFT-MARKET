@@ -19,7 +19,14 @@ const _getProvider = () => {
   return jsonRpcProvider;
 };
 
-export const _getCollectionContract = (address: string): ethers.Contract => {
+const _getSignerProvider = () => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  return provider;
+}
+
+export const _getCollectionContract = (
+  address = NFT_ADDRESS
+): ethers.Contract => {
   const contract: ethers.Contract = new ethers.Contract(
     address,
     collection.abi,
@@ -42,6 +49,15 @@ export const _getERC20Contract = () => {
     ERC20_TOKEN,
     token.abi,
     _getProvider()
+  );
+  return contract;
+}; export const _getERC20ContractWithSigner = () => {
+  const provider = _getSignerProvider();
+  const signer = provider.getSigner();
+  const contract: ethers.Contract = new ethers.Contract(
+    ERC20_TOKEN,
+    token.abi,
+    signer
   );
   return contract;
 };

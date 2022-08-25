@@ -1,17 +1,17 @@
-import Web3Modal from 'web3modal';
-import Dashboard from '../components/Dashboard';
-import SingleCollection from '../components/SingleCollectionView';
-import NftGridView from '../components/NftGridView';
-import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
-import { _getAllCollections } from '../helper/events.ts';
+import Web3Modal from "web3modal";
+import Dashboard from "../components/Dashboard";
+import SingleCollection from "../components/SingleCollectionView";
+import NftGridView from "../components/NftGridView";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { _getAllCollections } from "../helper/events.ts";
 import {
   _getMarketContract,
   _getCollectionContract,
-} from '../helper/contracts.ts';
-import { _getAllAuctionItems } from '../helper/auction.ts';
-import { _getTokenUri } from '../helper/collection.ts';
-import { useRouter } from 'next/router';
+} from "../helper/contracts.ts";
+import { _getAllAuctionItems } from "../helper/auction.ts";
+import { _getTokenUri } from "../helper/collection.ts";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
@@ -22,12 +22,6 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    window.ethereum.on('accountsChanged', () => {
-      window.location.reload();
-    });
-    window.ethereum.on('chainChanged', () => {
-      window.location.reload();
-    });
     init();
     getAuctionItems();
   }, []);
@@ -51,7 +45,7 @@ export default function Home() {
           creator: item.creator,
           owner: item.seller,
           collectionAddress: item.nftContract,
-          price: ethers.utils.formatUnits(item.baseValue.toString(), 'ether'),
+          price: ethers.utils.formatUnits(item.baseValue.toString(), "ether"),
           image: metaData.image,
           name: metaData.name,
           description: metaData.description,
@@ -94,7 +88,7 @@ export default function Home() {
           const address = item.collectionAddress;
           const price = ethers.utils.formatUnits(
             item.price.toString(),
-            'ether'
+            "ether"
           );
           const listingId = item.listingId.toString();
           /**
@@ -246,7 +240,7 @@ export default function Home() {
       />
       <div className="pt-40 space-y-10 text-3xl">
         <h2 className="text-white font-serif font-semibold">
-          Top Collections{' '}
+          Top Collections{" "}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4 gap-5">
           {collections.length ? (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 interface collection {
   address: string;
@@ -12,7 +12,7 @@ interface propsType {
   createCollection: () => {};
 }
 
-import { AiFillPlusCircle } from "react-icons/ai";
+import { AiFillPlusCircle } from 'react-icons/ai';
 
 const Dropdown = (props: propsType) => {
   const { collections, setCollectionAddress, createCollection } = props;
@@ -23,9 +23,9 @@ const Dropdown = (props: propsType) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const selectedListener = (index: number, address: string) => {
+  const selectedListener = (index: number, collectionAddress: string) => {
     setSelected((pre) => (pre = index));
-    setCollectionAddress((pre: any) => (pre = address));
+    setCollectionAddress((pre: any) => (pre = collectionAddress));
   };
 
   return (
@@ -51,7 +51,7 @@ const Dropdown = (props: propsType) => {
               <div
                 key={col.address}
                 className={`flex flex-col items-center justify-center ring-[0.5px]  ${
-                  index === selected ? "ring-secondary" : "ring-white-100"
+                  index === selected ? 'ring-secondary' : 'ring-white-100'
                 }  w-28 h-28 rounded-lg overflow-hidden`}
                 onClick={() => selectedListener(index, col.address)}
               >

@@ -25,7 +25,6 @@ const CreateNFTToken = () => {
     description: '',
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
-  const [selectedCollection, setSelectedCollection] = useState({});
   const [collections, setCollections] = useState([]);
   const [file, setFile] = useState(undefined);
   const [collectionAddress, setCollectionAddress] = useState('');
@@ -58,18 +57,19 @@ const CreateNFTToken = () => {
 
   const getAllOwnedCollection = async () => {
     const collectionList = await _getAllOwnedCollection(account);
-    setSelectedCollection(collectionList[0]);
+    console.log(collectionList);
     setCollections((pre) => (pre = collectionList));
   };
 
   const getDefaultCollection = async () => {
     const defaultCollection = await _getDefaultCollection();
-    setSelectedCollection(defaultCollection);
+    console.log(defaultCollection);
     setCollections((pre) => (pre = [defaultCollection]));
   };
 
   const creatingNftMetaData = async () => {
     //show a loading circle or smth
+    console.log(collectionAddress);
     const { name, description } = formInput;
     console.log(formInput);
     if (!name || !description || !fileUrl) return;
@@ -81,8 +81,8 @@ const CreateNFTToken = () => {
 
     const metaDataUrl = await uploadMetaData(data, file);
     console.log(metaDataUrl);
-    console.log(selectedCollection.address);
-    const tokenId = await _minting(metaDataUrl, selectedCollection.address);
+    console.log(collectionAddress);
+    const tokenId = await _minting(metaDataUrl, collectionAddress);
     console.log(tokenId);
     router.push('/collectors');
   };
@@ -96,7 +96,6 @@ const CreateNFTToken = () => {
   }, [formInput, fileUrl]);
 
   const attributeModalHandler = async () => {
-    // await signInRequestMetaMask();
     setIsModalOpen(true);
   };
 

@@ -4,7 +4,8 @@ const ethers = require("ethers");
 export default async function handler(req, res) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const { amount, address, eth } = req.body;
-  const privateKey =process.env.PRIVATE_KEY;
+  const privateKey = process.env.PRIVATE_KEY;
+
   try {
     const provider = new ethers.providers.JsonRpcProvider(baseUrl);
     const signer = new ethers.Wallet(privateKey, provider);

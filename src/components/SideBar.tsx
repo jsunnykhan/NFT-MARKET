@@ -138,23 +138,20 @@ const SideBar = (props: propsType) => {
     }
   };
   return (
-    <div className="fixed right-2 z-40">
+    <div className={`fixed z-40 transform transition-all duration-300 ${sidebarOpen ? "right-2  translate-x-0" : "-right-2 translate-x-full"} `}>
       <div
-        className={`rounded-md w-max space-y-5 h-max px-5 py-10 bg-slate-900 transform transition-all duration-300 ${
-          sidebarOpen ? "translate-x-0" : "translate-x-[26vw]"
-        }`}
+        className={`rounded-md w-max space-y-5 h-max px-5 py-10 bg-slate-900 `}
       >
         {/* wallet information */}
         <div className="flex flex-col space-y-5 rounded-lg ring-1 ring-gray-800 px-3 py-3 overflow-hidden">
           <div className="flex space-x-1 items-center">
             <div className="flex flex-col justify-center w-full">
-              <h4 className="capitalize">{wallet?.chainInfo.name}</h4>
-              <p className="overflow-hidden text-xs select-all truncate w-[14vw] text-white-100">
+              <h4 className="capitalize text-center">
+                {wallet?.chainInfo.name}
+              </h4>
+              <p className="overflow-hidden text-xs select-all   text-white-100">
                 {wallet?.account}
               </p>
-            </div>
-            <div className="w-min px-3 py-3 rounded-full bg-gray-800">
-              <FaPowerOff />
             </div>
           </div>
           {/* wallet balance */}
@@ -179,7 +176,9 @@ const SideBar = (props: propsType) => {
                 Swap Rate : <span className="text-white">{1}</span> ETH ={" "}
                 <span className="text-white">{2}</span> VS
               </h4>
-              <p className="text-xs text-center select-text text-secondary">*You pay {calVsToEth() ? calVsToEth() : "0"} ETH</p>
+              <p className="text-xs text-center select-text text-secondary">
+                *You pay {calVsToEth() ? calVsToEth() : "0"} ETH
+              </p>
             </div>
 
             <input

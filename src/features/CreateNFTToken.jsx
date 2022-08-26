@@ -1,17 +1,18 @@
-import React, { useEffect, useState, CSSProperties } from "react";
-import PropertiesModal from "../components/propertiesModal";
-import MakeCollectionModal from "../components/MakeCollectionModal";
-import Dropdown from "../components/Dropdown.tsx";
-import Image from "next/image";
-import CustomModal from "../components/CustomModal";
-import { useRouter } from "next/router";
-import { uploadMetaData } from "../helper/upload";
-import { _listingToMarket, _minting } from "../helper/collection.ts";
+import React, { useEffect, useState, CSSProperties } from 'react';
+import PropertiesModal from '../components/propertiesModal';
+import MakeCollectionModal from '../components/MakeCollectionModal';
+import Dropdown from '../components/Dropdown.tsx';
+import Image from 'next/image';
+import CustomModal from '../components/CustomModal';
+import LoadingModal from '../components/LoadingModal';
+import { useRouter } from 'next/router';
+import { uploadMetaData } from '../helper/upload';
+import { _listingToMarket, _minting } from '../helper/collection.ts';
 import {
   _getAllOwnedCollection,
   _getDefaultCollection,
-} from "../helper/collection.ts";
-import { useConnect } from "../helper/hooks/useConnect";
+} from '../helper/collection.ts';
+import { useConnect } from '../helper/hooks/useConnect';
 
 const ipfsBaseUrl = process.env.NEXT_PUBLIC_IPFS_BASE_URL;
 
@@ -21,13 +22,15 @@ const CreateNFTToken = () => {
   const [attributes, setAttributes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formInput, setFormInput] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
   });
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [collections, setCollections] = useState([]);
   const [file, setFile] = useState(undefined);
-  const [collectionAddress, setCollectionAddress] = useState("");
+  const [collectionAddress, setCollectionAddress] = useState('');
+  const [isLoadingModalOpen, setIsLoadingModalOpen] = useState(false);
+  const [metaDataState, setMetaDataState] = useState(0);
 
   const router = useRouter();
 
@@ -63,6 +66,7 @@ const CreateNFTToken = () => {
 
   const creatingNftMetaData = async () => {
     //show a loading circle or smth
+    setIsLoadingModalOpen(true);
     console.log(collectionAddress);
     const { name, description } = formInput;
     console.log(formInput);
@@ -72,13 +76,18 @@ const CreateNFTToken = () => {
       description,
       attributes: attributes,
     };
-
     const metaDataUrl = await uploadMetaData(data, file);
     console.log(metaDataUrl);
     console.log(collectionAddress);
-    const tokenId = await _minting(metaDataUrl, collectionAddress);
-    console.log(tokenId);
-    router.push("/collectors");
+    setMetaDataState(1);
+    try {
+      setMetaDataState(2);
+      const tokenId = await _minting(metaDataUrl, collectionAddress);
+      router.push('/collectors');
+    } catch (error) {
+      console.log(error);
+      setIsLoadingModalOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -117,6 +126,7 @@ const CreateNFTToken = () => {
             getAllOwnedCollection={getAllOwnedCollection}
           />
         )}
+        {isLoadingModalOpen && <LoadingModal metaDataState={metaDataState} />}
 
         <div className="flex flex-col space-y-5 w-2/5 my-5">
           <h2 className="flex font-medium text-4xl mb-2 font-serif">
@@ -141,7 +151,6 @@ const CreateNFTToken = () => {
               <input
                 type="file"
                 name="nft-file"
-                
                 onChange={onChange}
                 className="absolute opacity-0 rounded-full w-full h-full"
                 required

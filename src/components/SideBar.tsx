@@ -102,7 +102,7 @@ const SideBar = (props: propsType) => {
       const contracts = _getERC20ContractWithSigner();
       const value = ethers.utils.parseUnits(inputField.toString(), "ether");
       const eth = ethers.utils.parseUnits(
-        (Number(value.toString()) / 2).toString(),
+        ((Number(inputField) * 10 ** 18) / 2).toString(),
         "wei"
       );
 
@@ -124,24 +124,34 @@ const SideBar = (props: propsType) => {
       }
     }
   };
+
+  const calVsToEth = () => {
+    if (inputField.length) {
+      const eth = ethers.utils.parseUnits(
+        ((Number(inputField) * 10 ** 18) / 2).toString(),
+        "wei"
+      );
+
+      const value = Number(eth.toString()) / 10 ** 18;
+
+      return value.toString();
+    }
+  };
   return (
-    <div className="fixed right-2 z-40">
+    <div className={`fixed z-40 transform transition-all duration-300 ${sidebarOpen ? "right-2  translate-x-0" : "-right-2 translate-x-full"} `}>
       <div
-        className={`rounded-md w-[25vw] space-y-5 h-max px-5 py-10 bg-slate-900 transform transition-all duration-300 ${
-          sidebarOpen ? "translate-x-0" : "translate-x-[26vw]"
-        }`}
+        className={`rounded-md w-max space-y-5 h-max px-5 py-10 bg-slate-900 `}
       >
         {/* wallet information */}
         <div className="flex flex-col space-y-5 rounded-lg ring-1 ring-gray-800 px-3 py-3 overflow-hidden">
           <div className="flex space-x-1 items-center">
             <div className="flex flex-col justify-center w-full">
-              <h4 className="capitalize">{wallet?.chainInfo.name}</h4>
-              <p className="overflow-hidden text-xs select-all truncate w-[14vw] text-white-100">
+              <h4 className="capitalize text-center">
+                {wallet?.chainInfo.name}
+              </h4>
+              <p className="overflow-hidden text-xs select-all   text-white-100">
                 {wallet?.account}
               </p>
-            </div>
-            <div className="w-min px-3 py-3 rounded-full bg-gray-800">
-              <FaPowerOff />
             </div>
           </div>
           {/* wallet balance */}
@@ -161,16 +171,22 @@ const SideBar = (props: propsType) => {
 
         <div className="flex flex-col space-y-3 rounded-lg ring-1 ring-gray-800 px-3 py-3 overflow-hidden">
           <div className="flex flex-col space-y-5">
-            <h4 className="text-md text-center text-white-100 overflow-hidden">
-              Swap Rate : <span className="text-white">{1}</span> ETH ={" "}
-              <span className="text-white">{2}</span> VS
-            </h4>
+            <div>
+              <h4 className="text-sm text-center text-white-100 overflow-hidden">
+                Swap Rate : <span className="text-white">{1}</span> ETH ={" "}
+                <span className="text-white">{2}</span> VS
+              </h4>
+              <p className="text-xs text-center select-text text-secondary">
+                *You pay {calVsToEth() ? calVsToEth() : "0"} ETH
+              </p>
+            </div>
 
             <input
               className="px-5 py-3 rounded-md  w-full bg-gray-800 shadow-md focus:outline-none text-white-100 text-sm"
               placeholder="Amount of VS Coin"
               value={inputField}
               required
+              type="number"
               onChange={(event) =>
                 setInputField((pre) => (pre = event.target.value))
               }

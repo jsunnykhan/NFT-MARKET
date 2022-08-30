@@ -3,7 +3,6 @@ import Image from 'next/image';
 
 import { _getProfile, _uploadProfile } from '../helper/profile';
 import { _getOwnerOfCollection } from '../helper/collection.ts';
-import { _getSignerProvider } from '../helper/contracts.ts';
 
 import { MdModeEditOutline } from 'react-icons/md';
 import { useConnect } from '../helper/hooks/useConnect.ts';
@@ -48,6 +47,7 @@ const Profile = (props) => {
         isOwner(account);
       } else {
         getProfile();
+        setIsCollectionOwner(true);
       }
     }
   }, [address, account]);

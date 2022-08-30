@@ -5,8 +5,7 @@ import BidModal from '../components/BidModal';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { VscListSelection } from 'react-icons/vsc';
 import { MdOutlineBookmark } from 'react-icons/md';
-import { _bid } from '../helper/auction.ts';
-import { _getSingleAuctionItem } from '../helper/auction.ts';
+import { _getSingleAuctionItem, _bid } from '../helper/auction.ts';
 import { _getSingleNft } from '../helper/collection.ts';
 import { ethers } from 'ethers';
 import { _getBidEvents } from '../helper/events/getBidEvent';
@@ -20,6 +19,7 @@ const Auction = () => {
   const [auctionTime, setAuctionTime] = useState(undefined);
   const [singleNft, setSingleNft] = useState({});
   const [bidEvents, setBidEvents] = useState([]);
+  const [timeRemaining, setTimeRemaining] = useState(true);
   const [highestBid, setHIghestBid] = useState({
     returnValues: {
       bid: '0',
@@ -190,7 +190,10 @@ const Auction = () => {
               </h3>
             </div>
             <div>
-              <CountdownTimer targetDate={auctionTime} />
+              <CountdownTimer
+                targetDate={auctionTime}
+                setTimeRemaining={setTimeRemaining}
+              />
             </div>
             <div className="flex space-x-2">
               <p className="font-medium">Base price: </p>
@@ -208,14 +211,18 @@ const Auction = () => {
                 ''
               )}
             </div> */}
-            <div className="flex justify-start">
-              <button
-                className="w-[20%] bg-blue-600 text-white text-2xl font-semibold py-3 rounded-lg mx-2"
-                onClick={auctionModalOpen}
-              >
-                Bid
-              </button>
-            </div>
+            {timeRemaining ? (
+              <div className="flex justify-start">
+                <button
+                  className="w-[20%] bg-blue-600 text-white text-2xl font-semibold py-3 rounded-lg mx-2"
+                  onClick={auctionModalOpen}
+                >
+                  Bid
+                </button>
+              </div>
+            ) : (
+              ''
+            )}
           </div>
           <div className="h-max shadow-lg px-5 py-5 space-y-5 ring-1 ring-purple-100 rounded">
             <div className="flex space-x-3">

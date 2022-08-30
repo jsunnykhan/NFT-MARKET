@@ -74,7 +74,7 @@ export const _endAuction = async (auctionId: any) => {
 };
 
 export const _getAllAuctionItems = async () => {
-  const auction = _getAuctionContract()
+  const auction = _getAuctionContract();
   const items = await auction.getAllAuctionItems();
   return items;
 };

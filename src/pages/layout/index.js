@@ -1,29 +1,32 @@
-import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import Link from 'next/link';
+import React, { useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-import { StateContext } from "../../components/StateContex";
-import Image from "next/image";
+import { StateContext } from '../../components/StateContex';
+import Image from 'next/image';
 
-import SideBar from "../../components/SideBar.tsx";
-import { useConnect } from "../../helper/hooks/useConnect.ts";
+import SideBar from '../../components/SideBar.tsx';
+import { useConnect } from '../../helper/hooks/useConnect.ts';
 
 const routes = [
   {
-    title: "Explore",
-    url: "/",
+    title: 'Explore',
+    url: '/',
   },
   {
-    title: "Collectors",
-    url: "/collectors",
+    title: 'Resources',
+    url: '/resources',
+  },
+];
+
+const privateRoutes = [
+  {
+    title: 'Collectors',
+    url: '/collectors',
   },
   {
-    title: "Create",
-    url: "/create",
-  },
-  {
-    title: "Resources",
-    url: "/resources",
+    title: 'Create',
+    url: '/create',
   },
 ];
 
@@ -42,7 +45,7 @@ const Layout = (props) => {
   }, [router.route]);
 
   const handleHoverEffect = (path) => {
-    if (path === "/collectors") {
+    if (path === '/collectors') {
       setIsHover(!isHover);
     }
   };
@@ -66,14 +69,14 @@ const Layout = (props) => {
               </div>
             </Link>
           </div>
-          <div className="flex-1">
+          <div className="">
             <ul className="flex justify-center w-full text-lg font-normal sm:space-x-5 md:space-x-10 font-serif text-white">
               {routes.map((item) => (
                 <div key={item.title} className="relative">
                   <Link href={item.url} passHref>
                     <li
                       className={`cursor-pointer hover:text-secondary tracking-wide ${
-                        item.url == path && "text-secondary"
+                        item.url == path && 'text-secondary'
                       }`}
                       onMouseOver={() => handleHoverEffect(item.url)}
                     >
@@ -82,6 +85,22 @@ const Layout = (props) => {
                   </Link>
                 </div>
               ))}
+              {account
+                ? privateRoutes.map((item) => (
+                    <div key={item.title} className="relative">
+                      <Link href={item.url} passHref>
+                        <li
+                          className={`cursor-pointer hover:text-secondary tracking-wide ${
+                            item.url == path && 'text-secondary'
+                          }`}
+                          onMouseOver={() => handleHoverEffect(item.url)}
+                        >
+                          {item.title}
+                        </li>
+                      </Link>
+                    </div>
+                  ))
+                : ''}
             </ul>
           </div>
           <div className="flex-1">

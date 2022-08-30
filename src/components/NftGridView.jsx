@@ -9,7 +9,7 @@ const NftGridView = (props) => {
         {nftList.map((item) => {
           return (
             <div
-              key={item.tokenId}
+              key={item.id}
               onClick={() => {
                 if (item.listingId) {
                   redirectDetailPage(

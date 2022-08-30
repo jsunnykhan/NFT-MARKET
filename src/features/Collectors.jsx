@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
-import NftGridView from "../components/NftGridView";
-import GlowingButton from "../components/GlowingButton";
-import SingleCollection from "../components/SingleCollectionView";
+import React, { useState, useEffect } from 'react';
+import NftGridView from '../components/NftGridView';
+import GlowingButton from '../components/GlowingButton';
+import SingleCollection from '../components/SingleCollectionView';
 import {
   _getOwnCollections,
   _getCollectionOwnMintedItems,
-} from "../helper/events.ts";
-import { _getTokenUri, _getAllOwnedCollection } from "../helper/collection.ts";
-import { useRouter } from "next/router";
-import { useConnect } from "../helper/hooks/useConnect";
-import Profile from "../components/Profile";
+} from '../helper/events.ts';
+import { _getTokenUri, _getAllOwnedCollection } from '../helper/collection.ts';
+import { useRouter } from 'next/router';
+import { useConnect } from '../helper/hooks/useConnect';
+import Profile from '../components/Profile';
 
 const Collectors = () => {
   const [mintedItems, setMintedItems] = useState([]);
   const [collections, setCollections] = useState([]);
   const [ownedNft, setOwnedNft] = useState([]);
-  const [tabHandle, setTabHandler] = useState("owned");
+  const [tabHandle, setTabHandler] = useState('owned');
 
   const router = useRouter();
 
@@ -100,22 +100,22 @@ const Collectors = () => {
 
   const tabInfo = [
     {
-      name: "Owned items",
-      route: "owned",
+      name: 'Owned items',
+      route: 'owned',
     },
     {
-      name: "Collections",
-      route: "collection",
+      name: 'Collections',
+      route: 'collection',
     },
     {
-      name: "Minted items",
-      route: "mint",
+      name: 'Minted items',
+      route: 'mint',
     },
   ];
 
   return (
     <div className="py-5 flex flex-col space-y-5">
-      <Profile address={account} />
+      <Profile address={account} isCollection={false} />
       <div className="flex justify-center space-x-5 pb-10">
         <div className="grid grid-cols-3 grid-rows-1 gap-7">
           {tabInfo.map((info) => (
@@ -129,7 +129,7 @@ const Collectors = () => {
         </div>
       </div>
 
-      {tabHandle === "mint" ? (
+      {tabHandle === 'mint' ? (
         <div>
           <NftGridView
             nftList={mintedItems}
@@ -137,7 +137,7 @@ const Collectors = () => {
             redirectDetailPage={redirectNftDetailPage}
           />
         </div>
-      ) : tabHandle === "collection" ? (
+      ) : tabHandle === 'collection' ? (
         <div className="w-full space-y-5">
           <h2 className="font-semibold underline underline-offset-8 text-2xl font-mono">
             Collections

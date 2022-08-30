@@ -2,19 +2,21 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 import { _getProfile, _uploadProfile } from '../helper/profile';
+import { _getOwnerOfCollection } from '../helper/collection.ts';
+import { _getSignerProvider } from '../helper/contracts.ts';
 
 import { MdModeEditOutline } from 'react-icons/md';
+import { useConnect } from '../helper/hooks/useConnect.ts';
 
 const Profile = (props) => {
-  const { address } = props;
+  const { address, isCollection } = props;
+  const [account, chainId, connect, isMetamask, isActive] = useConnect();
   const [profileURL, setProfileURL] = useState('');
-
   const [coverURL, setCoverURL] = useState('');
-
   const [reload, setReload] = useState(false);
-
   const [coverHover, setCoverHover] = useState(false);
   const [hover, setHover] = useState(false);
+  const [isCollectionOwner, setIsCollectionOwner] = useState(false);
 
   const onChange = async (event, type) => {
     const _file = event.target.files[0];
@@ -33,11 +35,22 @@ const Profile = (props) => {
     }
   };
 
+  const isOwner = async (_account) => {
+    const _owner = await _getOwnerOfCollection(address);
+    console.log(_owner.toLowerCase() === _account.toLowerCase());
+    setIsCollectionOwner(_owner.toLowerCase() === _account.toLowerCase());
+  };
+
   useEffect(() => {
-    if (address) {
-      getProfile();
+    if (address && account) {
+      if (isCollection) {
+        getProfile();
+        isOwner(account);
+      } else {
+        getProfile();
+      }
     }
-  }, [address]);
+  }, [address, account]);
 
   const getProfile = async () => {
     const data = await _getProfile(address, 'cover');
@@ -54,17 +67,21 @@ const Profile = (props) => {
           onMouseOver={() => setCoverHover(true)}
           onMouseOut={() => setCoverHover(false)}
         >
-          <div className="absolute  bottom-5 right-5 z-30 rounded-full bg-primary bg-opacity-40 shadow-md">
-            <div className="relative w-full h-full cursor-pointer overflow-hidden">
-              <MdModeEditOutline className="m-2" size={24} />
-              <input
-                type="file"
-                name="profile-cover"
-                onChange={(event) => onChange(event, 'cover')}
-                className="absolute top-0 cursor-pointer opacity-0 rounded-full h-full w-full"
-              />
+          {isCollectionOwner ? (
+            <div className="absolute  bottom-5 right-5 z-30 rounded-full bg-primary bg-opacity-40 shadow-md">
+              <div className="relative w-full h-full cursor-pointer overflow-hidden">
+                <MdModeEditOutline className="m-2" size={24} />
+                <input
+                  type="file"
+                  name="profile-cover"
+                  onChange={(event) => onChange(event, 'cover')}
+                  className="absolute top-0 cursor-pointer opacity-0 rounded-full h-full w-full"
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            ''
+          )}
 
           <div className="relative rounded-md object-center overflow-hidden">
             {coverURL && (
@@ -87,17 +104,21 @@ const Profile = (props) => {
             onMouseOver={() => setHover(true)}
             onMouseOut={() => setHover(false)}
           >
-            <div className="absolute bottom-12 right-12 ">
-              <div className="absolute z-30 rounded-full bg-primary bg-opacity-40 p-2 cursor-pointer shadow-md">
-                <MdModeEditOutline className="" size={20} />
-                <input
-                  type="file"
-                  name="profile-profile"
-                  onChange={(event) => onChange(event, 'profile')}
-                  className="absolute top-0 cursor-pointer opacity-0 rounded-full h-full w-full"
-                />
+            {isCollectionOwner ? (
+              <div className="absolute bottom-12 right-12 ">
+                <div className="absolute z-30 rounded-full bg-primary bg-opacity-40 p-2 cursor-pointer shadow-md">
+                  <MdModeEditOutline className="" size={20} />
+                  <input
+                    type="file"
+                    name="profile-profile"
+                    onChange={(event) => onChange(event, 'profile')}
+                    className="absolute top-0 cursor-pointer opacity-0 rounded-full h-full w-full"
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              ''
+            )}
             <div className="relative rounded object-center overflow-hidden w-full h-full">
               {profileURL && (
                 <Image

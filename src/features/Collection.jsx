@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Profile from '../components/Profile';
-import SingleGridView from '../components/SingleGridView';
 import axios from 'axios';
 import { _getCollectionMintedItems } from '../helper/events.ts';
 import { _getCollectionContract } from '../helper/contracts.ts';
@@ -18,7 +17,6 @@ const Collection = (props) => {
   const router = useRouter();
 
   const getItems = async (collectionAddress) => {
-    console.log(collectionAddress);
     const collection = await _getCollectionContract(collectionAddress);
     const owner = await collection.contractOwner();
     const name = await collection.name();
@@ -29,7 +27,6 @@ const Collection = (props) => {
         const uri = await collection.tokenURI(
           item.returnValues.tokenId.toString()
         );
-        console.log(ipfsToHttp(uri));
         const metaData = await axios.get(ipfsToHttp(uri));
         const tempItem = {
           name: metaData.data.name,
@@ -41,8 +38,6 @@ const Collection = (props) => {
         return tempItem;
       })
     );
-
-    console.log(tempItems);
 
     setItems(tempItems);
   };
@@ -67,11 +62,9 @@ const Collection = (props) => {
     }
   }, []);
 
-  console.log(items);
-
   return (
     <div className="py-5 flex flex-col space-y-5">
-      <Profile collectionAddress={collectionAddress} />
+      <Profile address={collectionAddress} isCollection={true}/>
       <div className="flex flex-col space-y-2">
         <h2 className="text-3xl font-mono capitalize">{details.name}</h2>
         <h3 className="text-white-100 truncate">
@@ -85,12 +78,6 @@ const Collection = (props) => {
           redirectDetailPage={redirectNftDetailPage}
         />
       </div>
-      {/* <div className="grid grid-cols-4 gap-5">
-        {items.length &&
-          items.map((item) => {
-            <SingleGridView key={item.tokenId} nft={item} isBuy={false} />;
-          })}
-      </div> */}
     </div>
   );
 };

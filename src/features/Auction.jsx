@@ -82,6 +82,9 @@ const Auction = () => {
     console.log(tempNft);
     const endTime = Number(auctionItem.auctionEndTime);
     setAuctionTime(endTime * 1000);
+    if (endTime * 1000 <= Date.now()) {
+      setTimeRemaining(false);
+    }
     setSingleNft(tempNft);
   };
 

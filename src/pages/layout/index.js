@@ -13,10 +13,10 @@ const routes = [
     title: 'Explore',
     url: '/',
   },
-  {
-    title: 'Resources',
-    url: '/resources',
-  },
+  // {
+  //   title: 'Resources',
+  //   url: '/resources',
+  // },
 ];
 
 const privateRoutes = [

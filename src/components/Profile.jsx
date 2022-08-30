@@ -87,8 +87,8 @@ const Profile = (props) => {
             {coverURL && (
               <Image
                 src={coverURL}
-                width={1280}
-                height={720}
+                width={1920}
+                height={1080}
                 objectFit="cover"
                 objectPosition="center"
                 alt="image"

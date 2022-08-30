@@ -158,3 +158,9 @@ export const _getAllOwnedCollection = async (account: string) => {
     console.log(error);
   }
 };
+
+export const _getOwnerOfCollection = async (address: string) => {
+  const collectionContract = _getCollectionContract(address);
+  const owner = await collectionContract.contractOwner();
+  return owner;
+};

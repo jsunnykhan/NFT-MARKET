@@ -1,12 +1,13 @@
-require("@nomiclabs/hardhat-waffle");
-require("@openzeppelin/hardhat-upgrades");
-require("@nomiclabs/hardhat-etherscan");
+require('@nomiclabs/hardhat-waffle');
+require('@openzeppelin/hardhat-upgrades');
+require('@nomiclabs/hardhat-etherscan');
 
-require("dotenv").config();
+require('dotenv').config({ path: __dirname + '/.env.development' });
 
-const fs = require("fs");
-const privateKey = fs.readFileSync(".secret").toString();
+const fs = require('fs');
+const privateKey = fs.readFileSync('.secret').toString();
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+console.log(baseUrl);
 
 module.exports = {
   // defaultNetwork: "rinkeby",
@@ -28,5 +29,5 @@ module.exports = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
-  solidity: "0.8.11",
+  solidity: '0.8.11',
 };

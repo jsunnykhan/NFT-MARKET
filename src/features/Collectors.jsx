@@ -9,7 +9,9 @@ import {
 import { _getTokenUri, _getAllOwnedCollection } from '../helper/collection.ts';
 import { useRouter } from 'next/router';
 import { useConnect } from '../helper/hooks/useConnect';
+import { ipfsToHttp } from '../helper/ipfsToHttp.ts';
 import Profile from '../components/Profile';
+import axios from 'axios';
 
 const Collectors = () => {
   const [mintedItems, setMintedItems] = useState([]);
@@ -34,6 +36,7 @@ const Collectors = () => {
     await getAllOwnedCollection();
     if (collections.length) {
       await getAllOwnedMintedItem();
+      getOwnedItems();
     } else {
       setMintedItems([]);
     }
@@ -70,7 +73,7 @@ const Collectors = () => {
                 id: item.returnValues.tokenId,
                 name: data.name,
                 description: data.description,
-                image: data.image,
+                image: ipfsToHttp(data.image),
                 collectionAddress: collection.address,
                 tokenId: item.returnValues.tokenId,
               };
@@ -86,6 +89,17 @@ const Collectors = () => {
       setMintedItems((pre) => (pre = mintedItems.flat(1)));
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const getOwnedItems = async () => {
+    console.log(account);
+    try {
+      const _ownedItems = await axios.get(`/api/mynfts?userAddress=${account}`);
+      setOwnedNft(_ownedItems.data.nfts);
+      console.log(_ownedItems.data.nfts);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -152,13 +166,21 @@ const Collectors = () => {
             ))}
           </div>
         </div>
+      ) : tabHandle === 'owned' ? (
+        <div className="w-full space-y-5">
+          <NftGridView
+            nftList={ownedNft}
+            notFoundMessage="You never mint any NFT"
+            redirectDetailPage={redirectNftDetailPage}
+          />
+        </div>
       ) : (
-        <div></div>
         // <NftGridView
         //   nftList={ownedNft}
         //   notFoundMessage="No NFT found that you owned"
         //   redirectNftDetailPage={redirectNftDetailPage}
         // />
+        ''
       )}
     </div>
   );

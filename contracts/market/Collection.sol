@@ -73,4 +73,9 @@ contract Collection is ERC721URIStorage {
             payable(_msgSender())
         );
     }
+
+    function totalNftCount() public view returns (uint256) {
+        return _nftTokenId.current();
+    }
+    
 }

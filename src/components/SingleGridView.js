@@ -1,18 +1,17 @@
-import Image from "next/image";
-import React, { useState } from "react";
-import { ipfsToHttp } from "../helper/ipfsToHttp.ts";
+import Image from 'next/image';
+import React, { useState } from 'react';
+import { ipfsToHttp } from '../helper/ipfsToHttp.ts';
 
 const SingleGridView = (props) => {
   const { nft, isBuy, buyNFT, processing } = props;
   const [process, setProcess] = useState(false);
 
- 
   return (
     <div className="h-full w-full rounded cursor-pointer ring-1 ring-secondary ring-opacity-40">
       <div className="h-[200px] relative">
         <Image
           className="rounded-t"
-          src={ipfsToHttp(nft.image)}
+          src={nft.image}
           alt={nft.name}
           layout="fill"
           objectFit="cover"
@@ -48,7 +47,7 @@ const SingleGridView = (props) => {
                 buyNFT(nft);
               }}
             >
-              {processing && process ? "Processing.." : "Buy NFT"}
+              {processing && process ? 'Processing..' : 'Buy NFT'}
             </button>
           </div>
         )}

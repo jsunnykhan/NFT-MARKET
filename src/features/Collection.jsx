@@ -31,7 +31,7 @@ const Collection = (props) => {
         const tempItem = {
           name: metaData.data.name,
           description: metaData.data.description,
-          image: metaData.data.image,
+          image: ipfsToHttp(metaData.data.image),
           id: item.returnValues.tokenId,
           collectionAddress: collectionAddress,
         };
@@ -64,7 +64,7 @@ const Collection = (props) => {
 
   return (
     <div className="py-5 flex flex-col space-y-5">
-      <Profile address={collectionAddress} isCollection={true}/>
+      <Profile address={collectionAddress} isCollection={true} />
       <div className="flex flex-col space-y-2">
         <h2 className="text-3xl font-mono capitalize">{details.name}</h2>
         <h3 className="text-white-100 truncate">

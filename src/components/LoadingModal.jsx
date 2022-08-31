@@ -43,7 +43,7 @@ const LoadingModal = (props) => {
           ) : (
             ''
           )}
-          <ReactLoading type="bubbles" color="#000" />
+          <ReactLoading type="bubbles" color="#471363" />
         </div>
       </div>
     </CustomModal>

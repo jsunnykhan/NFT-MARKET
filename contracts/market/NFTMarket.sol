@@ -34,10 +34,11 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
     mapping(uint256 => Listing) private _listings;
 
     event listed(
-        uint256 indexed listingId,
-        address collectionAddress,
+        uint256 listingId,
+        address indexed collectionAddress,
+        uint256 indexed tokenId,
         address payable creator,
-        address payable owner,
+        address payable indexed owner,
         uint256 price
     );
 
@@ -116,6 +117,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
         emit listed(
             newListingId,
             collectionAddress,
+            tokenId,
             payable(_owner),
             payable(_owner),
             price

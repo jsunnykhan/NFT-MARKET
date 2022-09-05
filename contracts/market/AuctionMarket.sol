@@ -44,6 +44,13 @@ contract AuctionMarket is Context {
         uint256 baseValue
     );
 
+    event AuctionListed(
+        uint256 auctionId,
+        address payable indexed seller,
+        address indexed collectionAddress,
+        uint256 indexed tokenId
+    );
+
     event Bid(
         uint256 indexed auctionId,
         address indexed bidder,
@@ -112,6 +119,13 @@ contract AuctionMarket is Context {
             _tokenId,
             _biddingTime,
             _baseValue
+        );
+
+        emit AuctionListed(
+            auctionId,
+            payable(_msgSender()),
+            _nftContract,
+            _tokenId
         );
     }
 
@@ -203,6 +217,7 @@ contract AuctionMarket is Context {
             revert("AUC105: Only owner can end the auction");
         }
 
+        //might need to invert the logic
         if (auctionItems[_auctionId].auctionEnded) {
             revert("AUC106: The function has already been called");
         }
@@ -213,8 +228,10 @@ contract AuctionMarket is Context {
         address highestBidder = auctionItems[_auctionId].highestBidder;
         address nftContract = auctionItems[_auctionId].nftContract;
 
+        //need test for no bid action
         if (auctionItems[_auctionId].highestBidder == address(0)) {
-            auctionItems[_auctionId].auctionEnded = true;
+            // auctionItems[_auctionId].auctionEnded = true;
+            terminateAuction(_auctionId);
             emit AuctionEnded(
                 _auctionId,
                 highestBidder,
@@ -232,8 +249,9 @@ contract AuctionMarket is Context {
 
         IERC721(nftContract).transferFrom(seller, highestBidder, tokenId);
 
-        auctionItems[_auctionId].auctionListed = false;
-        auctionItems[_auctionId].auctionEnded = true;
+        // auctionItems[_auctionId].auctionListed = false;
+        // auctionItems[_auctionId].auctionEnded = true;
+        terminateAuction(_auctionId);
 
         emit AuctionEnded(
             _auctionId,
@@ -245,15 +263,16 @@ contract AuctionMarket is Context {
     }
 
     function terminateAuction(uint256 _auctionId) public {
-        auctionItems[_auctionId].auctionEnded = true;
-        auctionItems[_auctionId].auctionListed = false;
+        // auctionItems[_auctionId].auctionEnded = true;
+        // auctionItems[_auctionId].auctionListed = false;
+        delete auctionItems[_auctionId];
     }
 
     // fetch functions
 
     function getAllAuctionItems() public view returns (AuctionItem[] memory) {
         uint256 totalItemCount = _itemID.current();
-        
+
         uint256 currentIndex = 0;
         uint256 count = 0;
 
@@ -304,6 +323,14 @@ contract AuctionMarket is Context {
 
     function getListingPrice() external view returns (uint256) {
         return listingPrice;
+    }
+
+    function getAuctionListingStatus(uint256 auctionId)
+        public
+        view
+        returns (bool)
+    {
+        return auctionItems[auctionId].auctionListed;
     }
 }
 

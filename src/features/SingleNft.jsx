@@ -33,7 +33,7 @@ const SingleNFT = () => {
   const [history, setHistory] = useState([]);
   const [collectionAddress, setCollectionAddress] = useState('');
   const [listingStatus, setListingStatus] = useState(false);
-  const [listingId, setListingId] = useState('');
+  const [listingId, setListingId] = useState(undefined);
   const [isAuctionModalOpen, setIsAuctionModalOpen] = useState(false);
   const [basePrice, setBasePrice] = useState('');
   const [auctionTime, setAuctionTime] = useState('');
@@ -303,7 +303,7 @@ const SingleNFT = () => {
               ) : (
                 ''
               )}
-              {listingStatus ? (
+              {listingStatus && listingId ? (
                 <>
                   <div className="flex justify-start">
                     <div>Price: {listedPrice} VSC</div>

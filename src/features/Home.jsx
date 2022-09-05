@@ -1,7 +1,7 @@
-import Web3Modal from 'web3modal';
 import Dashboard from '../components/Dashboard';
 import SingleCollection from '../components/SingleCollectionView';
 import NftGridView from '../components/NftGridView';
+import ReactLoading from 'react-loading';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { _getAllCollections } from '../helper/events.ts';
@@ -18,7 +18,6 @@ export default function Home() {
   const [nfts, setNfts] = useState([]);
   const [auctionItems, setAuctionItems] = useState([]);
   const [collections, setCollections] = useState([]);
-  const [processing, setProcessing] = useState(false);
 
   const router = useRouter();
 
@@ -160,7 +159,14 @@ export default function Home() {
               ) : null
             )
           ) : (
-            <div>Loading ..</div>
+            <div>
+              <ReactLoading
+                type="bubbles"
+                height={'10%'}
+                width={'10%'}
+                color="#471363"
+              />
+            </div>
           )}
         </div>
       </div>
@@ -173,7 +179,14 @@ export default function Home() {
               redirectDetailPage={redirectNFTDetailPage}
             />
           ) : (
-            <div>Loading ..</div>
+            <div>
+              <ReactLoading
+                type="bubbles"
+                height={'10%'}
+                width={'10%'}
+                color="#471363"
+              />
+            </div>
           )}
         </div>
       </div>
@@ -186,7 +199,14 @@ export default function Home() {
               redirectDetailPage={redirectAuctionDetailPage}
             />
           ) : (
-            <div>Loading ..</div>
+            <div>
+              <ReactLoading
+                type="bubbles"
+                height={'10%'}
+                width={'10%'}
+                color="#471363"
+              />
+            </div>
           )}
         </div>
       </div>

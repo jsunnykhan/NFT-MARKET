@@ -12,6 +12,7 @@ import { useConnect } from '../helper/hooks/useConnect';
 import { ipfsToHttp } from '../helper/ipfsToHttp.ts';
 import Profile from '../components/Profile';
 import axios from 'axios';
+import ReactLoading from 'react-loading';
 
 const Collectors = () => {
   const [mintedItems, setMintedItems] = useState([]);
@@ -168,18 +169,24 @@ const Collectors = () => {
         </div>
       ) : tabHandle === 'owned' ? (
         <div className="w-full space-y-5">
-          <NftGridView
-            nftList={ownedNft}
-            notFoundMessage="You never mint any NFT"
-            redirectDetailPage={redirectNftDetailPage}
-          />
+          {ownedNft.length === 0 ? (
+            <div className="flex items-center justify-center">
+              <ReactLoading
+                type="bubbles"
+                height={'10%'}
+                width={'10%'}
+                color="#471363"
+              />
+            </div>
+          ) : (
+            <NftGridView
+              nftList={ownedNft}
+              notFoundMessage="You don't any NFT"
+              redirectDetailPage={redirectNftDetailPage}
+            />
+          )}
         </div>
       ) : (
-        // <NftGridView
-        //   nftList={ownedNft}
-        //   notFoundMessage="No NFT found that you owned"
-        //   redirectNftDetailPage={redirectNftDetailPage}
-        // />
         ''
       )}
     </div>

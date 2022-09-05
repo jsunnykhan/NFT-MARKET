@@ -20,6 +20,7 @@ import {
   _buyNft,
 } from '../helper/market.ts';
 import { useConnect } from '../helper/hooks/useConnect';
+import { _getListingStatus } from '../helper/events/listedEvents';
 
 const SingleNFT = () => {
   const [isDesOpen, setIsDesOpen] = useState(true);
@@ -139,6 +140,16 @@ const SingleNFT = () => {
     }
   };
 
+  const checkListingStatus = async (collectionAddress, tokenId, account) => {
+    const tempStatus = await _getListingStatus(
+      tokenId,
+      collectionAddress,
+      account
+    );
+    console.log(tempStatus);
+    setListingStatus(tempStatus);
+  };
+
   useEffect(() => {
     if (account) {
       console.log(account);
@@ -153,6 +164,7 @@ const SingleNFT = () => {
         getNftDetails(collectionAddress, tokenId);
         getHistory(collectionAddress, tokenId);
       } else {
+        checkListingStatus(collectionAddress, tokenId, account);
         setCollectionAddress(collectionAddress);
         setTokenId(tokenId);
         getNftDetails(collectionAddress, tokenId);

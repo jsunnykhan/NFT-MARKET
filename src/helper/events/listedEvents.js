@@ -38,7 +38,7 @@ export const _getListingStatus = async (tokenId, collectionAddress, owner) => {
   );
 
   const auctionListing = await auctionContract.getPastEvents(
-    'AuctionStarted',
+    'AuctionListed',
     eventFilterAuction
   );
   const provider = new ethers.providers.Web3Provider(window.ethereum);

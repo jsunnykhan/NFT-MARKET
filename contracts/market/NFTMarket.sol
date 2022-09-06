@@ -100,6 +100,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
             "Item is already listed"
         );
         address _owner = IERC721(collectionAddress).ownerOf(tokenId);
+        address _creator = IERC721(collectionAddress).creatorOf(tokenId); 
         require(_owner == msg.sender, "This token not belongs to this address");
         IERC721(collectionAddress).approve(address(this), tokenId); // collenction should be tx.origin
 
@@ -107,7 +108,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
             newListingId,
             tokenId,
             collectionAddress,
-            payable(_owner),
+            payable(_creator),
             payable(_owner),
             true,
             price
@@ -118,7 +119,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
             newListingId,
             collectionAddress,
             tokenId,
-            payable(_owner),
+            payable(_creator),
             payable(_owner),
             price
         );

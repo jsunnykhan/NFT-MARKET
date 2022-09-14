@@ -36,7 +36,7 @@ export const _startAuction = async (
   console.log(transactionGoing);
   const tx = await transactionGoing.wait();
   console.log(tx);
-  return true;
+
   // can be used to fetch additional information
 };
 

@@ -1,3 +1,5 @@
+### NOTICE: Due to the protocol changes of Ethereum: Rinkeby, Ropsten and Kovan test networks may not work as reliably and will be deprecated soon.
+
 <-- Project Name -->
 
 This is a NFT Marketplace built for Ethereum blockchain network. 

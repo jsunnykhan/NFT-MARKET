@@ -13,6 +13,10 @@ const routes = [
     title: 'Explore',
     url: '/',
   },
+  {
+    title: 'Create',
+    url: '/create',
+  },
   // {
   //   title: 'Resources',
   //   url: '/resources',
@@ -24,10 +28,10 @@ const privateRoutes = [
     title: 'Collectors',
     url: '/collectors',
   },
-  {
-    title: 'Create',
-    url: '/create',
-  },
+  // {
+  //   title: 'Create',
+  //   url: '/create',
+  // },
 ];
 
 const Layout = (props) => {

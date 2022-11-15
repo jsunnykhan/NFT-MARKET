@@ -9,6 +9,10 @@ import "hardhat/console.sol";
 import "../utils/Ownable.sol";
 import "../utils/Context.sol";
 
+abstract contract ICollection {
+    function creatorOf(uint256 tokenId) public view virtual returns (address);
+}
+
 contract NFTMarket is ReentrancyGuard, Ownable, Context {
     using Counters for Counters.Counter;
     Counters.Counter private _listingId;
@@ -100,7 +104,7 @@ contract NFTMarket is ReentrancyGuard, Ownable, Context {
             "Item is already listed"
         );
         address _owner = IERC721(collectionAddress).ownerOf(tokenId);
-        address _creator = IERC721(collectionAddress).creatorOf(tokenId); 
+        address _creator = ICollection(collectionAddress).creatorOf(tokenId);
         require(_owner == msg.sender, "This token not belongs to this address");
         IERC721(collectionAddress).approve(address(this), tokenId); // collenction should be tx.origin
 

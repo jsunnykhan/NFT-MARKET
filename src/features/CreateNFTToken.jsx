@@ -91,6 +91,9 @@ const CreateNFTToken = () => {
   };
 
   useEffect(() => {
+    if (!account) {
+      connect();
+    }
     if (formInput.name && formInput.description && fileUrl) {
       setIsDisable(false);
     } else {

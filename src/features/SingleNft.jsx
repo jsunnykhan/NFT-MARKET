@@ -61,7 +61,7 @@ const SingleNFT = () => {
   const auctionItemsIntoMarket = async () => {
     const duration = Math.ceil((toMiliseonds(auctionTime) - Date.now()) / 1000);
     console.log(duration);
-    const success = await _startAuction(
+    await _startAuction(
       singleNft.collectionAddress,
       singleNft.tokenId,
       singleNft.creator,
@@ -70,22 +70,20 @@ const SingleNFT = () => {
     );
     const currentTime = moment().format('YYYY-MM-DDTHH:mm:ss');
     const durationInHour = Math.ceil(duration / 3600);
-    if (success) {
-      const response = await axios.post(
-        'http://159.89.3.212:8860/api/v1/auction',
-        {
-          auction_id: singleNft.tokenId,
-          token_address: ERC20_TOKEN,
-          nft_contract: singleNft.collectionAddress,
-          auction_created_time: currentTime,
-          auction_start_time: currentTime,
-          duration: durationInHour,
-        }
-      );
-      console.log(response);
-      router.push('/');
-      setIsAuctionModalOpen(false);
-    }
+    const response = await axios.post(
+      'http://159.89.3.212:8860/api/v1/auction',
+      {
+        auction_id: singleNft.tokenId,
+        token_address: ERC20_TOKEN,
+        nft_contract: singleNft.collectionAddress,
+        auction_created_time: currentTime,
+        auction_start_time: currentTime,
+        duration: durationInHour,
+      }
+    );
+    console.log(response);
+    router.push('/');
+    setIsAuctionModalOpen(false);
   };
 
   const buyNft = async () => {

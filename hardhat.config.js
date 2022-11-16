@@ -7,6 +7,7 @@ require('dotenv').config({ path: __dirname + '/.env.development' });
 const fs = require('fs');
 const privateKey = fs.readFileSync('.secret').toString();
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+const goerliUrl = process.env.NEXT_ALCHEMY_API;
 console.log(baseUrl);
 
 module.exports = {
@@ -25,6 +26,12 @@ module.exports = {
       // gas: 21000000,
       // gasPrice: 8000000000,
     },
+    goerli: {
+      baseUrl: goerliUrl,
+      accounts: {
+        mnemonic: privateKey,
+      }
+    }
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

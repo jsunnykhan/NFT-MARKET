@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx hardhat run --network rinkeby scripts/deploy.js && next build",
+    "build": "npx hardhat run --network goerli scripts/deploy.js && next build",
     "start": "next start",
     "lint": "next lint",
     "deploy": "npx hardhat run --network localhost scripts/deploy.js"

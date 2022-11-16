@@ -27,7 +27,7 @@ module.exports = {
       // gasPrice: 8000000000,
     },
     goerli: {
-      baseUrl: goerliUrl,
+      url: goerliUrl,
       accounts: {
         mnemonic: privateKey,
       }

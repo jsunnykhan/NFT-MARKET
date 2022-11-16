@@ -8,7 +8,7 @@ const fs = require('fs');
 const privateKey = fs.readFileSync('.secret').toString();
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 const goerliUrl = process.env.NEXT_ALCHEMY_API;
-console.log(baseUrl);
+console.log(goerliUrl);
 
 module.exports = {
   // defaultNetwork: "rinkeby",

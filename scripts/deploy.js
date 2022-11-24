@@ -4,7 +4,6 @@ const fs = require('fs');
 async function main() {
   const NFtMarket = await hre.ethers.getContractFactory('NFTMarket');
   const Auction = await hre.ethers.getContractFactory('AuctionMarket');
-
   const VSCoin = await hre.ethers.getContractFactory('VSCoin');
   const Nft = await hre.ethers.getContractFactory('Collection');
 

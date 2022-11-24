@@ -30,8 +30,8 @@ module.exports = {
       url: goerliUrl,
       accounts: {
         mnemonic: privateKey,
-      }
-    }
+      },
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

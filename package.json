@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "compile:build": "npx hardhat run --network goerli scripts/deploy.js && next build",
-    "build": "next build",
+    "build": "npx hardhat compile &&  next build",
     "start": "next start",
     "lint": "next lint",
     "deploy": "npx hardhat run --network goerli scripts/deploy.js"

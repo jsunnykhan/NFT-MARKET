@@ -51,7 +51,8 @@ export const _getERC20Contract = () => {
     _getProvider()
   );
   return contract;
-}; export const _getERC20ContractWithSigner = () => {
+};
+export const _getERC20ContractWithSigner = () => {
   const provider = _getSignerProvider();
   const signer = provider.getSigner();
   const contract: ethers.Contract = new ethers.Contract(

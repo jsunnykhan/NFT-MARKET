@@ -7,8 +7,7 @@ require('dotenv').config({ path: __dirname + '/.env.development' });
 const fs = require('fs');
 const privateKey = fs.readFileSync('.secret').toString();
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-const goerliUrl = process.env.NEXT_ALCHEMY_API;
-console.log(goerliUrl);
+
 
 module.exports = {
   // defaultNetwork: "rinkeby",
@@ -27,7 +26,7 @@ module.exports = {
       // gasPrice: 8000000000,
     },
     goerli: {
-      url: goerliUrl,
+      url: baseUrl,
       accounts: {
         mnemonic: privateKey,
       },

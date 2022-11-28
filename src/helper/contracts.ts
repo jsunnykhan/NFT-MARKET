@@ -11,7 +11,6 @@ import {
 } from './contractImport';
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-const infuraApiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
 
 const _getProvider = () => {
   const jsonRpcProvider: ethers.providers.JsonRpcProvider =
@@ -22,7 +21,7 @@ const _getProvider = () => {
 const _getSignerProvider = () => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   return provider;
-}
+};
 
 export const _getCollectionContract = (
   address = NFT_ADDRESS
